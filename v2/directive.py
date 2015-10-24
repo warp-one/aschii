@@ -63,10 +63,18 @@ class Directive(Attachment, Tile):
         self.phrase_clear = [False] * len(self.phrase)
         self.phrase_index = 0
         
-class Aschimba(Directive):
-
+class Next(Directive):
+    def complete(self):
+        self.anchor.say_line()
+        if self.anchor.script:
+            self.reset()
+        else:
+            super(Next, self).complete()
+        
+        
+class SCHIMB(Directive):
     def __init__(self, indices, *args, **kwargs):
-        super(Aschimba, self).__init__(*args, **kwargs)
+        super(SCHIMB, self).__init__(*args, **kwargs)
         self.coordinates = []
         for i in indices:
             self.coordinates.append(tools.get_xy_from_index(i, len(self.game.tilemap[0])))
@@ -83,7 +91,7 @@ class Aschimba(Directive):
                                             letter[0], libtcod.BKGND_NONE)
                                             
     def complete(self):
-        super(Aschimba, self).complete()
+        super(SCHIMB, self).complete()
         self.game.the_map.schimb()
             
         

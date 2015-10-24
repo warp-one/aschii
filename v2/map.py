@@ -74,6 +74,13 @@ class TileMap(object):
         num_cells = self.width * self.height
         prose = self.text.generate_markov_text(size=num_cells/3)
         text = prose[0:num_cells]
+        text = text.replace("Bernard", "XXXXXXX")
+        text = text.replace("Jinny", "XXXXX")
+        text = text.replace("Louis", "XXXXX")
+        text = text.replace("Neville", "XXXXXXX")
+        text = text.replace("Rhoda", "XXXXX")
+        text = text.replace("Susan", "XXXXX")
+        text = text.replace("Percival", "PPPPPPPP")
         special_letters = set()
         for i, t in enumerate(self.get_tiles()):
             if not t.blocked:

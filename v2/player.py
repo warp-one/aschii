@@ -1,7 +1,7 @@
 import libtcodpy as libtcod
 
 from tile import Unit
-from directive import Directive, PlayerArrow, Aschimba
+from directive import Directive, PlayerArrow, SCHIMB
 
 
 class Player(Unit):
@@ -97,7 +97,11 @@ class Player(Unit):
             for d in self.directives:
                 if d.tick_phrase(letter):
                     self.current_directive = d
+                    return
                 
+    def move(self, dx, dy):
+        if super(Player, self).move(dx, dy):
+            pass
 
     def draw(self):
         super(Player, self).draw()
@@ -116,5 +120,5 @@ class Player(Unit):
                 
     def on_notify(self, entity, event):
         if event == "SCHIMB":
-            self.add_child(Aschimba(entity, self, self.game, text="SCHIMB", static=True, offset=(-self.x, -self.y)))
+            self.add_child(SCHIMB(entity, self, self.game, text="SCHIMB", static=True, offset=(-self.x, -self.y)))
 

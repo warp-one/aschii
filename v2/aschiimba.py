@@ -5,7 +5,7 @@ import libtcodpy as libtcod
 from player import Player
 from tile import EnvironmentTile
 import tile
-from directive import Directive, Aschimba
+from directive import Directive, SCHIMB, Next
 from map import TileMap
  
 #actual size of the window
@@ -32,11 +32,11 @@ class Game(object):
         self.player.add_child(Directive(self.player, self, text="praise"))
         
         self.statues = []
-        for _ in range(3):
-            s = tile.Statue(10 + _*3, 10 + _, 'S', libtcod.green, self.foreground, self)
+        for _ in range(1):
+            s = tile.Statue(['He dreamt that it was alive, tremulous', 'it was not the atrocious bastard', 'of a tiger and a colt, but', 'at the same time both of these', 'fiery creatures, and also', 'a bull, a rose, and a storm'], 10 + _*3, 10 + _, 'S', libtcod.green, self.foreground, self)
             self.statues.append(s)
             self.the_map.add(s.x, s.y, s)
-            self.player.add_child(Directive(s, self, text="bow", static=True, offset = (2, 2)))
+            self.player.add_child(Next(s, self, text="bow", static=True, offset = (2, 2)))
         s = self.the_map.schimb()
             
     def create_consoles(self):
