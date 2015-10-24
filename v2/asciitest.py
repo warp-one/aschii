@@ -4,7 +4,8 @@ import libtcodpy as libtcod
 
 from player import Player
 from tile import EnvironmentTile
-from directive import Directive
+import tile
+from directive import Directive, Aschimba
 from map import TileMap
  
 #actual size of the window
@@ -24,19 +25,27 @@ class Game(object):
         libtcod.sys_set_fps(LIMIT_FPS)
 
         self.create_consoles()
-        self.add_map()
         self.player = Player(0, 0, '@', libtcod.white, self.foreground, self)
+        self.add_map()
         self.player.move(5, 5)
-        self.player.add_directive(Directive(self.player, self))
-        self.player.add_directive(Directive(self.player, self, text="praise"))
-
+        self.player.add_child(Directive(self.player, self))
+        self.player.add_child(Directive(self.player, self, text="praise"))
+        
+        self.statues = []
+        for _ in range(3):
+            s = tile.Statue(10 + _*3, 10 + _, 'S', libtcod.green, self.foreground, self)
+            self.statues.append(s)
+            self.the_map.add(s.x, s.y, s)
+            self.player.add_child(Directive(s, self, text="bow", static=True, offset = (2, 2)))
+        s = self.the_map.schimb()
+            
     def create_consoles(self):
         self.background = libtcod.console_new(self.width, self.height)
         self.foreground = libtcod.console_new(self.width, self.height)
         self.consoles = [self.background, self.foreground]
 
     def add_map(self):
-        self.the_map = TileMap(self.width, self.height, self.foreground, self)
+        self.the_map = TileMap(self.width, self.height, self.foreground, self, self.player)
         self.tilemap = self.the_map.tilemap
 
     def get_all_tiles(self):
@@ -49,6 +58,8 @@ class Game(object):
         for t in self.the_map.get_tiles():
             t.draw()
         self.player.draw()
+        for s in self.statues:
+            s.draw()
 
     def clear_all(self):
         self.player.clear()

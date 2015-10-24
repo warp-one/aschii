@@ -8,6 +8,8 @@ class Tile(object):
         self.current_color = color
         self.con = con
         self.game = game
+        self.next = None
+        self.prev = None
 
     def move(self, dx, dy):
         self.x += dx
@@ -46,8 +48,14 @@ class Unit(Tile):   # has collision
     def move(self, dx, dy):
         newX = self.x + dx
         newY = self.y + dy
-        if not self.game.tilemap[newX][newY].blocked:
+        if not self.game.the_map.run_collision(newX, newY):
             self.x += dx
             self.y += dy
             return True
         return False
+
+class Statue(Unit):
+    def __init__(self, *args):
+        super(Statue, self).__init__(*args)
+        self.char = libtcod.CHAR_DVLINE
+        self.blocked = True

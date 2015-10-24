@@ -1,7 +1,8 @@
 import libtcodpy as libtcod
 
 from tile import Unit
-from directive import Directive, PlayerArrow
+from directive import Directive, PlayerArrow, Aschimba
+
 
 class Player(Unit):
 
@@ -28,19 +29,11 @@ class Player(Unit):
                 (-1, 0): libtcod.CHAR_ARROW_W} 
         for offset, char in NSEW.iteritems():
             newD = PlayerArrow(self, self.game, text=char)
-            self.add_directive(newD, offset=offset)
+            self.add_child(newD, offset=offset)
             self.add_arrow(newD)
         
     def add_arrow(self, arrow):
         self.arrows[arrow.phrase] = arrow
-
-    def move(self, dx, dy):
-        if super(Player, self).move(dx, dy):
-            for t in self.game.the_map.get_NSEW(self.x - dx, self.y - dy):
-                t.current_color = t.color
-            for t in self.game.the_map.get_NSEW(self.x, self.y):
-                if not t.blocked:
-                    t.current_color = t.current_color + libtcod.dark_grey
 
     def handle_keys(self):
         for a in self.arrows.values():
@@ -72,27 +65,25 @@ class Player(Unit):
         if dx or dy:
             self.move(dx, dy)
             
-    def add_child(self, child):
+    def add_child(self, child, offset=None):
         self.children.append(child)
+        if not offset:
+            oX, oY = self.offsets[self.next_offset]
+            self.next_offset = (self.next_offset + 1 if self.next_offset < len(self.offsets) - 1 else 0)
+        else:
+            oX, oY = offset
+        child.offsetX = oX
+        child.offsetY = oY
+
+        if isinstance(child, Directive):
+            self.directives.append(child)
         
     def remove_child(self, child):
         self.children.remove(child)
-
-    def add_directive(self, directive, offset=None):
-        self.add_child(directive)
-        self.directives.append(directive)
-        if not offset:
-            oX, oY = self.offsets[self.next_offset]
-            self.next_offset = (self.next_offset + 1 if self.next_offset < len(self.offsets) else 0)
-        else:
-            oX, oY = offset
-        directive.offsetX = oX
-        directive.offsetY = oY
-
-    def remove_directive(self, directive):
-        self.remove_child(directive)
-        self.directives.remove(directive)
-        self.current_directive = None
+        if isinstance(child, Directive):
+            if self.current_directive == child:
+                self.current_directive = None
+            self.directives.remove(child)
 
     def handle_letter(self, key):
         letter = (chr(key.c) if key.c else key.vk)
@@ -110,14 +101,20 @@ class Player(Unit):
 
     def draw(self):
         super(Player, self).draw()
-        for d in self.directives:
-            d.draw()
+        for c in self.children:
+            c.draw()
 
     def clear(self):
         super(Player, self).clear()
-        for d in self.directives:
-            d.clear()
+        for c in self.children:
+            c.clear()
         
     def update(self):
-        for d in self.directives:
-            d.update()
+        for c in self.children:
+            if not c.static:
+                c.update()
+                
+    def on_notify(self, entity, event):
+        if event == "SCHIMB":
+            self.add_child(Aschimba(entity, self, self.game, text="SCHIMB", static=True, offset=(-self.x, -self.y)))
+
