@@ -34,34 +34,50 @@ class Directive(Attachment, Tile):
         self.phrase_clear = [False] * len(self.phrase) 
         self.phrase_index = 0
         self.completed = False
+        
+    def get_visible(self):
+        dv = super(Directive, self).get_visible()
+#        uc = not self.game.the_map.run_collision(self.x, self.y)
+        return dv# and uc
 
-    def draw(self):
+    def _draw(self):
         to_draw = self.phrase
         for i, char in enumerate(to_draw):
-            color = (self.current_color if self.phrase_clear[i] else libtcod.red)
-            libtcod.console_set_default_foreground(self.con, color)
-            libtcod.console_put_char(self.con, self.x + i, self.y, 
-                                            char, libtcod.BKGND_NONE)
+            x, y = self.x + i, self.y
+            if not self.game.the_map.run_collision(x, y):
+                color = (self.current_color if self.phrase_clear[i] else libtcod.red)
+                libtcod.console_set_default_foreground(self.con, color)
+                libtcod.console_put_char(self.con, x, y, 
+                                                char, libtcod.BKGND_NONE)
+                                            
             
     def complete(self):
         self.completed = True
         self.game.player.remove_child(self)
         
+    def clear(self):
+        pass
+        
             
     def tick_phrase(self, letter):
-        if not self.completed:
-            if self.phrase[self.phrase_index] == letter:
-                self.phrase_clear[self.phrase_index] = True
-                self.phrase_index += 1
-                if self.phrase_index >= len(self.phrase):
-                    self.complete()
-                return True
-            else:
-                return False
+        if self.anchor.get_visible():
+            if not self.completed:
+                if self.phrase[self.phrase_index] == letter:
+                    self.phrase_clear[self.phrase_index] = True
+                    self.phrase_index += 1
+                    if self.phrase_index >= len(self.phrase):
+                        self.complete()
+                    return True
+                else:
+                    return False
                 
     def reset(self):
         self.phrase_clear = [False] * len(self.phrase)
         self.phrase_index = 0
+        
+class Power(Directive):
+    def get_visible(self):
+        return True
         
 class Next(Directive):
     def complete(self):
@@ -85,10 +101,12 @@ class SCHIMB(Directive):
     def draw(self):
         to_draw = zip(self.phrase, self.coordinates)
         for i, letter in enumerate(to_draw):
+            x, y = letter[1][0], letter[1][1]
             color = (self.current_color if self.phrase_clear[i] else self.color2)
-            libtcod.console_set_default_foreground(self.con, color)
-            libtcod.console_put_char(self.con, letter[1][0], letter[1][1], 
-                                            letter[0], libtcod.BKGND_NONE)
+            if libtcod.map_is_in_fov(self.game.the_map.libtcod_map, x, y):
+                libtcod.console_set_default_foreground(self.con, color)
+                libtcod.console_put_char(self.con, x, y, 
+                                                letter[0], libtcod.BKGND_NONE)
                                             
     def complete(self):
         super(SCHIMB, self).complete()
@@ -102,8 +120,8 @@ class PlayerArrow(Directive):
         self.phrase_index = 0
         self.completed = False
 
-    def draw(self):
-        if self.game.tilemap[self.x][self.y].blocked:
+    def _draw(self):
+        if self.game.the_map.run_collision(self.x, self.y):
             return
         char = chr(self.phrase)
         color = (self.current_color if self.pressed else libtcod.red)

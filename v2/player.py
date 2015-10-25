@@ -4,23 +4,63 @@ from tile import Unit
 from directive import Directive, PlayerArrow, SCHIMB
 
 
+class Item(object):
+    def turn_on(self):
+        pass
+        
+    def turn_off(self):
+        pass
+
+class Inventory(object):
+
+    next_item_key = libtcod.KEY_SPACE
+    item_keys = []
+
+    def __init__(self):
+        self.inventory = []
+        self.item_number = 0
+        self.current_item = None
+        
+    def pick_up_item(self, item):
+        item.toggle_visible()
+        self.inventory.append(item)
+        
+    def drop_item(self, item):
+        item.toggle_visible()
+        self.inventory.remove(item)
+        
+    def switch_item(self):
+        if not self.current_item:
+            if self.inventory:
+                self.current_item = self.inventory[0]
+        else:
+            self.item_number += 1
+            if self.item_number >= len(self.inventory):
+                self.item_number = 0
+            self.current_item = self.inventory[self.item_number]
+    
+
 class Player(Unit):
 
     arrow_keys = [libtcod.KEY_UP, libtcod.KEY_DOWN,
                   libtcod.KEY_RIGHT, libtcod.KEY_LEFT]
 
     def __init__(self, *args):
+        self.blocked = False
         super(Player, self).__init__(*args)
 
         self.children = []
         self.directives = []
-        self.current_directive = None
+        self.current_directives = []
         self.offsets = [(-2, -2), (-2, 2), (2, 3), (2, -3), (-2, -2), (-2, 2), (2, 3), (2, -3)]
         self.next_offset = 0
+        self.facing = (0, 0)
+        self.powers = None
 
         self.arrows = {libtcod.CHAR_ARROW_N:None, libtcod.CHAR_ARROW_S:None, 
                        libtcod.CHAR_ARROW_E:None, libtcod.CHAR_ARROW_W:None}
         self.set_arrows()
+        
         
     def set_arrows(self):
         NSEW = {(0, 1): libtcod.CHAR_ARROW_N, 
@@ -78,35 +118,50 @@ class Player(Unit):
         if isinstance(child, Directive):
             self.directives.append(child)
         
+    def add_power(self, power):
+        if self.powers is None:
+            self.powers = []
+        self.add_child(power)
+        self.powers.append(power)
+        power.x = 0
+        power.y = self.game.the_map.height - len(self.powers)
+        power.update()
+        
+    def remove_power(self, power):
+        self.remove_child(power)
+        self.powers.remove(power)
+    
     def remove_child(self, child):
         self.children.remove(child)
         if isinstance(child, Directive):
-            if self.current_directive == child:
-                self.current_directive = None
+            if child in self.current_directives:
+                self.current_directives.remove(child)
             self.directives.remove(child)
 
     def handle_letter(self, key):
         letter = (chr(key.c) if key.c else key.vk)
-        if self.current_directive:
-            if self.current_directive.tick_phrase(letter):
-                pass
-            else:
-                self.current_directive.reset()
-                self.current_directive = None
+        if self.current_directives:
+            for d in self.current_directives:
+                if d.tick_phrase(letter):
+                    pass
+                else:
+                    d.reset()
+                    self.current_directives.remove(d)
         else:
             for d in self.directives:
                 if d.tick_phrase(letter):
-                    self.current_directive = d
-                    return
+                    self.current_directives.append(d)
                 
     def move(self, dx, dy):
         if super(Player, self).move(dx, dy):
-            pass
+            self.game.the_map.move(self.x, self.y, self)
+            self.fov = libtcod.map_compute_fov(self.game.the_map.libtcod_map, self.x, self.y, 10, algo=libtcod.FOV_DIAMOND)
+            self.facing = (dx, dy)
 
     def draw(self):
-        super(Player, self).draw()
         for c in self.children:
             c.draw()
+        super(Player, self).draw()
 
     def clear(self):
         super(Player, self).clear()

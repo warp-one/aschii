@@ -5,7 +5,7 @@ import libtcodpy as libtcod
 from player import Player
 from tile import EnvironmentTile
 import tile
-from directive import Directive, SCHIMB, Next
+from directive import Directive, SCHIMB, Next, Power
 from map import TileMap
  
 #actual size of the window
@@ -28,8 +28,8 @@ class Game(object):
         self.player = Player(0, 0, '@', libtcod.white, self.foreground, self)
         self.add_map()
         self.player.move(5, 5)
-        self.player.add_child(Directive(self.player, self))
-        self.player.add_child(Directive(self.player, self, text="praise"))
+        self.player.add_power(Power(self.player, self, static=True, offset=(0, 30+len(self.player.children))))
+        self.player.add_power(Power(self.player, self, text="praise", static=True, offset=(0, 30+len(self.player.children))))
         
         self.statues = []
         for _ in range(1):
@@ -47,6 +47,9 @@ class Game(object):
     def add_map(self):
         self.the_map = TileMap(self.width, self.height, self.foreground, self, self.player)
         self.tilemap = self.the_map.tilemap
+        
+    def switch_map(self):
+        pass
 
     def get_all_tiles(self):
         tiles = [self.player]
@@ -57,9 +60,11 @@ class Game(object):
     def render_all(self):
         for t in self.the_map.get_tiles():
             t.draw()
-        self.player.draw()
+#        for t in self.the_map.get_tiles_by_layer():
+#            t.draw()
         for s in self.statues:
             s.draw()
+        self.player.draw()
 
     def clear_all(self):
         self.player.clear()

@@ -5,18 +5,27 @@ import libtcodpy as libtcod
 from tile import EnvironmentTile
 import markovgen as mg
 
+class BoardSetup(object):
+    pass
+
 class TileMap(object):
     def __init__(self, w, h, con, game, player):
         self.con = con
         self.game = game
         self.width, self.height = w, h
         self.tilemap = [[EnvironmentTile(
-                (False if randint(-6, 1) < 1 else True), 
+                (False if randint(-6, 1) < 2 else True), 
                 x, y, '@', libtcod.darkest_grey, self.con, self.game
                                          )
                             for y in range(h)]
                             for x in range(w)]
                             
+        self.libtcod_map = libtcod.map_new(self.width, self.height)
+        for t in self.get_tiles():
+            libtcod.map_set_properties(self.libtcod_map, t.x, t.y, not t.blocked, not t.blocked)
+           
+        self.light_sources = []
+           
         with open('waves.txt', 'r') as f:
             self.text = mg.Markov(f)
             
@@ -27,6 +36,17 @@ class TileMap(object):
         for y in range(self.height):
             for x in range(self.width):
                 yield self.tilemap[x][y]
+                
+    def get_tiles_by_layer(self):
+        tiles = self.get_tiles()
+        while tiles:
+            
+            for t in tiles:
+                if t.next:
+                    tiles.append(t.next)
+                yield t
+                     
+            
 
     def get_NSEW(self, x, y):
         targets = [(x, y-1), (x, y+1), (x+1, y), (x-1, y)]
@@ -45,12 +65,18 @@ class TileMap(object):
         unit.prev = tail
         
     def remove(self, x, y, unit):
+        if not unit.prev:
+            return
         if unit.next:
             unit.prev.next = unit.next
         else:
             unit.prev.next = None
         unit.next = None
         unit.prev = None
+        
+    def move(self, x, y, unit):
+        self.remove(x, y, unit)
+        self.add(x, y, unit)
         
     def run_collision(self, x, y):
         unit = self.tilemap[x][y]
