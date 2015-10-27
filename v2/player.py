@@ -1,49 +1,70 @@
 import libtcodpy as libtcod
 
 from tile import Unit
-from directive import Directive, PlayerArrow, SCHIMB
+from directive import Directive, PlayerArrow, SCHIMB, Legs
 
-
-class Item(object):
-    def turn_on(self):
-        pass
+class Orders(object):
+    def create_orders(self):
+        self.orders = [] # (t, callable)
+        self.current_action = None
+        self.time_left = 0
+        self.path = []
         
-    def turn_off(self):
-        pass
-
-class Inventory(object):
-
-    next_item_key = libtcod.KEY_SPACE
-    item_keys = []
-
-    def __init__(self):
-        self.inventory = []
-        self.item_number = 0
-        self.current_item = None
-        
-    def pick_up_item(self, item):
-        item.toggle_visible()
-        self.inventory.append(item)
-        
-    def drop_item(self, item):
-        item.toggle_visible()
-        self.inventory.remove(item)
-        
-    def switch_item(self):
-        if not self.current_item:
-            if self.inventory:
-                self.current_item = self.inventory[0]
+    def act(self):
+        if self.current_action:
+            self.current_action()
+            self.time_left -= .1
+            if self.time_left <= 0:
+                self.end_action()
         else:
-            self.item_number += 1
-            if self.item_number >= len(self.inventory):
-                self.item_number = 0
-            self.current_item = self.inventory[self.item_number]
+            if self.orders:
+                self.time_left, self.current_action = self.orders.pop(0)
+                
+    def add_order(self, time, order):
+        self.orders.append((time, order))
+        
+    def move_along_path(self):
+        try:
+            next_tile = self.path.pop(0)
+        except IndexError:
+            self.end_action()
+            return
+        dx = next_tile[0] - self.x
+        dy = next_tile[1] - self.y
+        self.move(dx, dy)
+        
+    def get_path(self, start, finish):
+        self.path = []
+        x_dif = finish[0] - start[0] 
+        y_dif = finish[1] - start[1]
+        if x_dif: 
+            x_sign = x_dif/abs(x_dif)
+        else:
+            x_sign = 1
+        for x in range(x_sign, x_dif + 1, x_sign):
+            self.path.append((start[0] + x, start[1]))
+        if y_dif: 
+            y_sign = y_dif/abs(y_dif)
+        else:
+            y_sign = 1
+        for y in range(y_sign, y_dif + 1, y_sign):
+            self.path.append((start[0] + x_dif, start[1] + y))
+        return self.path
+        
+    def end_action(self):
+        self.current_action = None
+        self.time_left = 0
+            
+    def update(self):
+        pass
     
-
-class Player(Unit):
+    
+class Player(Orders, Unit):
 
     arrow_keys = [libtcod.KEY_UP, libtcod.KEY_DOWN,
                   libtcod.KEY_RIGHT, libtcod.KEY_LEFT]
+    offsets = [(-2, -2), (-2, 2), (2, 3), (2, -3), 
+               (-2, -2), (-2, 2), (2, 3), (2, -3)]
 
     def __init__(self, *args):
         self.blocked = False
@@ -52,10 +73,11 @@ class Player(Unit):
         self.children = []
         self.directives = []
         self.current_directives = []
-        self.offsets = [(-2, -2), (-2, 2), (2, 3), (2, -3), (-2, -2), (-2, 2), (2, 3), (2, -3)]
         self.next_offset = 0
-        self.facing = (0, 0)
+        self.facing = (1, 0)
         self.powers = None
+        
+        self.create_orders()
 
         self.arrows = {libtcod.CHAR_ARROW_N:None, libtcod.CHAR_ARROW_S:None, 
                        libtcod.CHAR_ARROW_E:None, libtcod.CHAR_ARROW_W:None}
@@ -71,6 +93,9 @@ class Player(Unit):
             newD = PlayerArrow(self, self.game, text=char)
             self.add_child(newD, offset=offset)
             self.add_arrow(newD)
+            
+        self.legs = Legs(self, self.game)
+        self.add_child(self.legs, offset=(0, 0))
         
     def add_arrow(self, arrow):
         self.arrows[arrow.phrase] = arrow
@@ -91,19 +116,19 @@ class Player(Unit):
             return True  #exit game
      
         if libtcod.console_is_key_pressed(libtcod.KEY_UP):
-            dx, dy = (0, -1)
+            self.facing = (0, -1)
             self.arrows[libtcod.CHAR_ARROW_N].pressed = True
         elif libtcod.console_is_key_pressed(libtcod.KEY_DOWN):
-            dx, dy = (0, 1)
+            self.facing = (0, 1)
             self.arrows[libtcod.CHAR_ARROW_S].pressed = True
         elif libtcod.console_is_key_pressed(libtcod.KEY_LEFT):
-            dx, dy = (-1, 0)
+            self.facing = (-1, 0)
             self.arrows[libtcod.CHAR_ARROW_W].pressed = True
         elif libtcod.console_is_key_pressed(libtcod.KEY_RIGHT):
-            dx, dy = (1, 0)
+            self.facing = (1, 0)
             self.arrows[libtcod.CHAR_ARROW_E].pressed = True
-        if dx or dy:
-            self.move(dx, dy)
+#        if dx or dy:
+#            self.move(dx, dy)
             
     def add_child(self, child, offset=None):
         self.children.append(child)
@@ -140,23 +165,25 @@ class Player(Unit):
 
     def handle_letter(self, key):
         letter = (chr(key.c) if key.c else key.vk)
-        if self.current_directives:
-            for d in self.current_directives:
-                if d.tick_phrase(letter):
+        for d in self.directives:
+            if d.tick_phrase(letter):
+                if d.active:
                     pass
                 else:
+                    d.toggle_active()
+            else:
+                if d.active:
                     d.reset()
-                    self.current_directives.remove(d)
-        else:
-            for d in self.directives:
-                if d.tick_phrase(letter):
-                    self.current_directives.append(d)
-                
+                    d.toggle_active()
+                    
     def move(self, dx, dy):
         if super(Player, self).move(dx, dy):
             self.game.the_map.move(self.x, self.y, self)
-            self.fov = libtcod.map_compute_fov(self.game.the_map.libtcod_map, self.x, self.y, 10, algo=libtcod.FOV_DIAMOND)
-            self.facing = (dx, dy)
+            self.fov = libtcod.map_compute_fov(self.game.the_map.libtcod_map, self.x, self.y, 17, algo=libtcod.FOV_DIAMOND)
+            if dx:
+                self.facing = (dx, 0)
+            else:
+                self.facing = (0, dy)
 
     def draw(self):
         for c in self.children:
@@ -169,6 +196,8 @@ class Player(Unit):
             c.clear()
         
     def update(self):
+        self.act()
+        super(Player, self).update()
         for c in self.children:
             if not c.static:
                 c.update()
@@ -176,4 +205,3 @@ class Player(Unit):
     def on_notify(self, entity, event):
         if event == "SCHIMB":
             self.add_child(SCHIMB(entity, self, self.game, text="SCHIMB", static=True, offset=(-self.x, -self.y)))
-

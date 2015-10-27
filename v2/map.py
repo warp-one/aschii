@@ -31,6 +31,12 @@ class TileMap(object):
             
         self.obs = []
         self.add_observer(player)
+        
+    def get_tile(self, x, y):
+        try:
+            return self.tilemap[x][y]
+        except IndexError:
+            return False
 
     def get_tiles(self):
         for y in range(self.height):
