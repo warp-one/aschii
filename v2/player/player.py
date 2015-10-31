@@ -1,7 +1,9 @@
 import libtcodpy as libtcod
 
 from tile import Unit
-from directive import Directive, PlayerArrow, SCHIMB, Legs
+from directive import Directive, PlayerArrow, SCHIMB, Legs, PlayerWASD
+from observer import Listener
+from actionmenu import *
 
 class Orders(object):
     def create_orders(self):
@@ -19,6 +21,7 @@ class Orders(object):
         else:
             if self.orders:
                 self.time_left, self.current_action = self.orders.pop(0)
+                print "ad"
                 
     def add_order(self, time, order):
         self.orders.append((time, order))
@@ -32,6 +35,10 @@ class Orders(object):
         dx = next_tile[0] - self.x
         dy = next_tile[1] - self.y
         self.move(dx, dy)
+        
+    def set_path(self, path):
+        self.path = path
+        return self.path
         
     def get_path(self, start, finish):
         self.path = []
@@ -59,12 +66,14 @@ class Orders(object):
         pass
     
     
-class Player(Orders, Unit):
+class Player(Listener, Orders, Unit):
 
     arrow_keys = [libtcod.KEY_UP, libtcod.KEY_DOWN,
                   libtcod.KEY_RIGHT, libtcod.KEY_LEFT]
     offsets = [(-2, -2), (-2, 2), (2, 3), (2, -3), 
                (-2, -2), (-2, 2), (2, 3), (2, -3)]
+    sprint_distance = 9
+    char = ' '
 
     def __init__(self, *args):
         self.blocked = False
@@ -78,17 +87,19 @@ class Player(Orders, Unit):
         self.powers = None
         
         self.create_orders()
+        self.obs = []
 
         self.arrows = {libtcod.CHAR_ARROW_N:None, libtcod.CHAR_ARROW_S:None, 
                        libtcod.CHAR_ARROW_E:None, libtcod.CHAR_ARROW_W:None}
         self.set_arrows()
+        self.add_child(PlayerWASD(self, self.game))
         
         
     def set_arrows(self):
-        NSEW = {(0, 1): libtcod.CHAR_ARROW_N, 
-                (0, -1): libtcod.CHAR_ARROW_S, 
-                (1, 0): libtcod.CHAR_ARROW_E, 
-                (-1, 0): libtcod.CHAR_ARROW_W} 
+        NSEW = {(0, 4): libtcod.CHAR_ARROW_N, 
+                (0, -4): libtcod.CHAR_ARROW_S, 
+                (4, 0): libtcod.CHAR_ARROW_E, 
+                (-4, 0): libtcod.CHAR_ARROW_W} 
         for offset, char in NSEW.iteritems():
             newD = PlayerArrow(self, self.game, text=char)
             self.add_child(newD, offset=offset)
@@ -114,6 +125,8 @@ class Player(Orders, Unit):
             libtcod.console_set_fullscreen(not libtcod.console_is_fullscreen())
         elif key.vk == libtcod.KEY_ESCAPE:
             return True  #exit game
+        elif key.vk == libtcod.KEY_SPACE:
+            self.game.the_map.schimb()
      
         if libtcod.console_is_key_pressed(libtcod.KEY_UP):
             self.facing = (0, -1)
@@ -181,9 +194,10 @@ class Player(Orders, Unit):
             self.game.the_map.move(self.x, self.y, self)
             self.fov = libtcod.map_compute_fov(self.game.the_map.libtcod_map, self.x, self.y, 17, algo=libtcod.FOV_DIAMOND)
             if dx:
-                self.facing = (dx, 0)
+                self.facing = (dx/abs(dx), 0)
             else:
-                self.facing = (0, dy)
+                self.facing = (0, dy/abs(dy))
+            self.notify(None, "player move")
 
     def draw(self):
         for c in self.children:
@@ -203,5 +217,5 @@ class Player(Orders, Unit):
                 c.update()
                 
     def on_notify(self, entity, event):
-        if event == "SCHIMB":
-            self.add_child(SCHIMB(entity, self, self.game, text="SCHIMB", static=True, offset=(-self.x, -self.y)))
+        pass#if event == "SCHIMB":
+            #self.add_child(SCHIMB(entity, self, self.game, text="SCHIMB", static=True, offset=(-self.x, -self.y)))

@@ -38,7 +38,6 @@ class Tile(object):
         
     def get_visible(self):
         lights = self.game.the_map.light_sources
-    
         seen = libtcod.map_is_in_fov(self.game.the_map.libtcod_map, self.x, self.y)
         lit = False
         for l in lights:
@@ -68,7 +67,6 @@ class Tile(object):
                                         self.current_char, libtcod.BKGND_NONE)
 
     def clear(self):
-        
         libtcod.console_put_char(self.con, self.x, self.y, 
                                        ' ', libtcod.BKGND_NONE)
 

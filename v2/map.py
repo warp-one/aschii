@@ -3,12 +3,13 @@ from random import randint
 import libtcodpy as libtcod
 
 from tile import EnvironmentTile
+from observer import Listener
 import markovgen as mg
 
 class BoardSetup(object):
     pass
 
-class TileMap(object):
+class TileMap(Listener, object):
     def __init__(self, w, h, con, game, player):
         self.con = con
         self.game = game
@@ -42,6 +43,12 @@ class TileMap(object):
         for y in range(self.height):
             for x in range(self.width):
                 yield self.tilemap[x][y]
+                
+    def get_visible_tiles(self):
+        for t in self.get_tiles():
+            if t.get_visible():
+                yield t
+
                 
     def get_tiles_by_layer(self):
         tiles = self.get_tiles()
@@ -92,16 +99,6 @@ class TileMap(object):
             unit = unit.next
         return False
         
-    def add_observer(self, observer):
-        self.obs.append(observer)
-        
-    def remove_observer(self, observer):
-        self.obs.remove(observer)
-        
-    def notify(self, entity, event):
-        for o in self.obs:
-            o.on_notify(entity, event)
-            
     def schimb(self):
         num_cells = self.width * self.height
         prose = self.text.generate_markov_text(size=num_cells/3)
@@ -114,10 +111,13 @@ class TileMap(object):
         text = text.replace("Susan", "XXXXX")
         text = text.replace("Percival", "PPPPPPPP")
         special_letters = set()
-        for i, t in enumerate(self.get_tiles()):
+        for i, t in enumerate(self.get_visible_tiles()):
             if not t.blocked:
                 t.char = text[i]
         while len(special_letters) < 6:
             special_letters.add(randint(0, num_cells - 1))
         self.notify(special_letters, "SCHIMB")
         
+    def on_notify(self, entity, event):
+        if event == "player move":
+            self.schimb()

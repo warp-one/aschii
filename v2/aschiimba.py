@@ -5,7 +5,7 @@ import libtcodpy as libtcod
 from player import Player
 from tile import EnvironmentTile
 import tile
-from directive import Directive, SCHIMB, Next, Power, Waypoint
+from directive import *
 from map import TileMap
  
 #actual size of the window
@@ -25,11 +25,12 @@ class Game(object):
         libtcod.sys_set_fps(LIMIT_FPS)
 
         self.create_consoles()
-        self.player = Player(15, 15, '@', libtcod.white, self.foreground, self)
+        self.player = Player(15, 15, ' ', libtcod.white, self.foreground, self)
         self.add_map()
         self.player.move(5, 5)
         self.player.add_power(Power(self.player, self, static=True, offset=(0, 30+len(self.player.children))))
-        self.player.add_power(Power(self.player, self, text="praise", static=True, offset=(0, 30+len(self.player.children))))
+        self.player.add_power(Sprint(self.player, self, text="sprint", static=True, offset=(0, 30+len(self.player.children))))
+        self.player.add_observer(self.the_map)
         
         self.statues = []
         for _ in range(1):
