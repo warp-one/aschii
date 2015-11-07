@@ -14,6 +14,7 @@ class Attachment(object):
 class Directive(Attachment, Tile):
 
     char = 'X'
+    range = 5
 
     def __init__(self, anchor, game, static=False, text="Destroy", offset=(0, 0)):
         self.anchor = anchor
@@ -22,6 +23,7 @@ class Directive(Attachment, Tile):
         self.static = static
         self.color = libtcod.green
         self.current_color = self.color
+        self.dormant_color = libtcod.red
         self.game = game
         self.con = game.foreground
         self.x, self.y = self.anchor.x + self.offsetX, self.anchor.y + self.offsetY
@@ -48,11 +50,20 @@ class Directive(Attachment, Tile):
         return dv and av
 
     def _draw(self):
+        in_range = tools.get_distance(self.game.player.get_location(), self.get_location()) < self.range
+        if in_range:
+            self.dormant_color = libtcod.red
+        else:
+            self.dormant_color = libtcod.grey
+        
+    
+    
+    
         to_draw = self.phrase
         for i, char in enumerate(to_draw):
             x, y = self.x + i, self.y
             if not self.game.the_map.run_collision(x, y):
-                color = (self.current_color if self.phrase_clear[i] else libtcod.red)
+                color = (self.current_color if self.phrase_clear[i] else self.dormant_color)
                 libtcod.console_set_default_foreground(self.con, color)
                 libtcod.console_put_char(self.con, x, y, 
                                                 char, libtcod.BKGND_NONE)
@@ -64,7 +75,6 @@ class Directive(Attachment, Tile):
         
     def clear(self):
         pass
-        
             
     def tick_phrase(self, letter):
         if self.anchor.get_visible() and self.get_visible():

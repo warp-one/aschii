@@ -4,6 +4,9 @@ import tools
 from directive import Directive
 
 class Power(Directive):
+
+    range = 1000
+
     def get_visible(self):
         return True
         
@@ -145,6 +148,12 @@ class Sprint(Power):
 
         
 class Waypoint(Directive):
+
+    range = 20
+
+    def get_dormant(self):
+        return False
+        
     def complete(self):
 #        self.completed = True
         p = self.game.player

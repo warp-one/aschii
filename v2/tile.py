@@ -55,13 +55,6 @@ class Tile(object):
     def _draw(self):
         self.current_char = self.char
         self.current_color = self.color
-#        elif tools.get_distance(self.game.player.get_location(), self.get_location()) < 20:
-#            self.current_char = libtcod.CHAR_BLOCK2
-#            self.current_color = libtcod.white
-#        else:
-#            self.current_char = ' '
-             
-
         libtcod.console_set_default_foreground(self.con, self.current_color)
         libtcod.console_put_char(self.con, self.x, self.y, 
                                         self.current_char, libtcod.BKGND_NONE)

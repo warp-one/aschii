@@ -1,5 +1,6 @@
 import libtcodpy as libtcod
 
+import tools
 from tile import Unit
 from directive import Directive, PlayerArrow, SCHIMB, Legs, PlayerWASD
 from observer import Listener
@@ -179,6 +180,8 @@ class Player(Listener, Orders, Unit):
     def handle_letter(self, key):
         letter = (chr(key.c) if key.c else key.vk)
         for d in self.directives:
+            if d.dormant_color == libtcod.grey:
+                continue
             if d.tick_phrase(letter):
                 if d.active:
                     pass
