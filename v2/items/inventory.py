@@ -1,6 +1,6 @@
 import libtcodpy as libtcod
 
-from tile import Tile
+from tile import EnvironmentTile
 
 class Inventory(object):
 
@@ -17,6 +17,7 @@ class Inventory(object):
         if item:
             item.pick_up(self.owner)
             self.inventory.append(item)
+            print "pickin up"
         else:
             print "No item to pick up!"
         
@@ -42,13 +43,14 @@ class Inventory(object):
         if previous_item:
             previous_item.put_away()
 
-class Item(Tile):
+class Item(EnvironmentTile):
 
     name = "Generic Item"
     
     def pick_up(self, owner):
         self.toggle_visible()
         self.owner = owner
+        print "we got it"
         
     def put_down(self):
         self.x, self.y = self.owner.get_location()
@@ -66,3 +68,13 @@ class Item(Tile):
         
     def put_away(self):
         print "You put away your " + self.name
+        
+    def _draw(self):
+        try:
+            if self.owner:
+                return
+            else:
+                return super(Item, self)._draw()
+        except AttributeError:
+            return super(Item, self)._draw()
+        

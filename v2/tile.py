@@ -41,10 +41,10 @@ class Tile(object):
         seen = libtcod.map_is_in_fov(self.game.the_map.libtcod_map, self.x, self.y)
         lit = False
         for l in lights:
-            if tools.get_distance(l.get_location(), self.get_location()) < l.radius:
+            if tools.get_distance(l.get_location(), self.get_location()) < l.Lradius:
                 lit = True
         return seen or lit and self.visible
-      
+
     def draw(self):
         if self.get_visible():
             self._draw()
@@ -55,9 +55,10 @@ class Tile(object):
     def _draw(self):
         self.current_char = self.char
         self.current_color = self.color
+        x, y = self.get_location()
         libtcod.console_set_default_foreground(self.con, self.current_color)
-        libtcod.console_put_char(self.con, self.x, self.y, 
-                                        self.current_char, libtcod.BKGND_NONE)
+        libtcod.console_put_char(self.con, x, y, 
+                    self.current_char, libtcod.BKGND_NONE)
 
     def clear(self):
         libtcod.console_put_char(self.con, self.x, self.y, 

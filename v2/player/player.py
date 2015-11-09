@@ -1,10 +1,11 @@
 import libtcodpy as libtcod
 
 import tools
-from tile import Unit
-from directive import Directive, PlayerArrow, SCHIMB, Legs, PlayerWASD
-from observer import Listener
 from actionmenu import *
+from directive import Directive, PlayerArrow, SCHIMB, Legs, PlayerWASD
+from items import Inventory
+from observer import Listener
+from tile import Unit
 
 class Orders(object):
     def create_orders(self):
@@ -95,6 +96,8 @@ class Player(Listener, Orders, Unit):
         self.set_arrows()
         self.add_child(PlayerWASD(self, self.game))
         
+        self.inventory = Inventory(self)
+        
         
     def set_arrows(self):
         NSEW = {(0, 4): libtcod.CHAR_ARROW_N, 
@@ -128,7 +131,10 @@ class Player(Listener, Orders, Unit):
             return True  #exit game
         elif key.vk == libtcod.KEY_SPACE:
             self.game.the_map.schimb()
-     
+            self.inventory.pick_up_item(self.game.the_map.get_item(*self.get_location()))
+        elif key.vk == libtcod.KEY_TAB:
+            self.inventory.switch_item()
+ 
         if libtcod.console_is_key_pressed(libtcod.KEY_UP):
             self.facing = (0, -1)
             self.arrows[libtcod.CHAR_ARROW_N].pressed = True
@@ -195,18 +201,22 @@ class Player(Listener, Orders, Unit):
     def move(self, dx, dy):
         if super(Player, self).move(dx, dy):
             self.game.the_map.move(self.x, self.y, self)
-            self.fov = libtcod.map_compute_fov(self.game.the_map.libtcod_map, self.x, self.y, 17, algo=libtcod.FOV_DIAMOND)
+            self.fov = libtcod.map_compute_fov(self.game.the_map.libtcod_map, self.x, self.y, 8, algo=libtcod.FOV_DIAMOND)
             if dx:
                 self.facing = (dx/abs(dx), 0)
             else:
                 self.facing = (0, dy/abs(dy))
             self.notify(None, "player move")
 
-    def draw(self):
+#    def draw(self):
+#        for c in self.children:
+#            c.draw()
+#        super(Player, self).draw()
+        
+    def _draw(self):
         for c in self.children:
             c.draw()
-        super(Player, self).draw()
-
+        
     def clear(self):
         super(Player, self).clear()
         for c in self.children:

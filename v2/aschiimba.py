@@ -7,6 +7,7 @@ from tile import EnvironmentTile
 import tile
 from directive import *
 from map import TileMap
+from items import *
  
 #actual size of the window
 SCREEN_WIDTH = 80
@@ -27,7 +28,6 @@ class Game(object):
         self.create_consoles()
         self.player = Player(15, 15, ' ', libtcod.white, self.foreground, self)
         self.add_map()
-        self.player.move(5, 5)
         self.player.add_power(Power(self.player, self, static=True, offset=(0, 30+len(self.player.children))))
         self.player.add_power(Sprint(self.player, self, text="sprint", static=True, offset=(0, 30+len(self.player.children))))
         self.player.add_observer(self.the_map)
@@ -39,7 +39,11 @@ class Game(object):
             self.the_map.add(s.x, s.y, s)
             self.player.add_child(Next(s, self, text="bow", static=True, offset = (2, 2)))
             self.player.add_child(Waypoint(s, self, text="approach", static=True, offset=(-1,-1)))
+        self.flashlight = Flashlight(False, 20, 20, 'I', libtcod.yellow, self.foreground, self)
+        x, y = self.flashlight.get_location()
+        self.the_map.add(x, y, self.flashlight)
         s = self.the_map.schimb()
+        self.player.move(5, 5)
             
     def create_consoles(self):
         self.background = libtcod.console_new(self.width, self.height)
@@ -60,7 +64,7 @@ class Game(object):
         return tiles
 
     def render_all(self):
-        for t in self.the_map.get_tiles():
+        for t in self.the_map.get_tiles_by_layer():
             t.draw()
 #        for t in self.the_map.get_tiles_by_layer():
 #            t.draw()

@@ -2,6 +2,7 @@ from random import randint
 
 import libtcodpy as libtcod
 
+from items import Item, Flashlight
 from tile import EnvironmentTile
 from observer import Listener
 import markovgen as mg
@@ -38,6 +39,20 @@ class TileMap(Listener, object):
             return self.tilemap[x][y]
         except IndexError:
             return False
+            
+    def get_item(self, x, y):
+        try:
+            tile = self.tilemap[x][y]
+            while tile.next:
+                tile = tile.next
+            while tile:
+                if isinstance(tile, Flashlight):
+                    print "woo"
+                    return tile
+                tile = tile.prev
+            return None
+        except IndexError:
+            return False
 
     def get_tiles(self):
         for y in range(self.height):
@@ -52,12 +67,16 @@ class TileMap(Listener, object):
                 
     def get_tiles_by_layer(self):
         tiles = self.get_tiles()
-        while tiles:
-            
+        while True:
+            next_layer = []
             for t in tiles:
                 if t.next:
-                    tiles.append(t.next)
+                    next_layer.append(t.next)
                 yield t
+            if next_layer:
+                tiles = next_layer
+            else:
+                break
                      
             
 
@@ -77,7 +96,7 @@ class TileMap(Listener, object):
         tail.next = unit
         unit.prev = tail
         
-    def remove(self, x, y, unit):
+    def remove(self, unit):
         if not unit.prev:
             return
         if unit.next:
@@ -88,7 +107,7 @@ class TileMap(Listener, object):
         unit.prev = None
         
     def move(self, x, y, unit):
-        self.remove(x, y, unit)
+        self.remove(unit)
         self.add(x, y, unit)
         
     def run_collision(self, x, y):
