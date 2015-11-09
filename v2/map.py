@@ -47,7 +47,6 @@ class TileMap(Listener, object):
                 tile = tile.next
             while tile:
                 if isinstance(tile, Flashlight):
-                    print "woo"
                     return tile
                 tile = tile.prev
             return None
@@ -59,9 +58,9 @@ class TileMap(Listener, object):
             for x in range(self.width):
                 yield self.tilemap[x][y]
                 
-    def get_visible_tiles(self):
+    def is_visible_tiles(self):
         for t in self.get_tiles():
-            if t.get_visible():
+            if t.is_visible():
                 yield t
 
                 
@@ -95,16 +94,20 @@ class TileMap(Listener, object):
             tail = tail.next
         tail.next = unit
         unit.prev = tail
-        
+        return unit
+
     def remove(self, unit):
         if not unit.prev:
             return
+        old_chain = unit.prev
         if unit.next:
             unit.prev.next = unit.next
+            unit.next.prev = unit.prev
         else:
             unit.prev.next = None
         unit.next = None
         unit.prev = None
+        return unit
         
     def move(self, x, y, unit):
         self.remove(unit)
@@ -130,7 +133,7 @@ class TileMap(Listener, object):
         text = text.replace("Susan", "XXXXX")
         text = text.replace("Percival", "PPPPPPPP")
         special_letters = set()
-        for i, t in enumerate(self.get_visible_tiles()):
+        for i, t in enumerate(self.is_visible_tiles()):
             if not t.blocked:
                 t.char = text[i]
         while len(special_letters) < 6:

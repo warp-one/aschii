@@ -66,11 +66,6 @@ class Game(object):
     def render_all(self):
         for t in self.the_map.get_tiles_by_layer():
             t.draw()
-#        for t in self.the_map.get_tiles_by_layer():
-#            t.draw()
-        for s in self.statues:
-            s.draw()
-        self.player.draw()
 
     def clear_all(self):
         self.player.clear()

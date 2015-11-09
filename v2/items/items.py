@@ -7,8 +7,8 @@ class Flashlight(Item):
     Lradius = 13
     
     def turn_on(self):
+        self.on = True
         self.game.the_map.light_sources.append(self)
-        print "woraraero"
         
     def get_location(self):
         try:
@@ -22,5 +22,11 @@ class Flashlight(Item):
             return super(Flashlight, self).get_location()
         
     def turn_off(self):
+        self.on = False
         self.game.the_map.light_sources.remove(self)
         
+    def do(self):
+        if self.on:
+            self.turn_off()
+        else:
+            self.turn_on()

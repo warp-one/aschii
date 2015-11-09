@@ -31,6 +31,8 @@ class Directive(Attachment, Tile):
 
         self.create_phrase(text)
         self.pressed = False
+
+        self.visible = True
         
     def toggle_active(self):
         if self.active:
@@ -44,9 +46,9 @@ class Directive(Attachment, Tile):
         self.phrase_index = 0
         self.completed = False
         
-    def get_visible(self):
-        dv = super(Directive, self).get_visible()
-        av = self.anchor.get_visible()
+    def is_visible(self):
+        dv = super(Directive, self).is_visible()
+        av = self.anchor.is_visible()
         return dv and av
 
     def _draw(self):
@@ -77,7 +79,7 @@ class Directive(Attachment, Tile):
         pass
             
     def tick_phrase(self, letter):
-        if self.anchor.get_visible() and self.get_visible():
+        if self.anchor.is_visible() and self.is_visible():
             if not self.completed:
                 if self.phrase[self.phrase_index] == letter:
                     self.phrase_clear[self.phrase_index] = True

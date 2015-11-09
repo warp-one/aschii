@@ -3,6 +3,9 @@ import libtcodpy as libtcod
 import tools
 
 class Tile(object):
+
+    name = ""
+
     def __init__(self, x, y, char, color, con, game):
         self.x, self.y = x, y
         self.char = char
@@ -36,7 +39,7 @@ class Tile(object):
             self.visible = True
         return self.visible
         
-    def get_visible(self):
+    def is_visible(self):
         lights = self.game.the_map.light_sources
         seen = libtcod.map_is_in_fov(self.game.the_map.libtcod_map, self.x, self.y)
         lit = False
@@ -46,7 +49,7 @@ class Tile(object):
         return seen or lit and self.visible
 
     def draw(self):
-        if self.get_visible():
+        if self.is_visible():
             self._draw()
         else:
             self.clear()

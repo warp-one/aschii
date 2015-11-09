@@ -23,7 +23,6 @@ class Orders(object):
         else:
             if self.orders:
                 self.time_left, self.current_action = self.orders.pop(0)
-                print "ad"
                 
     def add_order(self, time, order):
         self.orders.append((time, order))
@@ -131,24 +130,31 @@ class Player(Listener, Orders, Unit):
             return True  #exit game
         elif key.vk == libtcod.KEY_SPACE:
             self.game.the_map.schimb()
-            self.inventory.pick_up_item(self.game.the_map.get_item(*self.get_location()))
+            if self.inventory.pick_up_item(self.game.the_map.get_item(*self.get_location())):
+                pass
+            else:
+                self.inventory.toggle_item()
         elif key.vk == libtcod.KEY_TAB:
             self.inventory.switch_item()
+        elif key.vk == libtcod.KEY_BACKSPACE:
+            self.inventory.drop_item()
  
         if libtcod.console_is_key_pressed(libtcod.KEY_UP):
             self.facing = (0, -1)
+            self.game.the_map.schimb()
             self.arrows[libtcod.CHAR_ARROW_N].pressed = True
         elif libtcod.console_is_key_pressed(libtcod.KEY_DOWN):
             self.facing = (0, 1)
+            self.game.the_map.schimb()
             self.arrows[libtcod.CHAR_ARROW_S].pressed = True
         elif libtcod.console_is_key_pressed(libtcod.KEY_LEFT):
             self.facing = (-1, 0)
+            self.game.the_map.schimb()
             self.arrows[libtcod.CHAR_ARROW_W].pressed = True
         elif libtcod.console_is_key_pressed(libtcod.KEY_RIGHT):
             self.facing = (1, 0)
+            self.game.the_map.schimb()
             self.arrows[libtcod.CHAR_ARROW_E].pressed = True
-#        if dx or dy:
-#            self.move(dx, dy)
             
     def add_child(self, child, offset=None):
         self.children.append(child)
@@ -208,11 +214,6 @@ class Player(Listener, Orders, Unit):
                 self.facing = (0, dy/abs(dy))
             self.notify(None, "player move")
 
-#    def draw(self):
-#        for c in self.children:
-#            c.draw()
-#        super(Player, self).draw()
-        
     def _draw(self):
         for c in self.children:
             c.draw()

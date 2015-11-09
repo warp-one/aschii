@@ -7,7 +7,7 @@ class Power(Directive):
 
     range = 1000
 
-    def get_visible(self):
+    def is_visible(self):
         return True
         
     def complete(self):
@@ -52,7 +52,7 @@ class Legs(Directive):
         x_dir = self.anchor.facing[0]
         y_dir = self.anchor.facing[1]
         try:
-            while self.game.the_map.get_tile(self.x + x_dir, self.y + y_dir).get_visible():
+            while self.game.the_map.get_tile(self.x + x_dir, self.y + y_dir).is_visible():
                 if x_dir: x_dir += 1 * (x_dir/abs(x_dir))
                 if y_dir: y_dir += 1 * (y_dir/abs(y_dir))
             for i, char in enumerate(to_draw):
@@ -161,8 +161,8 @@ class Waypoint(Directive):
         self.game.player.add_order(len(path) * .1, p.move_along_path)
         self.reset()
         
-    def get_visible(self):
+    def is_visible(self):
         player_proximity = tools.get_distance(self.get_location(), 
                                             self.game.player.get_location())
-        return super(Waypoint, self).get_visible() and player_proximity > 7
+        return super(Waypoint, self).is_visible() and player_proximity > 7
         
