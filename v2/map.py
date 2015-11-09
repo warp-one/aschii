@@ -11,7 +11,7 @@ class BoardSetup(object):
     pass
 
 class TileMap(Listener, object):
-    def __init__(self, w, h, con, game, player):
+    def __init__(self, w, h, con, game):
         self.con = con
         self.game = game
         self.width, self.height = w, h
@@ -32,7 +32,7 @@ class TileMap(Listener, object):
             self.text = mg.Markov(f)
             
         self.obs = []
-        self.add_observer(player)
+#        self.add_observer(player)
         
     def get_tile(self, x, y):
         try:

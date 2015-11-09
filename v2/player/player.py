@@ -124,7 +124,6 @@ class Player(Listener, Orders, Unit):
             self.handle_letter(key)
      
         if key.vk == libtcod.KEY_ENTER and key.lalt:
-            #Alt+Enter: toggle fullscreen
             libtcod.console_set_fullscreen(not libtcod.console_is_fullscreen())
         elif key.vk == libtcod.KEY_ESCAPE:
             return True  #exit game

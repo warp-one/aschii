@@ -16,6 +16,10 @@ SCREEN_HEIGHT = 50
 LIMIT_FPS = 20  #20 frames-per-second maximum
 
 class Game(object):
+
+    hud = []
+    the_map = None
+
     def __init__(self, w, h):
         self.width, self.height = w, h
 
@@ -26,8 +30,8 @@ class Game(object):
         libtcod.sys_set_fps(LIMIT_FPS)
 
         self.create_consoles()
-        self.player = Player(15, 15, ' ', libtcod.white, self.foreground, self)
         self.add_map()
+        self.player = Player(15, 15, ' ', libtcod.white, self.foreground, self)
         self.player.add_power(Power(self.player, self, static=True, offset=(0, 30+len(self.player.children))))
         self.player.add_power(Sprint(self.player, self, text="sprint", static=True, offset=(0, 30+len(self.player.children))))
         self.player.add_observer(self.the_map)
@@ -44,6 +48,7 @@ class Game(object):
         self.the_map.add(x, y, self.flashlight)
         s = self.the_map.schimb()
         self.player.move(5, 5)
+
             
     def create_consoles(self):
         self.background = libtcod.console_new(self.width, self.height)
@@ -51,7 +56,7 @@ class Game(object):
         self.consoles = [self.background, self.foreground]
 
     def add_map(self):
-        self.the_map = TileMap(self.width, self.height, self.foreground, self, self.player)
+        self.the_map = TileMap(self.width, self.height, self.foreground, self)
         self.tilemap = self.the_map.tilemap
         
     def switch_map(self):
@@ -59,13 +64,15 @@ class Game(object):
 
     def get_all_tiles(self):
         tiles = [self.player]
-        for t in self.the_map.get_tiles():
+        for t in self.the_map.get_tiles_by_layer():
             tiles.append(t)
         return tiles
 
     def render_all(self):
         for t in self.the_map.get_tiles_by_layer():
             t.draw()
+        for i in self.hud:
+            i.draw()
 
     def clear_all(self):
         self.player.clear()
@@ -73,6 +80,8 @@ class Game(object):
     def update(self):
         for t in self.get_all_tiles():
             t.update()
+        for i in self.hud:
+            i.update()
 
     def execute(self):
         while not libtcod.console_is_window_closed():

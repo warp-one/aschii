@@ -6,10 +6,6 @@ class Flashlight(Item):
     distance = 20
     Lradius = 13
     
-    def turn_on(self):
-        self.on = True
-        self.game.the_map.light_sources.append(self)
-        
     def get_location(self):
         try:
             if self.owner:
@@ -21,9 +17,13 @@ class Flashlight(Item):
         except AttributeError:
             return super(Flashlight, self).get_location()
         
+    def turn_on(self):
+        if super(Flashlight, self).turn_on():
+            self.game.the_map.light_sources.append(self)
+        
     def turn_off(self):
-        self.on = False
-        self.game.the_map.light_sources.remove(self)
+        if super(Flashlight, self).turn_off():
+            self.game.the_map.light_sources.remove(self)
         
     def do(self):
         if self.on:
