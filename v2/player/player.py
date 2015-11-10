@@ -120,14 +120,14 @@ class Player(Listener, Orders, Unit):
                 a.pressed = False
         dx, dy = 0, 0
         key = libtcod.console_check_for_keypress()  #real-time
-        if key.vk == libtcod.KEY_CHAR or key.vk in self.arrow_keys:
+        if key.vk == libtcod.KEY_CHAR or key.vk in self.arrow_keys or key.vk == libtcod.KEY_SPACE:
             self.handle_letter(key)
      
         if key.vk == libtcod.KEY_ENTER and key.lalt:
             libtcod.console_set_fullscreen(not libtcod.console_is_fullscreen())
         elif key.vk == libtcod.KEY_ESCAPE:
             return True  #exit game
-        elif key.vk == libtcod.KEY_SPACE:
+        elif key.vk == libtcod.KEY_CONTROL:
             self.game.the_map.schimb()
             if self.inventory.pick_up_item(self.game.the_map.get_item(*self.get_location())):
                 pass
@@ -230,5 +230,4 @@ class Player(Listener, Orders, Unit):
                 c.update()
                 
     def on_notify(self, entity, event):
-        pass#if event == "SCHIMB":
-            #self.add_child(SCHIMB(entity, self, self.game, text="SCHIMB", static=True, offset=(-self.x, -self.y)))
+        pass

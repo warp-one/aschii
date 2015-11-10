@@ -52,11 +52,10 @@ class Directive(Attachment, Tile):
         return dv and av
 
     def _draw(self):
-        in_range = tools.get_distance(self.game.player.get_location(), self.get_location()) < self.range
-        if in_range:
-            self.dormant_color = libtcod.red
-        else:
-            self.dormant_color = libtcod.grey
+        Ploc = self.game.player.get_location()
+        Sloc = self.anchor.get_location()
+        in_range = tools.get_distance(Ploc, Sloc) < self.range
+        self.dormant_color = libtcod.red if in_range else libtcod.grey
         
     
     

@@ -1,6 +1,7 @@
 import libtcodpy as libtcod
 
 from tile import EnvironmentTile
+from directive import ItemGrab
 
 class Inventory(object):
 
@@ -30,6 +31,7 @@ class Inventory(object):
     def drop_item(self):
         if self.current_item:
             self.current_item.put_down()
+            self.owner.add_child(ItemGrab(self.current_item, self.owner.game, text="pick up", offset = (-2, 2)))
             self.inventory.remove(self.current_item)
             self.current_item = None
             self.switch_item()
@@ -69,6 +71,7 @@ class InventoryDisplay(object):
         self.con = con
 
         self.current_item = None
+        self.on_off_switch = None
         self.text = ""
         self.status = ""
 

@@ -14,6 +14,12 @@ SCREEN_WIDTH = 80
 SCREEN_HEIGHT = 50
  
 LIMIT_FPS = 20  #20 frames-per-second maximum
+statue_script = [("dreamt alive", 'He dreamt that it was alive, tremulous'),
+                 ("was bastard", 'it was not the atrocious bastard'),
+                 ("tiger colt", 'of a tiger and a colt, but'),
+                 ("both these", 'at the same time both of these'),
+                 ("fiery also", 'fiery creatures, and also'),
+                 ("bull rose", 'a bull, a rose, and a storm')]
 
 class Game(object):
 
@@ -38,7 +44,7 @@ class Game(object):
         
         self.statues = []
         for _ in range(1):
-            s = tile.Statue(['He dreamt that it was alive, tremulous', 'it was not the atrocious bastard', 'of a tiger and a colt, but', 'at the same time both of these', 'fiery creatures, and also', 'a bull, a rose, and a storm'], 10 + _*3, 10 + _, 'S', libtcod.green, self.foreground, self)
+            s = Statue(statue_script, 10 + _*3, 10 + _, 'S', libtcod.green, self.foreground, self)
             self.statues.append(s)
             self.the_map.add(s.x, s.y, s)
             self.player.add_child(Next(s, self, text="bow", static=True, offset = (2, 2)))
@@ -46,6 +52,7 @@ class Game(object):
         self.flashlight = Flashlight(False, 20, 20, 'I', libtcod.yellow, self.foreground, self)
         x, y = self.flashlight.get_location()
         self.the_map.add(x, y, self.flashlight)
+        self.player.add_child(ItemGrab(self.flashlight, self, text="pick up", offset = (-2, 2)))
         s = self.the_map.schimb()
         self.player.move(5, 5)
 
