@@ -198,13 +198,15 @@ class SpeakingObject(Unit):
             individual_words = self.line[1].split()
             self.nextwords = []
             self.words = []
+            
 
             for i, w in enumerate(individual_words):
-                x = self.x + i*3
+                sentence_place = len(individual_words[0:i]) + i
+                x = self.x + sentence_place
                 y = self.y
                 if w in self.keywords:
-                    x = i*3
-                    y = 1
+                    x = sentence_place
+                    y = 0
                     choice = Next(self, self.game, static=True, text=w, offset=(0, 0))
                     self.nextwords.append(choice)
                     self.game.player.add_child(choice)

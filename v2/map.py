@@ -105,7 +105,6 @@ class TileMap(Listener, object):
             unit.prev.next = None
         unit.next = None
         unit.prev = None
-        return unit
         
     def move(self, x, y, unit):
         self.remove(unit)
