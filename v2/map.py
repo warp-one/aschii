@@ -7,8 +7,6 @@ from tile import EnvironmentTile
 from observer import Listener
 import markovgen as mg
 
-class BoardSetup(object):
-    pass
 
 class TileMap(Listener, object):
     def __init__(self, w, h, con, game):
@@ -64,18 +62,13 @@ class TileMap(Listener, object):
                 
     def get_tiles_by_layer(self):
         tiles = self.get_tiles()
-        while True:
+        while tiles:
             next_layer = []
             for t in tiles:
                 if t.next:
                     next_layer.append(t.next)
                 yield t
-            if next_layer:
-                tiles = next_layer
-            else:
-                break
-                     
-            
+            tiles = next_layer
 
     def get_NSEW(self, x, y):
         targets = [(x, y-1), (x, y+1), (x+1, y), (x-1, y)]

@@ -2,28 +2,19 @@ from random import randint
 
 import libtcodpy as libtcod
 
+from level import LevelZero
 from player import Player
 from tile import EnvironmentTile
 import tile
-from directive import *
-from map import TileMap
-from items import *
  
 #actual size of the window
 SCREEN_WIDTH = 80
 SCREEN_HEIGHT = 50
  
 LIMIT_FPS = 20  #20 frames-per-second maximum
-statue_script = [("dreamt alive", 'He dreamt that it was alive, tremulous'),
-                 ("was bastard", 'it was not the atrocious bastard'),
-                 ("tiger colt", 'of a tiger and a colt, but'),
-                 ("both these", 'at the same time both of these'),
-                 ("fiery also", 'fiery creatures, and also'),
-                 ("bull rose", 'a bull, a rose, and a storm')]
 
 class Game(object):
 
-    hud = []
     the_map = None
 
     def __init__(self, w, h):
@@ -35,71 +26,18 @@ class Game(object):
                 'rooms', False, renderer=libtcod.RENDERER_GLSL)
         libtcod.sys_set_fps(LIMIT_FPS)
 
-        self.create_consoles()
-        self.add_map()
-        self.player = Player(15, 15, ' ', libtcod.white, self.foreground, self)
-        self.player.add_power(Power(self.player, self, static=True, offset=(0, 30+len(self.player.children))))
-        self.player.add_power(Sprint(self.player, self, text="sprint", static=True, offset=(0, 30+len(self.player.children))))
-        self.player.add_observer(self.the_map)
-        
-        self.statues = []
-        for _ in range(1):
-            s = Statue(statue_script, 10 + _*3, 10 + _, 'S', libtcod.green, self.foreground, self)
-            self.statues.append(s)
-            self.the_map.add(s.x, s.y, s)
-            self.player.add_child(Next(s, self, text="bow", static=True, offset = (2, 2)))
-            self.player.add_child(Waypoint(s, self, text="approach", static=True, offset=(-1,-1)))
-        self.flashlight = Flashlight(False, 20, 20, 'I', libtcod.yellow, self.foreground, self)
-        x, y = self.flashlight.get_location()
-        self.the_map.add(x, y, self.flashlight)
-        self.player.add_child(ItemGrab(self.flashlight, self, text="pick up", offset = (-2, 2)))
-        s = self.the_map.schimb()
-        self.player.move(5, 5)
-
+        self.current_level = LevelZero(self)
             
-    def create_consoles(self):
-        self.background = libtcod.console_new(self.width, self.height)
-        self.foreground = libtcod.console_new(self.width, self.height)
-        self.consoles = [self.background, self.foreground]
-
-    def add_map(self):
-        self.the_map = TileMap(self.width, self.height, self.foreground, self)
-        self.tilemap = self.the_map.tilemap
-        
-    def switch_map(self):
-        pass
-
-    def get_all_tiles(self):
-        tiles = [self.player]
-        for t in self.the_map.get_tiles_by_layer():
-            tiles.append(t)
-        return tiles
-
-    def render_all(self):
-        for t in self.the_map.get_tiles_by_layer():
-            t.draw()
-        for i in self.hud:
-            i.draw()
-
-    def clear_all(self):
-        self.player.clear()
-
-    def update(self):
-        for t in self.get_all_tiles():
-            t.update()
-        for i in self.hud:
-            i.update()
-
     def execute(self):
         while not libtcod.console_is_window_closed():
             libtcod.console_set_default_foreground(0, libtcod.white)
-            self.update()
-            self.render_all()
-            for c in self.consoles:
+            self.current_level.update_all()
+            self.current_level.render_all()
+            for c in self.current_level.consoles:
                 libtcod.console_blit(c, 0, 0, self.width, self.height, 0, 0, 0)
             libtcod.console_flush()
-            self.clear_all()
-            exit = self.player.handle_keys()
+            self.current_level.clear_all()
+            exit = self.current_level.player.handle_keys()
             if exit:
                 break
 

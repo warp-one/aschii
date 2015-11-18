@@ -17,6 +17,8 @@ class Tile(object):
         self.next = None
         self.prev = None
         
+        self.children = []
+        
         self.visible = True
 
     def move(self, dx, dy):
@@ -42,7 +44,6 @@ class Tile(object):
     def is_visible(self):
         lights = self.game.the_map.light_sources
         seen = libtcod.map_is_in_fov(self.game.the_map.libtcod_map, self.x, self.y)
-        seen = True
         lit = False
         for l in lights:
             if tools.get_distance(l.get_location(), self.get_location()) < l.Lradius:
@@ -52,6 +53,8 @@ class Tile(object):
     def draw(self):
         if self.is_visible():
             self._draw()
+            for c in self.children:
+                c.draw()
         else:
             self.clear()
     
@@ -67,10 +70,24 @@ class Tile(object):
     def clear(self):
         libtcod.console_put_char(self.con, self.x, self.y, 
                                        ' ', libtcod.BKGND_NONE)
+        for c in self.children:
+            c.clear()
 
     def update(self):
         pass
-
+        
+    def add_child(self, child, offset=None):
+        self.children.append(child)
+        if not offset:
+            oX, oY = self.offsets[self.next_offset]
+            self.next_offset = (self.next_offset + 1 if self.next_offset < len(self.offsets) - 1 else 0)
+        else:
+            oX, oY = offset
+        child.offsetX = oX
+        child.offsetY = oY
+    
+    def remove_child(self, child):
+        self.children.remove(child)
 
 class EnvironmentTile(Tile):
     def __init__(self, blocked, *args):

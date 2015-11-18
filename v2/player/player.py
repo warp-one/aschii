@@ -2,6 +2,7 @@ import libtcodpy as libtcod
 
 import tools
 from actionmenu import *
+from actions import ActionManager
 from directive import Directive, PlayerArrow, SCHIMB, Legs, PlayerWASD
 from items import Inventory
 from observer import Listener
@@ -80,9 +81,7 @@ class Player(Listener, Orders, Unit):
         self.blocked = False
         super(Player, self).__init__(*args)
 
-        self.children = []
-        self.directives = []
-        self.current_directives = []
+        self.action_manager = ActionManager(self)
         self.next_offset = 0
         self.facing = (1, 0)
         self.powers = None
@@ -121,7 +120,7 @@ class Player(Listener, Orders, Unit):
         dx, dy = 0, 0
         key = libtcod.console_check_for_keypress()  #real-time
         if key.vk == libtcod.KEY_CHAR or key.vk in self.arrow_keys or key.vk == libtcod.KEY_SPACE:
-            self.handle_letter(key)
+            self.action_manager.handle_letter(key)
      
         if key.vk == libtcod.KEY_ENTER and key.lalt:
             libtcod.console_set_fullscreen(not libtcod.console_is_fullscreen())
@@ -156,18 +155,15 @@ class Player(Listener, Orders, Unit):
             self.arrows[libtcod.CHAR_ARROW_E].pressed = True
             
     def add_child(self, child, offset=None):
-        self.children.append(child)
-        if not offset:
-            oX, oY = self.offsets[self.next_offset]
-            self.next_offset = (self.next_offset + 1 if self.next_offset < len(self.offsets) - 1 else 0)
-        else:
-            oX, oY = offset
-        child.offsetX = oX
-        child.offsetY = oY
-
+        super(Player, self).add_child(child, offset)
         if isinstance(child, Directive):
-            self.directives.append(child)
+            self.action_manager.add_action(child)
         
+    def remove_child(self, child):
+        super(Player, self).remove_child(child)
+        if isinstance(child, Directive):
+            self.action_manager.remove_action(child)
+            
     def add_power(self, power):
         if self.powers is None:
             self.powers = []
@@ -180,29 +176,7 @@ class Player(Listener, Orders, Unit):
     def remove_power(self, power):
         self.remove_child(power)
         self.powers.remove(power)
-    
-    def remove_child(self, child):
-        self.children.remove(child)
-        if isinstance(child, Directive):
-            if child in self.current_directives:
-                self.current_directives.remove(child)
-            self.directives.remove(child)
 
-    def handle_letter(self, key):
-        letter = (chr(key.c) if key.c else key.vk)
-        for d in self.directives:
-            if d.dormant_color == libtcod.grey:
-                continue
-            if d.tick_phrase(letter):
-                if d.active:
-                    pass
-                else:
-                    d.toggle_active()
-            else:
-                if d.active:
-                    d.reset()
-                    d.toggle_active()
-                    
     def move(self, dx, dy):
         if super(Player, self).move(dx, dy):
             self.game.the_map.move(self.x, self.y, self)
@@ -212,16 +186,10 @@ class Player(Listener, Orders, Unit):
             else:
                 self.facing = (0, dy/abs(dy))
             self.notify(None, "player move")
-
+            
     def _draw(self):
-        for c in self.children:
-            c.draw()
-        
-    def clear(self):
-        super(Player, self).clear()
-        for c in self.children:
-            c.clear()
-        
+        return
+
     def update(self):
         self.act()
         super(Player, self).update()

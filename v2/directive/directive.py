@@ -50,16 +50,18 @@ class Directive(Attachment, Tile):
         dv = super(Directive, self).is_visible()
         av = self.anchor.is_visible()
         return dv and av
+       
+    def draw(self):
+        if self.is_visible():
+            self._draw()
+        else:
+            self.clear()
 
     def _draw(self):
         Ploc = self.game.player.get_location()
         Sloc = self.anchor.get_location()
         in_range = tools.get_distance(Ploc, Sloc) < self.range
         self.dormant_color = libtcod.red if in_range else libtcod.grey
-        
-    
-    
-    
         to_draw = self.phrase
         for i, char in enumerate(to_draw):
             x, y = self.x + i, self.y
