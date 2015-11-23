@@ -36,6 +36,9 @@ class Orders(object):
             return
         dx = next_tile[0] - self.x
         dy = next_tile[1] - self.y
+        if self.game.the_map.run_collision(self.x + dx, self.y + dy):
+            self.end_action()
+            return
         self.move(dx, dy)
         
     def set_path(self, path):
