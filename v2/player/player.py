@@ -75,13 +75,15 @@ class Player(Listener, Orders, Unit):
     offsets = [(-2, -2), (-2, 2), (2, 3), (2, -3), 
                (-2, -2), (-2, 2), (2, 3), (2, -3)]
     sprint_distance = 9
+    sight_radius = 11
     char = ' '
 
     def __init__(self, *args):
         self.blocked = False
         super(Player, self).__init__(*args)
-
         self.action_manager = ActionManager(self)
+        self.inventory = Inventory(self)
+
         self.next_offset = 0
         self.facing = (1, 0)
         self.powers = None
@@ -94,7 +96,6 @@ class Player(Listener, Orders, Unit):
         self.set_arrows()
         self.add_child(PlayerWASD(self, self.game))
         
-        self.inventory = Inventory(self)
         
         
     def set_arrows(self):
@@ -180,10 +181,10 @@ class Player(Listener, Orders, Unit):
     def move(self, dx, dy):
         if super(Player, self).move(dx, dy):
             self.game.the_map.move(self.x, self.y, self)
-            self.fov = libtcod.map_compute_fov(self.game.the_map.libtcod_map, self.x, self.y, 8, algo=libtcod.FOV_DIAMOND)
+            self.fov = libtcod.map_compute_fov(self.game.the_map.libtcod_map, self.x, self.y, self.sight_radius, algo=libtcod.FOV_DIAMOND)
             if dx:
                 self.facing = (dx/abs(dx), 0)
-            else:
+            elif dy:
                 self.facing = (0, dy/abs(dy))
             self.notify(None, "player move")
             

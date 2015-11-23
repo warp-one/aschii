@@ -29,7 +29,7 @@ class Directive(Attachment, Tile):
         self.x, self.y = self.anchor.x + self.offsetX, self.anchor.y + self.offsetY
         self.active = False
 
-        self.create_phrase(text)
+        self.change_text(text)
         self.pressed = False
 
         self.visible = True
@@ -39,8 +39,8 @@ class Directive(Attachment, Tile):
             self.active = False
         else:
             self.active = True
-
-    def create_phrase(self, text):
+            
+    def change_text(self, text):
         self.phrase = text
         self.phrase_clear = [False] * len(self.phrase) 
         self.phrase_index = 0

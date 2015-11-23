@@ -13,6 +13,9 @@ statue_script = [("dreamt alive", 'He dreamt that it was alive, tremulous'),
 
 
 class LevelZero(Level):
+
+    start_location = 15, 15
+
     def __init__(self, *args):
         super(LevelZero, self).__init__(*args)
         self.player.add_power(Power(self.player, self, static=True, offset=(0, 30+len(self.player.children))))
@@ -25,7 +28,7 @@ class LevelZero(Level):
             s = Statue(statue_script, 10 + _*3, 10 + _, 'S', libtcod.green, self.foreground, self)
             self.statues.append(s)
             self.the_map.add(s.x, s.y, s)
-            self.player.add_child(Next(s, self, text="bow", static=True, offset = (2, 2)))
+#            self.player.add_child(Next(s, self, text="bow", static=True, offset = (2, 2)))
             self.player.add_child(Waypoint(s, self, text="approach", static=True, offset=(-1,-1)))
         self.flashlight = Flashlight(False, 20, 20, 'I', libtcod.yellow, self.foreground, self)
         x, y = self.flashlight.get_location()

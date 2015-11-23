@@ -22,11 +22,25 @@ class ItemGrab(Directive):
     def complete(self):
         self.game.player.inventory.pick_up_item(self.anchor)
         super(ItemGrab, self).complete()
+        
+class ItemToggle(Power):
+
+    def __init__(self, item, *args, **kwargs):
+        super(ItemToggle, self).__init__(*args, **kwargs)
+        self.item = item
+
+    def complete(self):
+        super(ItemToggle, self).complete()
+        self.item.toggle()
+        if self.item.on:
+            self.change_text(self.item.offtext)
+        else:
+            self.change_text(self.item.ontext)
 
         
 ## The Point of Interest Directives
 class Legs(Directive):
-    def create_phrase(self, text):
+    def change_text(self, text):
         self.phrase1 = "l"
         self.phrase2 = "r"
         self.current_phrase = self.phrase1
@@ -79,14 +93,34 @@ class Legs(Directive):
 class Next(Directive):
     def complete(self):
         self.anchor.say_line()
-        if self.anchor.script:
-            self.reset()
-        else:
-            super(Next, self).complete()
-            
+#        if self.anchor.script:
+#            self.reset()
+#        else:
+        super(Next, self).complete()
+        
+class DialogueChoice(Next):
+    def complete(self):
+        self.anchor.say_line()
+        self.game.player
+        
+    def _draw(self):
+        Ploc = self.game.player.get_location()
+        Sloc = self.anchor.get_location()
+        in_range = tools.get_distance(Ploc, Sloc) < self.range
+        self.dormant_color = libtcod.red if in_range else libtcod.grey
+        to_draw = self.phrase
+        for i, char in enumerate(to_draw):
+            x, y = self.x + i, self.y
+            is_lit = self.game.the_map.tile_is_lit(*self.get_location())
+            in_fov = libtcod.map_is_in_fov(self.game.the_map.libtcod_map, self.x, self.y)
+            if not self.game.the_map.run_collision(x, y) and (is_lit or in_fov):
+                color = (self.current_color if self.phrase_clear[i] else self.dormant_color)
+                libtcod.console_set_default_foreground(self.con, color)
+                libtcod.console_put_char(self.con, x, y, 
+                                                char, libtcod.BKGND_NONE)
 
 class PlayerArrow(Directive):
-    def create_phrase(self, text):
+    def change_text(self, text):
         self.phrase = text
         self.phrase_clear = [False]
         self.phrase_index = 0
@@ -159,7 +193,7 @@ class Sprint(Power):
         
 class Waypoint(Directive):
 
-    range = 20
+    range = 25
 
     def get_dormant(self):
         return False
@@ -196,18 +230,22 @@ class SpeakingObject(Unit):
             self.line = self.script.pop(0)
             self.keywords = self.line[0].split()
             individual_words = self.line[1].split()
+            for nw in self.nextwords:
+                try:
+                    self.game.player.remove_child(nw)
+                except ValueError:
+                    pass
             self.nextwords = []
             self.words = []
-            
-
+ 
             for i, w in enumerate(individual_words):
-                sentence_place = len(individual_words[0:i]) + i
-                x = self.x + sentence_place
-                y = self.y
+                x = self.x + (len(individual_words[i-1]) + 1 if i%2 else 0)
+                x -= len(individual_words[0])
+                y = self.y + i/2
                 if w in self.keywords:
-                    x = sentence_place
-                    y = 0
-                    choice = Next(self, self.game, static=True, text=w, offset=(0, 0))
+                    x = x - self.x
+                    y = y - self.y
+                    choice = DialogueChoice(self, self.game, static=True, text=w, offset=(x, y))
                     self.nextwords.append(choice)
                     self.game.player.add_child(choice)
                     continue

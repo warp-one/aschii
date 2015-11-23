@@ -42,13 +42,7 @@ class Tile(object):
         return self.visible
         
     def is_visible(self):
-        lights = self.game.the_map.light_sources
-        seen = libtcod.map_is_in_fov(self.game.the_map.libtcod_map, self.x, self.y)
-        lit = False
-        for l in lights:
-            if tools.get_distance(l.get_location(), self.get_location()) < l.Lradius:
-                lit = True
-        return seen or lit and self.visible
+        return self.visible
 
     def draw(self):
         if self.is_visible():
@@ -116,7 +110,9 @@ class Word(Tile):
     def draw(self):
         for i, letter in enumerate(self.word):
             x, y = self.x + i, self.y
-            if libtcod.map_is_in_fov(self.game.the_map.libtcod_map, x, y):
+            in_fov = libtcod.map_is_in_fov(self.game.the_map.libtcod_map, x, y)
+            is_lit = self.game.the_map.tile_is_lit(*self.get_location())
+            if in_fov or is_lit:
                 libtcod.console_set_default_foreground(self.con, self.current_color)
                 libtcod.console_put_char(self.con, x, y, 
                                                 letter, libtcod.BKGND_NONE)

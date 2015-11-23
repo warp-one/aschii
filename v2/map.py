@@ -1,4 +1,4 @@
-from random import randint
+from random import randint, choice
 
 import libtcodpy as libtcod
 
@@ -6,6 +6,7 @@ from items import Item, Flashlight
 from tile import EnvironmentTile
 from observer import Listener
 import markovgen as mg
+import tools
 
 
 class TileMap(Listener, object):
@@ -13,8 +14,16 @@ class TileMap(Listener, object):
         self.con = con
         self.game = game
         self.width, self.height = w, h
+        walls = []
+        for _ in [(25, 0, 25, 15), (0, 16, 15, 16)]:
+            libtcod.line_init(*_)
+            while True:
+                x, y = libtcod.line_step()
+                if x is None:
+                    break
+                walls.append((x, y))
         self.tilemap = [[EnvironmentTile(
-                (False if randint(-6, 1) < 2 else True), 
+                (True if (x, y) in walls else False), 
                 x, y, '@', libtcod.darkest_grey, self.con, self.game
                                          )
                             for y in range(h)]
@@ -27,7 +36,9 @@ class TileMap(Listener, object):
         self.light_sources = []
            
         with open('waves.txt', 'r') as f:
-            self.text = mg.Markov(f)
+            self.waves = mg.Markov(f)
+        with open('race.txt', 'r') as f:
+            self.race = mg.Markov(f)
             
         self.obs = []
         
@@ -78,6 +89,12 @@ class TileMap(Listener, object):
                 yield self.tilemap[t[0]][t[1]]
             except IndexError:
                 failures += 1
+                
+    def tile_is_lit(self, x, y):
+        for l in self.light_sources:
+            if tools.get_distance((x, y), l.get_location()) < l.Lradius:
+                return True
+        return False
 
     def add(self, x, y, unit):
         tail = self.tilemap[x][y]
@@ -104,16 +121,20 @@ class TileMap(Listener, object):
         self.add(x, y, unit)
         
     def run_collision(self, x, y):
-        unit = self.tilemap[x][y]
+        try:
+            unit = self.tilemap[x][y]
+        except IndexError:
+            unit = None
+            print "Out of bounds!"
         while unit:
             if unit.blocked:
                 return True
             unit = unit.next
         return False
         
-    def schimb(self):
+    def _schimb(self, novel):
         num_cells = self.width * self.height
-        prose = self.text.generate_markov_text(size=num_cells/3)
+        prose = novel.generate_markov_text(size=num_cells/3)
         text = prose[0:num_cells]
         text = text.replace("Bernard", "XXXXXXX")
         text = text.replace("Jinny", "XXXXX")
@@ -122,13 +143,17 @@ class TileMap(Listener, object):
         text = text.replace("Rhoda", "XXXXX")
         text = text.replace("Susan", "XXXXX")
         text = text.replace("Percival", "PPPPPPPP")
-        special_letters = set()
+        return text
+        
+        
+    def schimb(self):
+        waves = self._schimb(self.waves)
+#        race = self._schimb(self.race)
         for i, t in enumerate(self.get_visible_tiles()):
             if not t.blocked:
-                t.char = text[i]
-        while len(special_letters) < 6:
-            special_letters.add(randint(0, num_cells - 1))
-        self.notify(special_letters, "SCHIMB")
+                t.char = waves[i]
+            elif t.blocked:
+                t.char = choice(['#', '%', '@'])
         
     def on_notify(self, entity, event):
         if event == "player move":

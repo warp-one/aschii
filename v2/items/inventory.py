@@ -1,7 +1,7 @@
 import libtcodpy as libtcod
 
 from tile import EnvironmentTile
-from directive import ItemGrab
+from directive import ItemGrab, ItemToggle, Directive, Power
 
 class Inventory(object):
 
@@ -54,9 +54,24 @@ class Inventory(object):
             previous_item.put_away()
         if self.current_item:
             self.current_item.equip()
-            self.current_item.turn_on()
+#            self.current_item.turn_on()
         self.display.cycle_display(self.current_item)
+        
+        if self.current_item and previous_item is not self.current_item:
+            display_location = self.display.get_toggle_location()
+            x = display_location[0] - self.owner.x
+            y = display_location[1] - self.owner.y
+            for d in self.owner.children:
+                if isinstance(d, ItemToggle):
+                    self.owner.remove_child(d)
+            self.owner.add_child(ItemToggle(self.current_item, self.owner, self.owner.game, text=self.current_item.ontext, static=True, offset=(x, y)))
+        elif self.current_item is None:
+            for d in self.owner.children:
+                if isinstance(d, ItemToggle):
+                    self.owner.remove_child(d)
 
+            
+            
     def toggle_item(self):
         if self.current_item:
             self.current_item.do()
@@ -97,15 +112,24 @@ class InventoryDisplay(object):
             libtcod.console_set_default_foreground(self.con, color)
             libtcod.console_put_char(self.con, x, y, 
                                             char, libtcod.BKGND_NONE)
-
+#        if self.current_item.on:
+#            self.current_item.item_toggle.change_text(self.current_item.offtext)
+#            self.status = self.current_item.offtext
+#        else:
+#            self.current_item.item_toggle.change_text(self.current_item.ontext)
+ #           self.status = self.current_item.ontext
+            
         for i, char in enumerate(self.status):
             x, y = self.x + len(self.text) + 2 + i, self.y
             libtcod.console_set_default_foreground(self.con, color)
             libtcod.console_put_char(self.con, x, y, 
                                             char, libtcod.BKGND_NONE)
+                                            
+    def get_toggle_location(self):
+        return self.x + len(self.text) + 2, self.y
 
     def update(self):
-        if self.current_item:
+        if False:#self.current_item:
             if self.current_item.on:
                 self.status = "on"
             else:
@@ -144,6 +168,12 @@ class Item(EnvironmentTile):
         else:
             self.on = False
             return True
+            
+    def toggle(self):
+        if self.on:
+            self.turn_off()
+        else:
+            self.turn_on()
         
     def equip(self):
         print "You equip your " + self.name
