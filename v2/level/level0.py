@@ -5,12 +5,13 @@ from directive import *
 from items import *
 
 statue_script = {"start":("town city", 'I will go to town or city'),
-                 "town":("walk statue", 'and walk past the statue of the men'),
-                     "walk":("", 'briskly, with my collar up.'),
-                     "statue":("", ', the accursed Men of Grava'),
-                 "city":("out, down", 'In or out, up or down'),
-                     "out,":("", 'remember to bring my flashlight'),
-                     "down":("", 'into one of the caves')}
+                     "town":("walk statue", 'and walk past the statue of the men'),
+                         "walk":("", 'briskly, with my collar up.'),
+                         "statue":("", ', the accursed Men of Grava'),
+                     "city":("out, down", 'In or out, up or down'),
+                         "out,":("", 'remember to bring my flashlight'),
+                         "down":("caves", 'into one of the caves'),
+                            "caves":("caves", 'yes, deep into the caves')}
 
 
 class LevelZero(Level):

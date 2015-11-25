@@ -6,6 +6,11 @@ from level import LevelZero
 from player import Player
 from tile import EnvironmentTile
 import tile
+
+## this is a game made by William Schuller. w r schuller at gmail dot com
+# CC BY NC SA 4.0 http://creativecommons.org/licenses/by-nc-sa/4.0/
+
+
  
 #actual size of the window
 SCREEN_WIDTH = 80
