@@ -39,6 +39,7 @@ class Inventory(object):
             print "No item in hand!"
         
     def switch_item(self):
+        #TODO: make a legible sequence of functions rather than this unholiness
         previous_item = self.current_item
         if not self.current_item:
             if self.inventory:
@@ -64,7 +65,12 @@ class Inventory(object):
             for d in self.owner.children:
                 if isinstance(d, ItemToggle):
                     self.owner.remove_child(d)
-            self.owner.add_child(ItemToggle(self.current_item, self.owner, self.owner.game, text=self.current_item.ontext, static=True, offset=(x, y)))
+            self.owner.add_child(ItemToggle(self.current_item, 
+                    self.owner, 
+                    self.owner.game, 
+                    text=(self.current_item.offtext if self.current_item.on else self.current_item.ontext), 
+                    static=True, 
+                    offset=(x, y)))
         elif self.current_item is None:
             for d in self.owner.children:
                 if isinstance(d, ItemToggle):
@@ -138,6 +144,7 @@ class InventoryDisplay(object):
 class Item(EnvironmentTile):
 
     name = "Generic Item"
+    description = ""
 
     def __init__(self, *args):
         super(Item, self).__init__(*args)

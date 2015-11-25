@@ -100,7 +100,7 @@ class Next(Directive):
         
 class DialogueChoice(Next):
     def complete(self):
-        self.anchor.say_line()
+        self.anchor.say_line(self.phrase)
         self.game.player
         
     def _draw(self):
@@ -209,6 +209,8 @@ class Waypoint(Directive):
         player_proximity = tools.get_distance(self.get_location(), 
                                             self.game.player.get_location())
         return super(Waypoint, self).is_visible() and player_proximity > 7
+        
+        
 
 class SpeakingObject(Unit):
 
@@ -222,12 +224,12 @@ class SpeakingObject(Unit):
         self.words = []
         self.nextwords = []
         self.line = ""
-        self.say_line()
+        self.say_line("start")
         
-    def say_line(self):
+    def say_line(self, dialogue_choice):
         # ("one other", "Either go one way or the other way.")
         if self.script:
-            self.line = self.script.pop(0)
+            self.line = self.script[dialogue_choice]
             self.keywords = self.line[0].split()
             individual_words = self.line[1].split()
             for nw in self.nextwords:

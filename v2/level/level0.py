@@ -4,12 +4,13 @@ from basic_level import Level
 from directive import *
 from items import *
 
-statue_script = [("dreamt alive", 'He dreamt that it was alive, tremulous'),
-                 ("was bastard", 'it was not the atrocious bastard'),
-                 ("tiger colt", 'of a tiger and a colt, but'),
-                 ("both these", 'at the same time both of these'),
-                 ("fiery also", 'fiery creatures, and also'),
-                 ("bull rose", 'a bull, a rose, and a storm')]
+statue_script = {"start":("town city", 'I will go to town or city'),
+                 "town":("walk statue", 'and walk past the statue of the men'),
+                     "walk":("", 'briskly, with my collar up.'),
+                     "statue":("", ', the accursed Men of Grava'),
+                 "city":("out, down", 'In or out, up or down'),
+                     "out,":("", 'remember to bring my flashlight'),
+                     "down":("", 'into one of the caves')}
 
 
 class LevelZero(Level):
@@ -33,5 +34,12 @@ class LevelZero(Level):
         self.flashlight = Flashlight(False, 20, 20, 'I', libtcod.yellow, self.foreground, self)
         x, y = self.flashlight.get_location()
         self.the_map.add(x, y, self.flashlight)
+        
+        self.gam = Gammon(False, 22, 20, 'd', libtcod.pink, self.foreground, self)
+        x, y = self.gam.get_location()
+        self.the_map.add(x, y, self.gam)
+
+        
         self.player.add_child(ItemGrab(self.flashlight, self, text="pick up", offset = (-2, 2)))
+        self.player.add_child(ItemGrab(self.gam, self, text="pick up", offset = (-2, 2)))
         s = self.the_map.schimb()
