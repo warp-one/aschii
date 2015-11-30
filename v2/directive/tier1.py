@@ -4,15 +4,6 @@ import tools
 from directive import Directive
 from tile import Unit, Word
 
-class Power(Directive):
-
-    range = 1000
-
-    def is_visible(self):
-        return True
-        
-    def complete(self):
-        self.reset()
 
 
 class ItemGrab(Directive):
@@ -22,22 +13,8 @@ class ItemGrab(Directive):
     def complete(self):
         self.game.player.inventory.pick_up_item(self.anchor)
         super(ItemGrab, self).complete()
-        
-class ItemToggle(Power):
 
-    def __init__(self, item, *args, **kwargs):
-        super(ItemToggle, self).__init__(*args, **kwargs)
-        self.item = item
 
-    def complete(self):
-        super(ItemToggle, self).complete()
-        self.item.toggle()
-        if self.item.on:
-            self.change_text(self.item.offtext)
-        else:
-            self.change_text(self.item.ontext)
-
-        
 ## The Point of Interest Directives
 class Legs(Directive):
     def change_text(self, text):
@@ -89,7 +66,10 @@ class Legs(Directive):
         except AttributeError:
             print "No tile!"
             
-            
+    def clear(self):
+        pass
+
+
 class Next(Directive):
     def complete(self):
         self.anchor.say_line()
@@ -97,6 +77,38 @@ class Next(Directive):
 #            self.reset()
 #        else:
         super(Next, self).complete()
+        
+class Bow(Directive):
+
+    def __init__(self, *args, **kwargs):
+        super(Bow, self).__init__(*args, **kwargs)
+        self.blue = False
+
+    def tick_phrase(self, letter):
+        if self.blue:
+            if not self.anchor.links:
+                self.delete()
+            return
+        else:
+            return super(Bow, self).tick_phrase(letter)
+
+    def complete(self):
+        self.anchor.honored = True
+        self.blue = True
+        if self.anchor.check_links("honored"):
+            super(Bow, self).complete()
+            self.anchor.delete()
+            
+    def _draw(self):
+        if self.blue:
+            self.current_color = libtcod.blue + libtcod.grey
+        else:
+            self.current_color = self.color
+        super(Bow, self)._draw()
+            
+    def reset(self):
+        if not self.blue:
+            super(Bow, self).reset()
         
 class DialogueChoice(Next):
     def complete(self):
@@ -162,8 +174,8 @@ class SCHIMB(Directive):
         self.color = libtcod.blue - libtcod.red
         self.revert_color()
             
-    def draw(self):
         to_draw = zip(self.phrase, self.coordinates)
+    def draw(self):
         for i, letter in enumerate(to_draw):
             x, y = letter[1][0], letter[1][1]
             color = (self.current_color if self.phrase_clear[i] else self.color2)
@@ -178,17 +190,6 @@ class SCHIMB(Directive):
             
 
 
-class Sprint(Power):
-    def complete(self):
-        p = self.game.player
-        player_location = p.get_location()
-        path = []
-        for s in range(p.sprint_distance):
-            next_tile = (p.x + p.facing[0] * (s + 1), p.y + p.facing[1] * (s + 1))
-            path.append(next_tile)
-        path = p.set_path(path)
-        self.game.player.add_order(len(path) * .1, p.move_along_path)
-        self.reset()
 
         
 class Waypoint(Directive):
@@ -219,19 +220,25 @@ class SpeakingObject(Unit):
                                7:(1, 1, 0, 0, 0, -1, -1)}
 
     def __init__(self, script, *args):
-        super(SpeakingObject, self).__init__(*args)
+        self.loop = False
         self.script = script
         self.words = []
         self.nextwords = []
         self.line = ""
+        super(SpeakingObject, self).__init__(*args)
         self.say_line("start")
         
     def say_line(self, dialogue_choice):
-        # ("one other", "Either go one way or the other way.")
+        # "start":("town city", 'I will go to town or city')
         if self.script:
             self.line = self.script[dialogue_choice]
             self.keywords = self.line[0].split()
             individual_words = self.line[1].split()
+            if self.loop:
+                if not self.keywords:
+                    self.keywords = ["start"]
+                    individual_words.extend([">", "start"])
+
             for nw in self.nextwords:
                 try:
                     self.game.player.remove_child(nw)
@@ -259,10 +266,34 @@ class SpeakingObject(Unit):
         super(SpeakingObject, self).draw()
         for w in self.words:
             w.draw()
+            
+    def clear(self):
+        for w in self.words:
+            w.clear()
+        for n in self.nextwords:
+            n.clear()
 
 class Statue(SpeakingObject):
     def __init__(self, *args, **kwargs):
         super(Statue, self).__init__(*args, **kwargs)
         self.char = libtcod.CHAR_DVLINE
         self.blocked = True
+        
+        
+class LinkedStatue(Statue):
+    def __init__(self, *args, **kwargs):
+        super(LinkedStatue, self).__init__(*args, **kwargs)
+        self.char = libtcod.CHAR_TEES
+        self.current_color = libtcod.purple
+        self.honored = False
+        self.links = []
+        
+    def add_link(self, statue):
+        self.links.append(statue)
+            
+    def check_links(self, attribute):
+        for l in self.links:
+            if not getattr(l, attribute):
+                return False
+        return True
         

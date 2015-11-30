@@ -9,12 +9,18 @@ import tile
 
 ## this is a game made by William Schuller. w r schuller at gmail dot com
 # CC BY NC SA 4.0 http://creativecommons.org/licenses/by-nc-sa/4.0/
+#
+# "the position of each individual letter on the page is subject to rules"
+# bowing puzzles
+#
+# titles:
+# like a s hell (the waves)
 
 
  
 #actual size of the window
-SCREEN_WIDTH = 80
-SCREEN_HEIGHT = 50
+SCREEN_WIDTH = 160
+SCREEN_HEIGHT = 100
  
 LIMIT_FPS = 20  #20 frames-per-second maximum
 

@@ -27,7 +27,6 @@ class Flashlight(Item):
             self.game.the_map.light_sources.append(self)
         self.on = True
         
-        
     def turn_off(self):
         if super(Flashlight, self).turn_off():
             self.game.the_map.light_sources.remove(self)

@@ -77,7 +77,14 @@ class Directive(Attachment, Tile):
         self.game.player.remove_child(self)
         
     def clear(self):
-        pass
+        self.phrase
+        try:
+            for i in range(len(self.phrase)):
+                x, y = self.x + i, self.y
+                libtcod.console_put_char(self.con, x, y, 
+                                                ' ', libtcod.BKGND_NONE)
+        except TypeError:
+            return self.phrase
             
     def tick_phrase(self, letter):
         if self.anchor.is_visible() and self.is_visible():

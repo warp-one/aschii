@@ -49,8 +49,8 @@ class Tile(object):
             self._draw()
             for c in self.children:
                 c.draw()
-        else:
-            self.clear()
+#        else:
+#            self.clear()
     
     
     def _draw(self):
@@ -82,6 +82,10 @@ class Tile(object):
     
     def remove_child(self, child):
         self.children.remove(child)
+        
+    def delete(self):
+        self.game.the_map.remove(self)
+        del self
 
 class EnvironmentTile(Tile):
     def __init__(self, blocked, *args):
@@ -116,5 +120,12 @@ class Word(Tile):
                 libtcod.console_set_default_foreground(self.con, self.current_color)
                 libtcod.console_put_char(self.con, x, y, 
                                                 letter, libtcod.BKGND_NONE)
+                                                
+    def clear(self):
+        for i, letter in enumerate(self.word):
+            x, y = self.x + i, self.y
+            libtcod.console_put_char(self.con, x, y, 
+                                            ' ', libtcod.BKGND_NONE)
+    
 
-        
+    

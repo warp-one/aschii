@@ -15,8 +15,8 @@ class TileMap(Listener, object):
         self.game = game
         self.width, self.height = w, h
         walls = []
-        for _ in [(25, 0, 25, 15), (0, 16, 15, 16)]:
-            libtcod.line_init(*_)
+        for L in [(25, 0, 25, 15), (0, 16, 15, 16)]:
+            libtcod.line_init(*L)
             while True:
                 x, y = libtcod.line_step()
                 if x is None:
@@ -48,6 +48,27 @@ class TileMap(Listener, object):
         except IndexError:
             return False
             
+    def get_area(self, x, y, w, h, anchor="center"):
+        if anchor == "center":
+            Xstart = x - w/2
+            Xend = x + (w/2 if w%2 else w/2 + 1)
+            Ystart = y - h/2
+            Yend = y + (h/2 if h%2 else h/2 + 1)
+        else:
+            Xstart, Xend = x, x + w
+            Ystart, Yend = y, y + h
+            
+        if Xstart < 0: Xstart = 0
+        if Xend >= self.width: Xend = self.width
+        if Ystart < 0: Ystart = 0
+        if Yend >= self.height: Yend = self.height
+        
+        for y in range(Ystart, Yend):
+            for x in range(Xstart, Xend):
+                yield self.tilemap[x][y]
+            
+            
+            
     def get_item(self, x, y):
         try:
             tile = self.tilemap[x][y]
@@ -71,8 +92,7 @@ class TileMap(Listener, object):
             if t.is_visible():
                 yield t
                 
-    def get_tiles_by_layer(self):
-        tiles = self.get_tiles()
+    def get_tiles_by_layer(self, tiles):
         while tiles:
             next_layer = []
             for t in tiles:

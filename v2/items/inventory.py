@@ -149,6 +149,7 @@ class Item(EnvironmentTile):
     def __init__(self, *args):
         super(Item, self).__init__(*args)
         self.on = False
+        self.owner = None
     
     def pick_up(self, owner):
         self.toggle_visible()

@@ -13,38 +13,16 @@ statue_script = {"start":("town city", 'I will go to town or city'),
                          "down":("caves", 'into one of the caves'),
                             "caves":("caves", 'yes, deep into the caves')}
                             
-statue_script1 = {"start":("frozen, time", 'Everything is frozen, as if in time'),
-                      "frozen,":("changed,", 'It can be changed, but only a little'),
-                        "changed,":("suppose moments", "I suppose it is actually many moments"),
-                          "suppose":("", "Catch the ones you can and leave the rest."),
-                          "moments":("", "If you find one you like, you can leave it that way."),
-                      "time":("specific right", "It's a specific moment. But is it the right moment?"),
-                        "right":("know changing", "You'll know when it is. Until then, keep changing things."),
-                          "know":("you leave", "It's up to you when to leave the caves."),
-                            "you":("anyone will", "I don't know if anyone else will come down here."),
-                              "anyone":("time", "Not for a long time, at least."),
-                              "will":("", "Not for 10,000 years."),
-                            "leave":("ever", "You don't really have to go ever"),
-                              "ever":("time", "You can just stay here for a time"),
-                          "changing":("things change", "If it weren't for you, some things would never change"),
-                            "things":("time", "They would be the same for all time"),
-                            "change":("", "They wouldn't ever be interfered with."),
-                        "specific":("like now", "What is it like right now?"),
-                          "like":("time", "It's fairly damp. And jacket weather. The time"),
-                          "now":("", "It's very today, today.")}
 
-class LevelZero(Level):
-
-    start_location = 15, 15
+class LeaveTheCaves(Level):
 
     def __init__(self, *args):
-        super(LevelZero, self).__init__(*args)
-        self.player.add_power(Power(self.player, self, static=True, offset=(0, 30+len(self.player.children))))
-        self.player.add_power(Sprint(self.player, self, text="sprint", static=True, offset=(0, 30+len(self.player.children))))
-        self.player.add_observer(self.the_map)
-        self.player.place(*self.start_location)
+        super(LeaveTheCaves, self).__init__(*args)
+#        self.player.add_power(Power(self.player, self, static=True, offset=(0, 30+len(self.player.children))))
+#        self.player.add_power(Sprint(self.player, self, text="sprint", static=True, offset=(0, 30+len(self.player.children))))
+#        self.player.add_observer(self.the_map)
+#        self.player.place(*self.start_location)
         
-        self.statues = []
         for _ in range(1):
             s = Statue(statue_script1, 10 + _*3, 10 + _, 'S', libtcod.green, self.foreground, self)
             s.loop = True
