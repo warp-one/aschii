@@ -34,7 +34,7 @@ class Game(object):
         libtcod.console_set_custom_font('terminal8x8_gs_ro.png', 
                 libtcod.FONT_TYPE_GREYSCALE | libtcod.FONT_LAYOUT_ASCII_INROW)
         libtcod.console_init_root(self.width, self.height, 
-                'rooms', False, renderer=libtcod.RENDERER_GLSL)
+                'rooms', False)#, renderer=libtcod.RENDERER_GLSL)
         libtcod.sys_set_fps(LIMIT_FPS)
 
         self.current_level = LevelZero(self)

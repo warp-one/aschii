@@ -27,11 +27,14 @@ class ItemToggle(Power):
 
 
 class Sprint(Power):
+
+    sprint_distance = 20
+
     def complete(self):
         p = self.game.player
         player_location = p.get_location()
         path = []
-        for s in range(p.sprint_distance):
+        for s in range(self.sprint_distance):
             next_tile = (p.x + p.facing[0] * (s + 1), p.y + p.facing[1] * (s + 1))
             path.append(next_tile)
         path = p.set_path(path)

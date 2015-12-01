@@ -37,7 +37,7 @@ class Flashlight(Item):
             self.turn_off()
         else:
             self.turn_on()
-            
+
 class Gammon(Item):
 
     name = "gammon"
@@ -45,18 +45,17 @@ class Gammon(Item):
     on = False
     ontext = "eat"
     offtext = " "
-    
+
     def turn_on(self):
         # not hungry any more
         self.on = True
-        
-        
+
+
     def turn_off(self):
         return
-        
+
     def do(self):
         if not self.on:
             self.turn_on()
         else:
             print "wrong!"
-    

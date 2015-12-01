@@ -77,7 +77,6 @@ class Player(Listener, Orders, Unit):
                   libtcod.KEY_RIGHT, libtcod.KEY_LEFT]
     offsets = [(-2, -2), (-2, 2), (2, 3), (2, -3), 
                (-2, -2), (-2, 2), (2, 3), (2, -3)]
-    sprint_distance = 9
     sight_radius = 11
     char = ' '
 
@@ -123,7 +122,11 @@ class Player(Listener, Orders, Unit):
                 a.pressed = False
         dx, dy = 0, 0
         key = libtcod.console_check_for_keypress()  #real-time
-        if key.vk == libtcod.KEY_CHAR or key.vk in self.arrow_keys or key.vk == libtcod.KEY_SPACE:
+        
+        is_char = (key.vk == libtcod.KEY_CHAR)
+        is_arrow = (key.vk in self.arrow_keys)
+        is_space = (key.vk == libtcod.KEY_SPACE)
+        if is_char or is_arrow or is_space:
             self.action_manager.handle_letter(key)
      
         if key.vk == libtcod.KEY_ENTER and key.lalt:
@@ -131,7 +134,7 @@ class Player(Listener, Orders, Unit):
         elif key.vk == libtcod.KEY_ESCAPE:
             return True  #exit game
         elif key.vk == libtcod.KEY_CONTROL:
-            self.game.the_map.schimb()
+#            self.game.the_map.schimb()
             if self.inventory.pick_up_item(self.game.the_map.get_item(*self.get_location())):
                 pass
             else:
@@ -142,20 +145,16 @@ class Player(Listener, Orders, Unit):
             self.inventory.drop_item()
  
         if libtcod.console_is_key_pressed(libtcod.KEY_UP):
-            self.facing = (0, -1)
-            self.game.the_map.schimb()
+            self.change_direction((0, -1))
             self.arrows[libtcod.CHAR_ARROW_N].pressed = True
         elif libtcod.console_is_key_pressed(libtcod.KEY_DOWN):
-            self.facing = (0, 1)
-            self.game.the_map.schimb()
+            self.change_direction((0, 1))
             self.arrows[libtcod.CHAR_ARROW_S].pressed = True
         elif libtcod.console_is_key_pressed(libtcod.KEY_LEFT):
-            self.facing = (-1, 0)
-            self.game.the_map.schimb()
+            self.change_direction((-1, 0))
             self.arrows[libtcod.CHAR_ARROW_W].pressed = True
         elif libtcod.console_is_key_pressed(libtcod.KEY_RIGHT):
-            self.facing = (1, 0)
-            self.game.the_map.schimb()
+            self.change_direction((1, 0))
             self.arrows[libtcod.CHAR_ARROW_E].pressed = True
             
     def add_child(self, child, offset=None):
@@ -180,6 +179,14 @@ class Player(Listener, Orders, Unit):
     def remove_power(self, power):
         self.remove_child(power)
         self.powers.remove(power)
+        
+    def change_direction(self, direction):
+        if self.facing == direction:
+            return False
+        else:
+            self.facing = direction
+            self.game.the_map.schimb()
+            return self.facing
 
     def move(self, dx, dy):
         if super(Player, self).move(dx, dy):
@@ -190,6 +197,7 @@ class Player(Listener, Orders, Unit):
             elif dy:
                 self.facing = (0, dy/abs(dy))
             self.notify(None, "player move")
+            self.game.the_map.schimb()
             
     def _draw(self):
         return

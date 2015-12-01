@@ -41,6 +41,26 @@ class TileMap(Listener, object):
             self.race = mg.Markov(f)
             
         self.obs = []
+        self.render_area = (0, 0, 0, 0, "default")
+        
+    def load_doodad(self, x, y, doodad):
+        for t in doodad.get_tile_data():
+            blocked, c, r = t
+            if blocked:
+                blocked = True
+            else:
+                blocked = False
+            self.change_tile(x + c, y + r, blocked)
+        for t in self.get_tiles():
+            libtcod.map_set_properties(self.libtcod_map, t.x, t.y, not t.blocked, not t.blocked)
+
+    def change_tile(self, x, y, attr):
+        in_square = self.tilemap[x][y].next
+        self.tilemap[x][y] = EnvironmentTile(
+                attr, 
+                x, y, '@', libtcod.darkest_grey, self.con, self.game
+                                         )
+        self.tilemap[x][y].next = in_square                                 
         
     def get_tile(self, x, y):
         try:
@@ -67,8 +87,6 @@ class TileMap(Listener, object):
             for x in range(Xstart, Xend):
                 yield self.tilemap[x][y]
             
-            
-            
     def get_item(self, x, y):
         try:
             tile = self.tilemap[x][y]
@@ -87,10 +105,55 @@ class TileMap(Listener, object):
             for x in range(self.width):
                 yield self.tilemap[x][y]
                 
-    def get_visible_tiles(self):
-        for t in self.get_tiles():
-            if t.is_visible():
+    def tile_is_lit(self, x, y):
+        player = self.game.player
+        for l in self.light_sources + [player]:
+            Lradius = (l.Lradius if not l is player else l.sight_radius)
+            if tools.get_distance((x, y), l.get_location()) <= Lradius:
+                return True
+        return False
+        
+    def get_tiles_in_render_area(self):
+        player = self.game.player
+        def x(light):
+            return light.get_location()[0]
+        def y(light):
+            return light.get_location()[1]
+        Xmins = [x(l) - l.Lradius for l in self.light_sources]
+        Xmaxs = [x(l) + l.Lradius for l in self.light_sources]
+        Ymins = [y(l) - l.Lradius for l in self.light_sources]
+        Ymaxs = [y(l) + l.Lradius for l in self.light_sources]
+        PXmin = player.x - player.sight_radius - 1
+        PXmax = player.x + player.sight_radius + 1
+        PYmin = player.y - player.sight_radius - 1
+        PYmax = player.y + player.sight_radius + 1
+        minX, minY = min([PXmin] + (Xmins if Xmins else [])), min([PYmin] + (Ymins if Ymins else []))
+        maxX, maxY = max([PXmax] + (Xmaxs if Xmaxs else [])), max([PYmax] + (Ymaxs if Ymaxs else []))
+        w = maxX - minX
+        h = maxY - minY
+        self.render_area = minX, minY, w, h, "default"
+        return self.get_area(minX, minY, w, h, anchor="default")
+
+    def get_tiles_in_clear_area(self):
+        x, y, w, h, anchor = self.render_area
+        return self.get_area(x - 2, y - 2, w + 4, h + 4, anchor=anchor)
+        
+    def get_all_in_render_area(self):
+        return self.get_tiles_by_layer(self.get_tiles_in_render_area())
+        
+    def get_all_in_clear_area(self):
+        return self.get_tiles_by_layer(self.get_tiles_in_clear_area())
+                
+    def get_visible_tiles(self, tiles):
+        for t in tiles:
+            if t.is_visible() and self.tile_is_lit(*t.get_location()):
                 yield t
+                
+    def get_lit_tiles(self, tiles):
+        for t in tiles:
+            if self.tile_is_lit(*t.get_location()):
+                yield t
+    
                 
     def get_tiles_by_layer(self, tiles):
         while tiles:
@@ -110,12 +173,6 @@ class TileMap(Listener, object):
             except IndexError:
                 failures += 1
                 
-    def tile_is_lit(self, x, y):
-        for l in self.light_sources:
-            if tools.get_distance((x, y), l.get_location()) < l.Lradius:
-                return True
-        return False
-
     def add(self, x, y, unit):
         tail = self.tilemap[x][y]
         while tail.next:
@@ -139,6 +196,7 @@ class TileMap(Listener, object):
     def move(self, x, y, unit):
         self.remove(unit)
         self.add(x, y, unit)
+        self.schimb()
         
     def run_collision(self, x, y):
         try:
@@ -155,6 +213,8 @@ class TileMap(Listener, object):
     def _schimb(self, novel):
         num_cells = self.width * self.height
         prose = novel.generate_markov_text(size=num_cells/3)
+        while not prose:
+            prose = novel.generate_markov_text(size=num_cells/3)
         text = prose[0:num_cells]
         text = text.replace("Bernard", "XXXXXXX")
         text = text.replace("Jinny", "XXXXX")
@@ -168,13 +228,20 @@ class TileMap(Listener, object):
         
     def schimb(self):
         waves = self._schimb(self.waves)
-#        race = self._schimb(self.race)
-        for i, t in enumerate(self.get_visible_tiles()):
+        race = self._schimb(self.race)
+        wletter = 0
+        rletter = 0
+        for i, t in enumerate(self.get_lit_tiles(self.get_tiles_in_clear_area())):
             if not t.blocked:
-                t.char = waves[i]
+                t.char = waves[wletter]
+                wletter += 1
             elif t.blocked:
-                t.char = choice(['#', '%', '@'])
-        
+                t.char = race[rletter]
+                while t.char == ' ':
+                    rletter += 1
+                    t.char = race[rletter]
+            rletter += 1        
+                    
     def on_notify(self, entity, event):
         if event == "player move":
             self.schimb()
