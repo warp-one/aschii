@@ -35,6 +35,8 @@ statue_script1 = {"start":("frozen, time", 'Everything is frozen, as if in time'
                         "specific":("like now", "What is it like right now?"),
                           "like":("time", "It's fairly damp. And jacket weather. The time"),
                           "now":("", "It's very today, today.")}
+                          
+
 
 class LevelZero(Level):
 
@@ -54,7 +56,8 @@ class LevelZero(Level):
             self.statues.append(s)
             self.the_map.add(s.x, s.y, s)
 #            self.player.add_child(Next(s, self, text="bow", static=True, offset = (2, 2)))
-            self.player.add_child(Waypoint(s, self, text="approach", static=True, offset=(-1,-1)))
+            self.player.add_child(Waypoint(s, self, text="approach", 
+                                            static=True, offset=(-1,-1)))
 
             t = LinkedStatue({}, 10, 20, 'S', libtcod.brass, self.foreground, self)
             self.the_map.add(t.x, t.y, t)
@@ -65,6 +68,21 @@ class LevelZero(Level):
             self.player.add_child(Bow(u, self, text="bow", static=True, offset=(-1,-1)))
             u.add_link(t)
             t.add_link(u)
+            
+            v = LinkedStatue({}, 10, 25, 'T', libtcod.brass, self.foreground, self)
+            self.the_map.add(v.x, v.y, v)
+            v_ = WordMatch(["away", "find", "angle", "stalagmite"], 
+                                    v, self, static=True, offset=(-1,-1))
+            self.player.add_child(v_)
+
+            w = LinkedStatue({}, 15, 25, 'T', libtcod.brass, self.foreground, self)
+            self.the_map.add(w.x, w.y, w)
+            w_ = WordMatch(["go", "mushroom", "set", "frighten"], 
+                                    w, self, static=True, offset=(-1,-1))
+            self.player.add_child(w_)
+            w.add_link(v)
+            v.add_link(w)
+            
 
         self.flashlight = Flashlight(False, 20, 20, 'I', libtcod.yellow, self.foreground, self)
         x, y = self.flashlight.get_location()

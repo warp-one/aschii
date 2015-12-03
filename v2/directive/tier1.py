@@ -1,7 +1,7 @@
 import libtcodpy as libtcod
 
-import tools
-from directive import Directive
+import tools, settings
+from directive import Directive, DirectiveLink
 from tile import Unit, Word
 
 
@@ -64,7 +64,8 @@ class Legs(Directive):
                     libtcod.console_put_char(self.con, x, y, 
                                                     char, libtcod.BKGND_NONE)
         except AttributeError:
-            print "No tile!"
+            if settings._DEBUG:
+                print "No tile!"
             
     def clear(self):
         pass
@@ -81,8 +82,8 @@ class Next(Directive):
 class Bow(Directive):
 
     def __init__(self, *args, **kwargs):
-        super(Bow, self).__init__(*args, **kwargs)
         self.blue = False
+        super(Bow, self).__init__(*args, **kwargs)
 
     def tick_phrase(self, letter):
         if self.blue:
@@ -109,6 +110,42 @@ class Bow(Directive):
     def reset(self):
         if not self.blue:
             super(Bow, self).reset()
+            
+class WordMatch(Bow):
+    def __init__(self, words, *args, **kwargs):
+        self.blue = False
+        self.words = words
+        self.phrase = self.words.pop(0)
+        self.keyword = self.phrase
+        super(Bow, self).__init__(*args, **kwargs)
+        self._change_text()
+        
+    def change_text(self, _):
+        self._change_text()
+        
+    def _change_text(self):
+        self.words.append(self.phrase)
+        self.phrase = self.words.pop(0)
+        self.reset()
+        
+    def complete(self):
+        self._change_text()
+        if self.phrase == self.keyword:
+            self.anchor.matched = True
+            if self.anchor.check_links("matched"):
+                pass
+                print "DO THE THING"
+        else:
+            self.anchor.matched = False
+    
+    def reset(self):
+        self.phrase_clear = [False] * len(self.phrase)
+        self.phrase_index = 0
+        self.completed = False
+        
+## TODO: "PLEASE" CONFIRMATION BUTTON FOR MULTIPLE CHOICE PHRASES
+        
+    
         
 class DialogueChoice(Next):
     def complete(self):
@@ -276,16 +313,15 @@ class SpeakingObject(Unit):
 class Statue(SpeakingObject):
     def __init__(self, *args, **kwargs):
         super(Statue, self).__init__(*args, **kwargs)
-        self.char = libtcod.CHAR_DVLINE
         self.blocked = True
         
         
 class LinkedStatue(Statue):
     def __init__(self, *args, **kwargs):
         super(LinkedStatue, self).__init__(*args, **kwargs)
-        self.char = libtcod.CHAR_TEES
         self.current_color = libtcod.purple
         self.honored = False
+        self.matched = False
         self.links = []
         
     def add_link(self, statue):

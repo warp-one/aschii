@@ -102,3 +102,16 @@ class Directive(Attachment, Tile):
         self.phrase_clear = [False] * len(self.phrase)
         self.phrase_index = 0
         
+class DirectiveLink(object):
+    def __init__(self):
+        self.links = []
+        
+    def add_link(self, directive):
+        self.links.append(directive)
+        
+    def remove_link(self, directive):
+        self.links.remove(directive)
+        
+    def notify_links(self, command):
+        for l in self.links:
+            getattr(l, command)()
