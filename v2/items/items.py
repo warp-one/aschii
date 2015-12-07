@@ -8,7 +8,7 @@ class Flashlight(Item):
     ontext = "turn on"
     offtext = "turn off"
     distance = 20
-    Lradius = 13
+    Lradius = 5
     
         
     def get_location(self):

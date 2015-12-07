@@ -143,6 +143,21 @@ class WordMatch(Bow):
         self.phrase_index = 0
         self.completed = False
         
+    def _draw(self):
+        Ploc = self.game.player.get_location()
+        Sloc = self.anchor.get_location()
+        in_range = tools.get_distance(Ploc, Sloc) < self.range
+        self.dormant_color = libtcod.red if in_range else libtcod.grey
+        to_draw = self.phrase
+        x_minus = self.phrase.index(self.anchor.char.lower())
+        for i, char in enumerate(to_draw):
+            x, y = Sloc[0] + i - x_minus, Sloc[1]
+            if not self.game.the_map.run_collision(x, y):
+                color = (self.current_color if self.phrase_clear[i] else self.dormant_color)
+                libtcod.console_set_default_foreground(self.con, color)
+                libtcod.console_put_char(self.con, x, y, 
+                                                char, libtcod.BKGND_NONE)
+                                                
 ## TODO: "PLEASE" CONFIRMATION BUTTON FOR MULTIPLE CHOICE PHRASES
         
     

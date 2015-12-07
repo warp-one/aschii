@@ -47,6 +47,6 @@ class RandomBoulder(WallShape):
                     blocked = True
                 else:
                     blocked = False
-                self.shape[x][y] = (1 if blocked else 0)
                 
             init_w += randint(0, w - init_w)
+        self.shape[x][y] = (1 if blocked else 0)

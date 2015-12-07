@@ -8,22 +8,27 @@ from observer import Listener
 import markovgen as mg
 import tools
 
+from drawings import lvl0
+
 
 class TileMap(Listener, object):
     def __init__(self, w, h, con, game):
         self.con = con
         self.game = game
         self.width, self.height = w, h
-        walls = []
-        for L in [(25, 0, 25, 15), (0, 16, 15, 16)]:
-            libtcod.line_init(*L)
-            while True:
-                x, y = libtcod.line_step()
-                if x is None:
-                    break
-                walls.append((x, y))
+#        walls = []
+#        xs = range(2, 55)
+#        y1, y2 = 0, 35
+#        for L in [(x, y1, x, y2) for x in xs]:
+#            libtcod.line_init(*L)
+#            while True:
+##                x, y = libtcod.line_step()
+#                if x is None:
+#                    break
+#                walls.append((x, y))
+        drawing = lvl0
         self.tilemap = [[EnvironmentTile(
-                (True if (x, y) in walls else False), 
+                (True if lvl0.get_tile(x, y)[0] else False), 
                 x, y, '@', libtcod.darkest_grey, self.con, self.game
                                          )
                             for y in range(h)]

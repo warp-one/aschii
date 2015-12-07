@@ -77,7 +77,7 @@ class Player(Listener, Orders, Unit):
                   libtcod.KEY_RIGHT, libtcod.KEY_LEFT]
     offsets = [(-2, -2), (-2, 2), (2, 3), (2, -3), 
                (-2, -2), (-2, 2), (2, 3), (2, -3)]
-    sight_radius = 11
+    sight_radius = 21 #high in early levels, low in late...
     char = ' '
 
     def __init__(self, *args):

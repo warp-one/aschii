@@ -1,8 +1,20 @@
 import libtcodpy as libtcod
+import pyaudio
+import wave
+import sys
 
 from maps import TileMap
 from player import Player
 import tools
+
+'''# pyaudio
+CHUNK = 1024
+if len(sys.argv) < 2:
+    print("Plays a wave file. \n\nUsage: %s sys.argv[0])
+    sys.exit(-1)
+wf = wave.open(sys.argv[1]
+p = pyaudio.PyAudio()
+stream = p.open(format=p.get_format_from_'''
 
 class Level(object):
 

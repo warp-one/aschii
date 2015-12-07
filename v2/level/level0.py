@@ -69,15 +69,15 @@ class LevelZero(Level):
             u.add_link(t)
             t.add_link(u)
             
-            v = LinkedStatue({}, 10, 25, 'T', libtcod.brass, self.foreground, self)
+            v = LinkedStatue({}, 10, 25, 'L', libtcod.brass, self.foreground, self)
             self.the_map.add(v.x, v.y, v)
-            v_ = WordMatch(["away", "find", "angle", "stalagmite"], 
+            v_ = WordMatch(["holy", "look", "angle", "stalagmite"], 
                                     v, self, static=True, offset=(-1,-1))
             self.player.add_child(v_)
 
-            w = LinkedStatue({}, 15, 25, 'T', libtcod.brass, self.foreground, self)
+            w = LinkedStatue({}, 17, 31, 'T', libtcod.brass, self.foreground, self)
             self.the_map.add(w.x, w.y, w)
-            w_ = WordMatch(["go", "mushroom", "set", "frighten"], 
+            w_ = WordMatch(["bite", "tap", "set", "frighten"], 
                                     w, self, static=True, offset=(-1,-1))
             self.player.add_child(w_)
             w.add_link(v)
@@ -97,6 +97,6 @@ class LevelZero(Level):
         self.player.add_child(ItemGrab(self.gam, self, text="pick up", offset = (-2, 2)))
         s = self.the_map.schimb()
         self.the_map.load_doodad(25, 25, m1)
-        for b in Boulders:
-            x, y = randint(0, 100), randint(0, 80)
-            self.the_map.load_doodad(x, y, b)
+#        for b in Boulders:
+#            x, y = randint(0, 100), randint(0, 80)
+#            self.the_map.load_doodad(x, y, b)
