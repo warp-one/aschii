@@ -1,4 +1,18 @@
+import libtcodpy as libtcod
 from PIL import Image
+
+
+from tile import EnvironmentTile
+
+def make_tile(map_drawing, x, y, con, game):
+    tile = map_drawing.get_tile(x, y)
+    tile_rgb = tile[0], tile[1], tile[2]
+    blocked = (True if tile[0] else False)
+    color = (libtcod.darkest_grey if not blocked else libtcod.Color(*tile_rgb))
+    return EnvironmentTile(
+            blocked,
+            x, y, '@', color, con, game
+                                     )
 
 class MapDrawing(object):
 
@@ -23,4 +37,4 @@ class MapDrawing(object):
     def get_tile(self, x, y):
         return self.tiles[x + y*self.w]
         
-lvl0 = MapDrawing("maps\likethis.png")
+lvl0 = MapDrawing("maps\lvl0.png")

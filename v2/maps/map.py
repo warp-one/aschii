@@ -8,7 +8,7 @@ from observer import Listener
 import markovgen as mg
 import tools
 
-from drawings import lvl0
+import drawings
 
 
 class TileMap(Listener, object):
@@ -26,11 +26,8 @@ class TileMap(Listener, object):
 #                if x is None:
 #                    break
 #                walls.append((x, y))
-        drawing = lvl0
-        self.tilemap = [[EnvironmentTile(
-                (True if lvl0.get_tile(x, y)[0] else False), 
-                x, y, '@', libtcod.darkest_grey, self.con, self.game
-                                         )
+        drawing = drawings.lvl0
+        self.tilemap = [[drawings.make_tile(drawing, x, y, self.con, self.game)
                             for y in range(h)]
                             for x in range(w)]
                             
@@ -201,7 +198,7 @@ class TileMap(Listener, object):
     def move(self, x, y, unit):
         self.remove(unit)
         self.add(x, y, unit)
-        self.schimb()
+#        self.schimb()
         
     def run_collision(self, x, y):
         try:
@@ -249,4 +246,4 @@ class TileMap(Listener, object):
                     
     def on_notify(self, entity, event):
         if event == "player move":
-            self.schimb()
+            pass

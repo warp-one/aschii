@@ -92,8 +92,6 @@ class EnvironmentTile(Tile):
         super(EnvironmentTile, self).__init__(*args)
         self.blocked = blocked
         if self.blocked:
-            self.color = libtcod.white
-            self.revert_color()
             self.char = '#'
             
 class Unit(Tile):   # has collision

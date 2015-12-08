@@ -22,7 +22,7 @@ import tile
 SCREEN_WIDTH = 160
 SCREEN_HEIGHT = 100
  
-LIMIT_FPS = 20  #20 frames-per-second maximum
+LIMIT_FPS = 60  #20 frames-per-second maximum
 
 class Game(object):
 

@@ -134,7 +134,6 @@ class Player(Listener, Orders, Unit):
         elif key.vk == libtcod.KEY_ESCAPE:
             return True  #exit game
         elif key.vk == libtcod.KEY_CONTROL:
-#            self.game.the_map.schimb()
             if self.inventory.pick_up_item(self.game.the_map.get_item(*self.get_location())):
                 pass
             else:
@@ -146,15 +145,19 @@ class Player(Listener, Orders, Unit):
  
         if libtcod.console_is_key_pressed(libtcod.KEY_UP):
             self.change_direction((0, -1))
+            self.move(0, -1)
             self.arrows[libtcod.CHAR_ARROW_N].pressed = True
         elif libtcod.console_is_key_pressed(libtcod.KEY_DOWN):
             self.change_direction((0, 1))
+            self.move(0, 1)
             self.arrows[libtcod.CHAR_ARROW_S].pressed = True
         elif libtcod.console_is_key_pressed(libtcod.KEY_LEFT):
             self.change_direction((-1, 0))
+            self.move(-1, 0)
             self.arrows[libtcod.CHAR_ARROW_W].pressed = True
         elif libtcod.console_is_key_pressed(libtcod.KEY_RIGHT):
             self.change_direction((1, 0))
+            self.move(1, 0)
             self.arrows[libtcod.CHAR_ARROW_E].pressed = True
             
     def add_child(self, child, offset=None):
@@ -181,11 +184,11 @@ class Player(Listener, Orders, Unit):
         self.powers.remove(power)
         
     def change_direction(self, direction):
+        self.game.the_map.schimb()
         if self.facing == direction:
             return False
         else:
             self.facing = direction
-            self.game.the_map.schimb()
             return self.facing
 
     def move(self, dx, dy):
@@ -193,11 +196,10 @@ class Player(Listener, Orders, Unit):
             self.game.the_map.move(self.x, self.y, self)
             self.fov = libtcod.map_compute_fov(self.game.the_map.libtcod_map, self.x, self.y, self.sight_radius, algo=libtcod.FOV_DIAMOND)
             if dx:
-                self.facing = (dx/abs(dx), 0)
+                self.change_direction((dx/abs(dx), 0))
             elif dy:
-                self.facing = (0, dy/abs(dy))
+                self.change_direction((0, dy/abs(dy)))
             self.notify(None, "player move")
-            self.game.the_map.schimb()
             
     def _draw(self):
         return
