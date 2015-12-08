@@ -1,3 +1,5 @@
+from random import choice
+
 import libtcodpy as libtcod
 
 import tools, settings
@@ -329,6 +331,11 @@ class Statue(SpeakingObject):
     def __init__(self, *args, **kwargs):
         super(Statue, self).__init__(*args, **kwargs)
         self.blocked = True
+        
+class RealPerson(Statue): # inherits from statue (!)
+    
+    phrase = [choice(['o', 'O', libtcod.CHAR_BLOCK2]), libtcod.CHAR_DTEES, libtcod.CHAR_DVLINE]
+        
         
         
 class LinkedStatue(Statue):

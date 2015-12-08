@@ -3,6 +3,7 @@ from directive import Directive
 class Power(Directive):
 
     range = 1000
+    visible = True
 
     def is_visible(self):
         return True
@@ -24,6 +25,11 @@ class ItemToggle(Power):
             self.change_text(self.item.offtext)
         else:
             self.change_text(self.item.ontext)
+            
+    def _draw(self):
+        super(ItemToggle, self)._draw()
+        print "aga"
+            
 
 
 class Sprint(Power):

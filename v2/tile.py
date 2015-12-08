@@ -5,6 +5,7 @@ import tools
 class Tile(object):
 
     name = ""
+    phrase = None
 
     def __init__(self, x, y, char, color, con, game):
         self.x, self.y = x, y
@@ -54,12 +55,21 @@ class Tile(object):
     
     
     def _draw(self):
-        self.current_char = self.char
-        self.current_color = self.color
-        x, y = self.get_location()
-        libtcod.console_set_default_foreground(self.con, self.current_color)
-        libtcod.console_put_char(self.con, x, y, 
-                    self.current_char, libtcod.BKGND_NONE)
+        if self.phrase:
+            for i, char in enumerate(self.phrase):
+                x, y = self.x, self.y + i
+#                if not self.game.the_map.run_collision(x, y):
+                color = (self.current_color)
+                libtcod.console_set_default_foreground(self.con, color)
+                libtcod.console_put_char(self.con, x, y, 
+                                                char, libtcod.BKGND_NONE)
+        else:
+            self.current_char = self.char
+            self.current_color = self.color
+            x, y = self.get_location()
+            libtcod.console_set_default_foreground(self.con, self.current_color)
+            libtcod.console_put_char(self.con, x, y, 
+                        self.current_char, libtcod.BKGND_NONE)
 
     def clear(self):
         libtcod.console_put_char(self.con, self.x, self.y, 

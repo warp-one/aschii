@@ -37,6 +37,32 @@ class Flashlight(Item):
             self.turn_off()
         else:
             self.turn_on()
+            
+class Lamp(Item):
+
+    name = "Candelabra"
+    on = False
+    ontext = "turn on"
+    offtext = "turn off"
+    Lradius = 3
+    
+    def turn_on(self):
+        if super(Lamp, self).turn_on():
+            self.owner.sight_radius += self.Lradius
+        self.on = True
+        
+    def turn_off(self):
+        if super(Lamp, self).turn_off():
+            self.owner.sight_radius -= self.Lradius
+        self.on = False
+        
+    def do(self):
+        if self.on:
+            self.turn_off()
+        else:
+            self.turn_on()
+        self.game.the_map.schimb()
+    
 
 class Gammon(Item):
 

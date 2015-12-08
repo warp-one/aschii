@@ -8,7 +8,7 @@ from tile import EnvironmentTile
 import tile
 
 ## this is a game made by William Schuller. w r schuller at gmail dot com
-# CC BY NC SA 4.0 http://creativecommons.org/licenses/by-nc-sa/4.0/
+# Copyright me, 2015.
 #
 # "the position of each individual letter on the page is subject to rules"
 # bowing puzzles

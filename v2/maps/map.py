@@ -198,7 +198,6 @@ class TileMap(Listener, object):
     def move(self, x, y, unit):
         self.remove(unit)
         self.add(x, y, unit)
-#        self.schimb()
         
     def run_collision(self, x, y):
         try:

@@ -38,3 +38,4 @@ class MapDrawing(object):
         return self.tiles[x + y*self.w]
         
 lvl0 = MapDrawing("maps\lvl0.png")
+lvl1 = MapDrawing("maps\lvl1.png")

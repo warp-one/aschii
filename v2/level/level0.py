@@ -36,7 +36,19 @@ statue_script1 = {"start":("frozen, time", 'Everything is frozen, as if in time'
                           "like":("time", "It's fairly damp. And jacket weather. The time"),
                           "now":("", "It's very today, today.")}
                           
+class FieldOfRealPeople(object):
 
+    '''A little field of 3-character upright "people" with a title card. "THE
+    FIELD OF REAL PEOPLE". All of them have the same looping voice lines, which
+    the persistent find lead to an end path: join the field in the available
+    place.'''
+    
+    
+
+    def __init__(self):
+        pass
+        
+        
 
 class LevelZero(Level):
 
@@ -59,6 +71,11 @@ class LevelZero(Level):
             self.player.add_child(Waypoint(s, self, text="approach", 
                                             static=True, offset=(-1,-1)))
 
+            rp = RealPerson(None, 15, 17, ' ', libtcod.light_blue, self.foreground, self)
+            rp.loop = True
+            self.statues.append(rp)
+            self.the_map.add(rp.x, rp.y, rp)
+                                            
             t = LinkedStatue({}, 10, 20, 'S', libtcod.brass, self.foreground, self)
             self.the_map.add(t.x, t.y, t)
             self.player.add_child(Bow(t, self, text="bow", static=True, offset=(-1,-1)))
@@ -88,6 +105,10 @@ class LevelZero(Level):
         x, y = self.flashlight.get_location()
         self.the_map.add(x, y, self.flashlight)
         
+        self.lamp = Lamp(False, 17, 26, 'T', libtcod.yellow, self.foreground, self)
+        x, y = self.lamp.get_location()
+        self.the_map.add(x, y, self.lamp)
+        
         self.gam = Gammon(False, 22, 20, 'd', libtcod.pink, self.foreground, self)
         x, y = self.gam.get_location()
         self.the_map.add(x, y, self.gam)
@@ -95,8 +116,9 @@ class LevelZero(Level):
         
         self.player.add_child(ItemGrab(self.flashlight, self, text="pick up", offset = (-2, 2)))
         self.player.add_child(ItemGrab(self.gam, self, text="pick up", offset = (-2, 2)))
+        self.player.add_child(ItemGrab(self.lamp, self, text="pick up", offset = (-2, 2)))
         s = self.the_map.schimb()
-        self.the_map.load_doodad(25, 25, m1)
+#        self.the_map.load_doodad(25, 25, m1)
 #        for b in Boulders:
 #            x, y = randint(0, 100), randint(0, 80)
 #            self.the_map.load_doodad(x, y, b)

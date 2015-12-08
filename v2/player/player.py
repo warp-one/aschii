@@ -1,7 +1,6 @@
 import libtcodpy as libtcod
 
 import tools
-from actionmenu import *
 from actions import ActionManager
 from directive import Directive, PlayerArrow, SCHIMB, Legs, PlayerWASD
 from items import Inventory
