@@ -3,7 +3,7 @@ from random import randint, choice
 import libtcodpy as libtcod
 
 from items import Item, Flashlight
-from tile import EnvironmentTile
+from tile import EnvironmentTile, BottomlessPit
 from observer import Listener
 import markovgen as mg
 import tools
@@ -33,7 +33,7 @@ class TileMap(Listener, object):
                             
         self.libtcod_map = libtcod.map_new(self.width, self.height)
         for t in self.get_tiles():
-            libtcod.map_set_properties(self.libtcod_map, t.x, t.y, not t.blocked, not t.blocked)
+            libtcod.map_set_properties(self.libtcod_map, t.x, t.y, t.transparent, not t.blocked)
            
         self.light_sources = []
            
@@ -234,6 +234,8 @@ class TileMap(Listener, object):
         rletter = 0
         for i, t in enumerate(self.get_lit_tiles(self.get_tiles_in_clear_area())):
             if not t.blocked:
+                if isinstance(t, BottomlessPit):
+                    continue
                 t.char = waves[wletter]
                 wletter += 1
             elif t.blocked:

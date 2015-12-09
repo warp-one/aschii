@@ -62,3 +62,13 @@ Everything is frozen, as if in time.
       If it weren't for you, some things would never change.
         They would be the same forever.
         They wouldn't ever be interfered with.
+        
+[("Gorasgwrn", "Gwendolyn", "Gloriann"),
+("Glain", "Gwaeddan", "Gadarine"),
+("Gaetane", "Galiene", "Gerhardeen"),
+("Glorien", "Goshen", "Gibbethon"),
+("Gretchen", "Guillelmine", "Garabine"),
+("Gihon", "Gudrun", "Gefen"),
+("Ghislaine", "Gelsomine", "Gath-Rimmon")]
+
+

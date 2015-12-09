@@ -37,6 +37,7 @@ class Flashlight(Item):
             self.turn_off()
         else:
             self.turn_on()
+
             
 class Lamp(Item):
 

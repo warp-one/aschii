@@ -2,12 +2,17 @@ import libtcodpy as libtcod
 from PIL import Image
 
 
-from tile import EnvironmentTile
+from tile import EnvironmentTile, BottomlessPit
 
 def make_tile(map_drawing, x, y, con, game):
     tile = map_drawing.get_tile(x, y)
     tile_rgb = tile[0], tile[1], tile[2]
-    blocked = (True if tile[0] else False)
+    if tile_rgb == (221, 32, 117):
+        return BottomlessPit(
+            True,
+            x, y, ' ', libtcod.black, con, game
+                                     )
+    blocked = (False if not tile[0] and not tile[1] and not tile[2] else True)
     color = (libtcod.darkest_grey if not blocked else libtcod.Color(*tile_rgb))
     return EnvironmentTile(
             blocked,

@@ -21,6 +21,7 @@ class Tile(object):
         self.children = []
         
         self.visible = True
+        self.transparent = True
 
     def move(self, dx, dy):
         self.x += dx
@@ -103,6 +104,14 @@ class EnvironmentTile(Tile):
         self.blocked = blocked
         if self.blocked:
             self.char = '#'
+            self.transparent = False
+            
+class BottomlessPit(EnvironmentTile):
+    def __init__(self, *args):
+        super(BottomlessPit, self).__init__(*args)
+        self.transparent = True
+        self.char = ' '
+    
             
 class Unit(Tile):   # has collision
     def move(self, dx, dy):

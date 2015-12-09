@@ -12,6 +12,10 @@ import tile
 #
 # "the position of each individual letter on the page is subject to rules"
 # bowing puzzles
+# "it's all a maze."
+# "all of it"
+# in caves the way forward is sometimes through the hard-to-find tight squeeze
+# something occurs to you about the walls...
 #
 # titles:
 # like a s hell (the waves)
