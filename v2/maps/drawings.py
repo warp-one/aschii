@@ -3,8 +3,10 @@ from PIL import Image
 
 
 from tile import EnvironmentTile, BottomlessPit
+from primeRGB import sieve
 
 def make_tile(map_drawing, x, y, con, game):
+    primes = sieve(255*3)
     tile = map_drawing.get_tile(x, y)
     tile_rgb = tile[0], tile[1], tile[2]
     if tile_rgb == (221, 32, 117):
@@ -12,8 +14,8 @@ def make_tile(map_drawing, x, y, con, game):
             True,
             x, y, ' ', libtcod.black, con, game
                                      )
-    blocked = (False if not tile[0] and not tile[1] and not tile[2] else True)
-    color = (libtcod.darkest_grey if not blocked else libtcod.Color(*tile_rgb))
+    blocked = (False if sum(tile_rgb) in primes or sum(tile_rgb) == 0 else True)
+    color = (libtcod.darkest_grey if sum(tile_rgb) == 0 else libtcod.Color(*tile_rgb))
     return EnvironmentTile(
             blocked,
             x, y, '@', color, con, game
