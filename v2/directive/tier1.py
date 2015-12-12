@@ -5,6 +5,7 @@ import libtcodpy as libtcod
 import tools, settings
 from directive import Directive, DirectiveLink
 from tile import Unit, Word
+import faders
 
 
 
@@ -86,6 +87,7 @@ class Bow(Directive):
     def __init__(self, *args, **kwargs):
         self.blue = False
         super(Bow, self).__init__(*args, **kwargs)
+        self.fader = faders.DirectiveFade()
 
     def tick_phrase(self, letter):
         if self.blue:

@@ -75,12 +75,12 @@ class LevelZero(Level):
             rp.loop = True
             self.statues.append(rp)
             self.the_map.add(rp.x, rp.y, rp)
-                                            
-            t = LinkedStatue({}, 10, 20, 'S', libtcod.brass, self.foreground, self)
+                                 
+            t = LinkedStatue({}, 66, 21, 'S', libtcod.brass, self.foreground, self)
             self.the_map.add(t.x, t.y, t)
             self.player.add_child(Bow(t, self, text="bow", static=True, offset=(-1,-1)))
 
-            u = LinkedStatue({}, 13, 20, 'S', libtcod.brass, self.foreground, self)
+            u = LinkedStatue({}, 75, 21, 'S', libtcod.brass, self.foreground, self)
             self.the_map.add(u.x, u.y, u)
             self.player.add_child(Bow(u, self, text="bow", static=True, offset=(-1,-1)))
             u.add_link(t)

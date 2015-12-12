@@ -26,7 +26,7 @@ class TileMap(Listener, object):
 #                if x is None:
 #                    break
 #                walls.append((x, y))
-        drawing = drawings.lvl0
+        drawing = drawings.lvl2
         self.tilemap = [[drawings.make_tile(drawing, x, y, self.con, self.game)
                             for y in range(h)]
                             for x in range(w)]

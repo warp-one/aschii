@@ -10,7 +10,7 @@ class Attachment(object):
             newY = self.anchor.y - self.offsetY
             self.place(newX, newY)
     
-
+        
 class Directive(Attachment, Tile):
 
     char = 'X'
@@ -34,6 +34,8 @@ class Directive(Attachment, Tile):
 
         self.visible = True
         
+        self.fader = None
+        
     def toggle_active(self):
         if self.active:
             self.active = False
@@ -52,7 +54,13 @@ class Directive(Attachment, Tile):
         return dv and av
        
     def draw(self):
-        if self.is_visible():
+        if self.completed: # should only pass if there's a fader
+            if self.fader:
+                if self.fader.apply_draw_step_for_erase(self):
+                    return
+                else:
+                    self.game.player.remove_child(self)
+        elif self.is_visible():
             self._draw()
         else:
             self.clear()
@@ -65,7 +73,8 @@ class Directive(Attachment, Tile):
         to_draw = self.phrase
         for i, char in enumerate(to_draw):
             x, y = self.x + i, self.y
-            if not self.game.the_map.run_collision(x, y):
+            if True:#not self.game.the_map.run_collision(x, y): 
+                    # dunno about the above, visuals-wise
                 color = (self.current_color if self.phrase_clear[i] else self.dormant_color)
                 libtcod.console_set_default_foreground(self.con, color)
                 libtcod.console_put_char(self.con, x, y, 
@@ -74,10 +83,13 @@ class Directive(Attachment, Tile):
             
     def complete(self):
         self.completed = True
-        self.game.player.remove_child(self)
+        if self.fader:
+            self.clear()
+            return
+        else:
+            self.game.player.remove_child(self)
         
     def clear(self):
-        self.phrase
         try:
             for i in range(len(self.phrase)):
                 x, y = self.x + i, self.y
@@ -87,8 +99,8 @@ class Directive(Attachment, Tile):
             return self.phrase
             
     def tick_phrase(self, letter):
-        if self.anchor.is_visible() and self.is_visible():
-            if not self.completed:
+        if not self.completed:
+            if self.anchor.is_visible() and self.is_visible():
                 if self.phrase[self.phrase_index] == letter:
                     self.phrase_clear[self.phrase_index] = True
                     self.phrase_index += 1

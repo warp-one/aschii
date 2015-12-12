@@ -5,7 +5,7 @@ import libtcodpy as libtcod
 from level import LevelZero
 from player import Player
 from tile import EnvironmentTile
-import tile
+import tile, settings
 
 ## this is a game made by William Schuller. w r schuller at gmail dot com
 # Copyright me, 2015.
@@ -20,14 +20,6 @@ import tile
 # titles:
 # like a s hell (the waves)
 
-
- 
-#actual size of the window
-SCREEN_WIDTH = 160
-SCREEN_HEIGHT = 100
- 
-LIMIT_FPS = 60  #20 frames-per-second maximum
-
 class Game(object):
 
     the_map = None
@@ -39,7 +31,7 @@ class Game(object):
                 libtcod.FONT_TYPE_GREYSCALE | libtcod.FONT_LAYOUT_ASCII_INROW)
         libtcod.console_init_root(self.width, self.height, 
                 'rooms', False)#, renderer=libtcod.RENDERER_GLSL)
-        libtcod.sys_set_fps(LIMIT_FPS)
+        libtcod.sys_set_fps(settings.LIMIT_FPS)
 
         self.current_level = LevelZero(self)
             
@@ -57,5 +49,5 @@ class Game(object):
                 break
 
 if __name__ == '__main__':
-    game = Game(SCREEN_WIDTH, SCREEN_HEIGHT)
+    game = Game(settings.SCREEN_WIDTH, settings.SCREEN_HEIGHT)
     game.execute()

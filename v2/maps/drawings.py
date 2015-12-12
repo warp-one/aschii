@@ -4,6 +4,7 @@ from PIL import Image
 
 from tile import EnvironmentTile, BottomlessPit
 from primeRGB import sieve
+import settings
 
 def make_tile(map_drawing, x, y, con, game):
     primes = sieve(255*3)
@@ -46,3 +47,4 @@ class MapDrawing(object):
         
 lvl0 = MapDrawing("maps\lvl0.png")
 lvl1 = MapDrawing("maps\lvl1.png")
+lvl2 = MapDrawing("maps\lvl2.png")
