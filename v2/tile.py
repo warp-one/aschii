@@ -13,6 +13,7 @@ class Tile(object):
         self.current_char = char
         self.color = color
         self.current_color = color
+        self.color_queue = []
         self.con = con
         self.game = game
         self.next = None
@@ -56,19 +57,23 @@ class Tile(object):
     
     
     def _draw(self):
+        color = self.current_color
+        if self.color_queue:
+            next_color = self.color_queue.pop(0)
+            if next_color:
+                color = next_color
+            
         if self.phrase:
             for i, char in enumerate(self.phrase):
                 x, y = self.x, self.y + i
 #                if not self.game.the_map.run_collision(x, y):
-                color = (self.current_color)
                 libtcod.console_set_default_foreground(self.con, color)
                 libtcod.console_put_char(self.con, x, y, 
                                                 char, libtcod.BKGND_NONE)
         else:
             self.current_char = self.char
-            self.current_color = self.color
             x, y = self.get_location()
-            libtcod.console_set_default_foreground(self.con, self.current_color)
+            libtcod.console_set_default_foreground(self.con, color)
             libtcod.console_put_char(self.con, x, y, 
                         self.current_char, libtcod.BKGND_NONE)
 

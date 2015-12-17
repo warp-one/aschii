@@ -198,7 +198,7 @@ class Player(Listener, Orders, Unit):
                 self.change_direction((dx/abs(dx), 0))
             elif dy:
                 self.change_direction((0, dy/abs(dy)))
-            self.notify(None, "player move")
+            self.notify(self, "player move")
             
     def _draw(self):
         return

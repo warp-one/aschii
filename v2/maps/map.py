@@ -102,6 +102,12 @@ class TileMap(Listener, object):
         except IndexError:
             return False
 
+    def get_tile(self, x, y):
+        try:
+            return self.tilemap[x][y]
+        except IndexError:
+            print x, y
+
     def get_tiles(self):
         for y in range(self.height):
             for x in range(self.width):
@@ -247,4 +253,5 @@ class TileMap(Listener, object):
                     
     def on_notify(self, entity, event):
         if event == "player move":
-            pass
+            fade = [libtcod.lightest_grey, libtcod.light_grey, libtcod.grey]
+            self.get_tile(entity.x, entity.y).color_queue.extend(fade)
