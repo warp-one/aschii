@@ -52,6 +52,7 @@ class Legs(Directive):
             return False
             
     def _draw(self):
+        return
         to_draw = self.current_phrase
         x_dir = self.anchor.facing[0]
         y_dir = self.anchor.facing[1]
@@ -195,6 +196,7 @@ class PlayerArrow(Directive):
         self.completed = False
 
     def _draw(self):
+        return
         if self.game.the_map.run_collision(self.x, self.y):
             return
         char = chr(self.phrase)

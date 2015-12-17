@@ -76,7 +76,8 @@ class Player(Listener, Orders, Unit):
                   libtcod.KEY_RIGHT, libtcod.KEY_LEFT]
     offsets = [(-2, -2), (-2, 2), (2, 3), (2, -3), 
                (-2, -2), (-2, 2), (2, 3), (2, -3)]
-    sight_radius = 21 #high in early levels, low in late...
+    sight_radius = 21 # high in early levels, low in late...
+    len_step = 10 # in frames
     char = ' '
 
     def __init__(self, *args):
@@ -88,6 +89,7 @@ class Player(Listener, Orders, Unit):
         self.next_offset = 0
         self.facing = (1, 0)
         self.powers = None
+        self.step_timer = 0
         
         self.create_orders()
         self.obs = []
@@ -198,13 +200,17 @@ class Player(Listener, Orders, Unit):
                 self.change_direction((dx/abs(dx), 0))
             elif dy:
                 self.change_direction((0, dy/abs(dy)))
-            self.notify(self, "player move")
+            if self.step_timer >= self.len_step:
+                self.step_timer = 0
+                self.notify(self, "player move")
             
     def _draw(self):
         return
 
     def update(self):
         self.act()
+        if self.step_timer < self.len_step:
+            self.step_timer += 1
         super(Player, self).update()
         for c in self.children:
             if not c.static:
