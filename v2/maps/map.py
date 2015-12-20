@@ -16,16 +16,6 @@ class TileMap(Listener, object):
         self.con = con
         self.game = game
         self.width, self.height = w, h
-#        walls = []
-#        xs = range(2, 55)
-#        y1, y2 = 0, 35
-#        for L in [(x, y1, x, y2) for x in xs]:
-#            libtcod.line_init(*L)
-#            while True:
-##                x, y = libtcod.line_step()
-#                if x is None:
-#                    break
-#                walls.append((x, y))
         drawing = drawings.lvl2
         self.tilemap = [[drawings.make_tile(drawing, x, y, self.con, self.game)
                             for y in range(h)]
@@ -60,7 +50,7 @@ class TileMap(Listener, object):
         in_square = self.tilemap[x][y].next
         self.tilemap[x][y] = EnvironmentTile(
                 attr, 
-                x, y, '@', libtcod.darkest_grey, self.con, self.game
+                x, y, ' ', libtcod.darkest_grey, self.con, self.game
                                          )
         self.tilemap[x][y].next = in_square                                 
         

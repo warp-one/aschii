@@ -1,7 +1,7 @@
 import libtcodpy as libtcod
 
 from tile import Tile
-import tools
+import tools, faders
 
 class Attachment(object):
     def update(self):
@@ -15,8 +15,9 @@ class Directive(Attachment, Tile):
 
     char = 'X'
     range = 5
+    fader = faders.DirectiveFade()
 
-    def __init__(self, anchor, game, static=False, text="Destroy", offset=(0, 0)):
+    def __init__(self, anchor, game, static=False, text="Destroy", offset=(0, 0), new_fader=None):
         self.anchor = anchor
         self.offsetX = offset[0]
         self.offsetY = offset[1]
@@ -33,8 +34,8 @@ class Directive(Attachment, Tile):
         self.pressed = False
 
         self.visible = True
-        
-        self.fader = None
+        if new_fader:
+            self.fader = new_fader()
         
     def toggle_active(self):
         if self.active:

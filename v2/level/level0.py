@@ -6,6 +6,7 @@ from basic_level import Level
 from directive import *
 from items import *
 from maps import Med10x10_1 as m1, Boulders
+from directive.faders import DirectiveLineFade
 
 statue_script = {"start":("town city", 'I will go to town or city'),
                      "town":("walk statue", 'and walk past the statue of the men'),
@@ -76,13 +77,13 @@ class LevelZero(Level):
             self.statues.append(rp)
             self.the_map.add(rp.x, rp.y, rp)
                                  
-            t = LinkedStatue({}, 66, 21, 'S', libtcod.brass, self.foreground, self)
+            t = LinkedStatue({}, 10, 10, 'S', libtcod.brass, self.foreground, self)
             self.the_map.add(t.x, t.y, t)
-            self.player.add_child(Bow(t, self, text="bow", static=True, offset=(-1,-1)))
+            self.player.add_child(Bow(t, self, text="scatter", static=True, offset=(-1,-1)))
 
-            u = LinkedStatue({}, 75, 21, 'S', libtcod.brass, self.foreground, self)
+            u = LinkedStatue({}, 10, 15, 'S', libtcod.brass, self.foreground, self)
             self.the_map.add(u.x, u.y, u)
-            self.player.add_child(Bow(u, self, text="bow", static=True, offset=(-1,-1)))
+            self.player.add_child(Bow(u, self, text="fade", static=True, offset=(-1,-1), new_fader=DirectiveLineFade))
             u.add_link(t)
             t.add_link(u)
             

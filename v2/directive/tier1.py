@@ -84,11 +84,9 @@ class Next(Directive):
         super(Next, self).complete()
         
 class Bow(Directive):
-
     def __init__(self, *args, **kwargs):
         self.blue = False
         super(Bow, self).__init__(*args, **kwargs)
-        self.fader = faders.DirectiveFade()
 
     def tick_phrase(self, letter):
         if self.blue:
