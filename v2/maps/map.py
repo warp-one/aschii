@@ -1,6 +1,7 @@
 from random import randint, choice
 
 import libtcodpy as libtcod
+import pyglet
 
 from items import Item, Flashlight
 from tile import EnvironmentTile, BottomlessPit
@@ -239,4 +240,6 @@ class TileMap(Listener, object):
     def on_notify(self, entity, event):
         if event == "player move":
             fade = [libtcod.Color(a, a, a) for a in range(255, libtcod.darkest_grey.r, -15)]
-            self.get_tile(entity.x, entity.y).color_queue.extend(fade)
+            x = entity.x + (entity.facing[1] if entity.left_foot else 0)
+            y = entity.y + (entity.facing[0] if entity.left_foot else 0)
+            self.get_tile(x, y).color_queue.extend(fade)

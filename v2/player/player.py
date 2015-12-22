@@ -90,6 +90,7 @@ class Player(Listener, Orders, Unit):
         self.facing = (1, 0)
         self.powers = None
         self.step_timer = 0
+        self.left_foot = False
         
         self.create_orders()
         self.obs = []
@@ -203,6 +204,10 @@ class Player(Listener, Orders, Unit):
             if self.step_timer >= self.len_step:
                 self.step_timer = 0
                 self.notify(self, "player move")
+                if self.left_foot:
+                    self.left_foot = False
+                else:
+                    self.left_foot = True
             
     def _draw(self):
         return
