@@ -35,6 +35,8 @@ class TileMap(Listener, object):
             
         self.obs = []
         self.render_area = (0, 0, 0, 0, "default")
+        self.tv = drawings.GifReader("maps\\tigers.gif")
+
         
     def load_doodad(self, x, y, doodad):
         for t in doodad.get_tile_data():
@@ -218,9 +220,12 @@ class TileMap(Listener, object):
         text = text.replace("Percival", "PPPPPPPP")
         return text
 
-    def apply_tile_effect(self, frame_data, mode="add"): # frame_data is a dict:
-        for xy, effect in frame_data.iteritems():        # {(x, y):[(color, char), ...]}
-            tile = self.get_tile(*xy)
+    def apply_tile_effect(self, frame_data, mode="add", anchor=(0, 0)):
+        # frame_data is a dict:
+        # {(x, y):[(color, char), ...], (x, y): ...}
+        for xy, effect in frame_data.iteritems():
+            x, y = xy[0] + anchor[0], xy[1] + anchor[1]
+            tile = self.get_tile(x, y)
             colors, chars = zip(*effect)
             if mode == "add":
                 if colors:
@@ -258,5 +263,4 @@ class TileMap(Listener, object):
             y = entity.y + (entity.facing[0] if entity.left_foot else 0)
             self.apply_tile_effect({(x, y):[(color, 'o') for color in fade]})
 
-            r = drawings.GifReader("maps\\tigers.gif")
-            self.apply_tile_effect(r.get_frame_data())
+#            self.apply_tile_effect(self.tv.get_frame_data(), anchor=self.game.player.get_location())
