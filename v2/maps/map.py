@@ -217,7 +217,21 @@ class TileMap(Listener, object):
         text = text.replace("Susan", "XXXXX")
         text = text.replace("Percival", "PPPPPPPP")
         return text
-        
+
+    def apply_tile_effect(self, xys, effects, mode="add"): # effect will be a tuple (colors, chars)
+        for xy, effect in zip(xys, effects):
+            tile = self.get_tile(*xy)
+            colors, chars = effect
+            if mode == "add":
+                if colors:
+                    tile.color_queue.extend(colors)
+                #if chars:
+                    #tile.char_queue.extend(chars)
+            if mode == "replace":
+                if colors:
+                    tile.color_queue = colors
+                #if chars:
+                    #tile.char_queue = chars
         
     def schimb(self):
         waves = self._schimb(self.waves)
@@ -242,4 +256,8 @@ class TileMap(Listener, object):
             fade = [libtcod.Color(a, a, a) for a in range(255, libtcod.darkest_grey.r, -15)]
             x = entity.x + (entity.facing[1] if entity.left_foot else 0)
             y = entity.y + (entity.facing[0] if entity.left_foot else 0)
-            self.get_tile(x, y).color_queue.extend(fade)
+            self.apply_tile_effect([(x, y)], [(fade, None)])
+
+            r = drawings.GifReader("maps\\tigers.gif")
+            rf = r.get_frame_data()
+            self.apply_tile_effect(rf.keys(), rf.items())

@@ -44,6 +44,52 @@ class MapDrawing(object):
         
     def get_tile(self, x, y):
         return self.tiles[x + y*self.w]
+
+class GifReader(object):
+
+    def __init__(self, img):
+        self.image_file = img
+        self.frames = []
+        self.frame_index = 0
+        self.current_frame = None
+        self.read_image()
+
+    def get_frame_data(self):
+        xys = [(i % self.w, i / self.h) for i in range(len(self.frames[0]))]
+        frame_data = dict(zip(xys, [[] for xy in xys]))
+        for f in self.frames:
+            for i, n in enumerate(f):
+                frame_data[(i % self.w, i / self.h)].append(n)
+        print frame_data
+        return frame_data
+
+    def advance_frame(self):
+        self.frame_index += 1
+        if self.frame_index >= len(self.frames):
+            self.frame_index = 0
+        self.current_frame = self.frames[self.frame_index]
+    
+    def read_image(self):
+        im = Image.open(self.image_file)
+        self.w, self.h = im.size
+        self.add_frame(self.create_data(im))
+        while True:
+            try:
+                img_data = self.create_data(im.seek(im.tell() + 1))
+                self.add_frame(img_data)
+            except AttributeError:
+                im.close()
+                self.current_frame = self.frames[self.frame_index]
+                return
+
+    def add_frame(self, img_data):
+        self.frames.append([x for x in img_data])
+
+    def create_data(self, img):
+        for p in list(img.getdata()):
+            print p, "IMGDATA"
+            yield (p, 0, 0)
+    
         
 lvl0 = MapDrawing("maps\lvl0.png")
 lvl1 = MapDrawing("maps\lvl1.png")
