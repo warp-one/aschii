@@ -218,10 +218,10 @@ class TileMap(Listener, object):
         text = text.replace("Percival", "PPPPPPPP")
         return text
 
-    def apply_tile_effect(self, xys, effects, mode="add"): # effect will be a tuple (colors, chars)
-        for xy, effect in zip(xys, effects):
+    def apply_tile_effect(self, frame_data, mode="add"): # frame_data is a dict:
+        for xy, effect in frame_data.iteritems():        # {(x, y):[(color, char), ...]}
             tile = self.get_tile(*xy)
-            colors, chars = effect
+            colors, chars = zip(*effect)
             if mode == "add":
                 if colors:
                     tile.color_queue.extend(colors)
@@ -256,8 +256,7 @@ class TileMap(Listener, object):
             fade = [libtcod.Color(a, a, a) for a in range(255, libtcod.darkest_grey.r, -15)]
             x = entity.x + (entity.facing[1] if entity.left_foot else 0)
             y = entity.y + (entity.facing[0] if entity.left_foot else 0)
-            self.apply_tile_effect([(x, y)], [(fade, None)])
+            self.apply_tile_effect({(x, y):[(color, 'o') for color in fade]})
 
             r = drawings.GifReader("maps\\tigers.gif")
-            rf = r.get_frame_data()
-            self.apply_tile_effect(rf.keys(), rf.items())
+            self.apply_tile_effect(r.get_frame_data())

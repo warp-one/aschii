@@ -59,8 +59,7 @@ class GifReader(object):
         frame_data = dict(zip(xys, [[] for xy in xys]))
         for f in self.frames:
             for i, n in enumerate(f):
-                frame_data[(i % self.w, i / self.h)].append(n)
-        print frame_data
+                frame_data[(i % self.w, i / self.h)].append((n, None))
         return frame_data
 
     def advance_frame(self):
@@ -75,20 +74,20 @@ class GifReader(object):
         self.add_frame(self.create_data(im))
         while True:
             try:
-                img_data = self.create_data(im.seek(im.tell() + 1))
+                im.seek(im.tell() + 1)
+                img_data = self.create_data(im)
                 self.add_frame(img_data)
-            except AttributeError:
-                im.close()
-                self.current_frame = self.frames[self.frame_index]
-                return
+            except EOFError:
+                break
+        im.close()
+        self.current_frame = self.frames[self.frame_index]
 
     def add_frame(self, img_data):
         self.frames.append([x for x in img_data])
 
     def create_data(self, img):
         for p in list(img.getdata()):
-            print p, "IMGDATA"
-            yield (p, 0, 0)
+            yield libtcod.Color(p, 0, 0)
     
         
 lvl0 = MapDrawing("maps\lvl0.png")
