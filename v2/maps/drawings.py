@@ -56,7 +56,6 @@ class GifReader(object):
         def get_xy(i):
             return i % self.w, i / self.w
         xys = [get_xy(i) for i in range(len(self.frames[0]))]
-        print xys
         frame_data = dict(zip(xys, [[] for xy in xys]))
         for f in self.frames:
             for i, n in enumerate(f):
@@ -68,22 +67,49 @@ class GifReader(object):
         self.w, self.h = im.size
         while True:
             try:
-                cf = im.convert('RGB')
-                img_data = self.create_data(cf)
+                current_frame = im.convert('RGB')
+                img_data = self.create_data(current_frame)
                 self.add_frame(img_data)
                 im.seek(im.tell() + 1)
             except EOFError:
                 break
         im.close()
 
-    def add_frame(self, img_data):
-        self.frames.append([x for x in img_data])
-
     def create_data(self, img):
         for p in list(img.getdata()):
             yield libtcod.Color(*p)
     
+    def add_frame(self, img_data):
+        self.frames.append([x for x in img_data])
+
+class SpecialEffect(object):
+
+    position = 0, 0
+    
+    def __init__(self, frames, position):
+        self.current_frame = 0
+        self.frames = frames # a dict of coordinates with lists of color, char data
+        self.num_frames = self.frames[(0, 0)]
+
+    def get_char(self, x, y):
+        x1, y1 = x - self.position[0], y - self.position[1]
+        return self.frames[(x1, y1)][self.current_frame]
+
+    def update(self):
+        self.current_frame += 1
+        if self.current_frame >= len(self.num_frames):
+            self.current_frame = 0
+
+    def begin(self, tilemap):
+        for xy in self.frames.keys():
+            tilemap.get_tile(*xy).effects.append(self)
+
+    def complete(self, tilemap):
+        for xy in self.frames.keys():
+            tilemap.get_tile(*xy).effects.remove(self)
         
 lvl0 = MapDrawing("maps\lvl0.png")
 lvl1 = MapDrawing("maps\lvl1.png")
 lvl2 = MapDrawing("maps\lvl2.png")
+
+tv = SpecialEffect(GifReader("maps\water.gif").get_frame_data(), (0, 0))

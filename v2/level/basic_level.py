@@ -27,6 +27,7 @@ class Level(object):
         self.add_map()
         self.player = Player(0, 0, ' ', libtcod.white, self.foreground, self)
         self.last_render = []
+        self.special_effects = []
         
     def create_consoles(self):
         self.background = libtcod.console_new(self.game.width, self.game.height)
@@ -76,4 +77,6 @@ class Level(object):
             t.update()
         for i in self.hud:
             i.update()
+        for e in self.special_effects:
+            e.update()
         

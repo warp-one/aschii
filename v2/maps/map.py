@@ -35,9 +35,6 @@ class TileMap(Listener, object):
             
         self.obs = []
         self.render_area = (0, 0, 0, 0, "default")
-        self.tv = drawings.GifReader("maps\\water.gif")
-        self.apply_tile_effect(self.tv.get_frame_data(), set_effect="hold")
-
         
     def load_doodad(self, x, y, doodad):
         for t in doodad.get_tile_data():

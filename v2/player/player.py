@@ -186,21 +186,20 @@ class Player(Listener, Orders, Unit):
         self.powers.remove(power)
         
     def change_direction(self, direction):
+        x, y = direction
         self.game.the_map.schimb()
         if self.facing == direction:
             return False
         else:
-            self.facing = direction
+            self.facing = (x/abs(x) if x else 0), (y/abs(y) if y else 0)
             return self.facing
 
     def move(self, dx, dy):
         if super(Player, self).move(dx, dy):
             self.game.the_map.move(self.x, self.y, self)
             self.fov = libtcod.map_compute_fov(self.game.the_map.libtcod_map, self.x, self.y, self.sight_radius, algo=libtcod.FOV_DIAMOND)
-            if dx:
-                self.change_direction((dx/abs(dx), 0))
-            elif dy:
-                self.change_direction((0, dy/abs(dy)))
+            if dx or dy:
+                self.change_direction((dx, dy))
             if self.step_timer >= self.len_step:
                 self.step_timer = 0
                 self.notify(self, "player move")

@@ -6,6 +6,7 @@ from basic_level import Level
 from directive import *
 from items import *
 from maps import Med10x10_1 as m1, Boulders
+from maps import drawings
 from directive.faders import DirectiveLineFade
 
 statue_script = {"start":("town city", 'I will go to town or city'),
@@ -123,3 +124,6 @@ class LevelZero(Level):
 #        for b in Boulders:
 #            x, y = randint(0, 100), randint(0, 80)
 #            self.the_map.load_doodad(x, y, b)
+
+        a = self.special_effects.append(drawings.tv)
+        drawings.tv.begin(self.the_map)

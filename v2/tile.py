@@ -21,6 +21,7 @@ class Tile(object):
         self.effects_mode = "discard"
         
         self.children = []
+        self.effects = []
         
         self.visible = True
         self.transparent = True
@@ -59,6 +60,16 @@ class Tile(object):
     
     def _draw(self):
         color = self.current_color
+
+        # awkward that there are two effects systems here, but maybe the 
+        # checks are low cost enough that I don't have to worry about it?
+        if self.effects and not self.game.the_map.run_collision(*self.get_location()):
+            next_color, next_char = self.effects[-1].get_char(*self.get_location())
+            if next_color:
+                color = next_color
+            if next_char:
+                char = next_char
+
         if self.color_queue:
             next_color = self.color_queue.pop(0)
             if self.effects_mode == "hold":
