@@ -35,7 +35,7 @@ class TileMap(Listener, object):
             
         self.obs = []
         self.render_area = (0, 0, 0, 0, "default")
-        self.tv = drawings.GifReader("maps\\tigers.gif")
+        self.tv = drawings.GifReader("maps\\water.gif")
         self.apply_tile_effect(self.tv.get_frame_data(), set_effect="hold")
 
         
@@ -229,16 +229,17 @@ class TileMap(Listener, object):
             if set_effect:
                 tile.effects_mode = set_effect
             colors, chars = zip(*effect)
-            if mode == "add":
-                if colors:
-                    tile.color_queue.extend(colors)
-                #if chars:
-                    #tile.char_queue.extend(chars)
-            if mode == "replace":
-                if colors:
-                    tile.color_queue = colors
-                #if chars:
-                    #tile.char_queue = chars
+            if not self.run_collision(x, y):
+                if mode == "add":
+                    if colors:
+                        tile.color_queue.extend(colors)
+                    #if chars:
+                        #tile.char_queue.extend(chars)
+                if mode == "replace":
+                    if colors:
+                        tile.color_queue = colors
+                    #if chars:
+                        #tile.char_queue = chars
         
     def schimb(self):
         waves = self._schimb(self.waves)

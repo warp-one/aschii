@@ -53,22 +53,25 @@ class GifReader(object):
         self.read_image()
 
     def get_frame_data(self):
-        xys = [(i % self.w, i / self.h) for i in range(len(self.frames[0]))]
+        def get_xy(i):
+            return i % self.w, i / self.w
+        xys = [get_xy(i) for i in range(len(self.frames[0]))]
+        print xys
         frame_data = dict(zip(xys, [[] for xy in xys]))
         for f in self.frames:
             for i, n in enumerate(f):
-                frame_data[(i % self.w, i / self.h)].append((n, None))
+                frame_data[get_xy(i)].append((n, None))
         return frame_data
 
     def read_image(self):
         im = Image.open(self.image_file)
         self.w, self.h = im.size
-        self.add_frame(self.create_data(im))
         while True:
             try:
-                im.seek(im.tell() + 1)
-                img_data = self.create_data(im)
+                cf = im.convert('RGB')
+                img_data = self.create_data(cf)
                 self.add_frame(img_data)
+                im.seek(im.tell() + 1)
             except EOFError:
                 break
         im.close()
@@ -78,7 +81,7 @@ class GifReader(object):
 
     def create_data(self, img):
         for p in list(img.getdata()):
-            yield libtcod.Color(p, 0, 0)
+            yield libtcod.Color(*p)
     
         
 lvl0 = MapDrawing("maps\lvl0.png")
