@@ -36,6 +36,7 @@ class TileMap(Listener, object):
         self.obs = []
         self.render_area = (0, 0, 0, 0, "default")
         self.tv = drawings.GifReader("maps\\tigers.gif")
+        self.apply_tile_effect(self.tv.get_frame_data(), set_effect="hold")
 
         
     def load_doodad(self, x, y, doodad):
@@ -149,7 +150,6 @@ class TileMap(Listener, object):
         for t in tiles:
             if self.tile_is_lit(*t.get_location()):
                 yield t
-    
                 
     def get_tiles_by_layer(self, tiles):
         while tiles:
@@ -220,12 +220,14 @@ class TileMap(Listener, object):
         text = text.replace("Percival", "PPPPPPPP")
         return text
 
-    def apply_tile_effect(self, frame_data, mode="add", anchor=(0, 0)):
+    def apply_tile_effect(self, frame_data, mode="add", anchor=(0, 0), set_effect=None):
         # frame_data is a dict:
         # {(x, y):[(color, char), ...], (x, y): ...}
         for xy, effect in frame_data.iteritems():
             x, y = xy[0] + anchor[0], xy[1] + anchor[1]
             tile = self.get_tile(x, y)
+            if set_effect:
+                tile.effects_mode = set_effect
             colors, chars = zip(*effect)
             if mode == "add":
                 if colors:
@@ -258,9 +260,8 @@ class TileMap(Listener, object):
                     
     def on_notify(self, entity, event):
         if event == "player move":
-            fade = [libtcod.Color(a, a, a) for a in range(255, libtcod.darkest_grey.r, -15)]
+            fade = [libtcod.Color(a, a, a) for a in range(255, libtcod.darkest_grey.r, -10)]
             x = entity.x + (entity.facing[1] if entity.left_foot else 0)
             y = entity.y + (entity.facing[0] if entity.left_foot else 0)
             self.apply_tile_effect({(x, y):[(color, 'o') for color in fade]})
 
-#            self.apply_tile_effect(self.tv.get_frame_data(), anchor=self.game.player.get_location())

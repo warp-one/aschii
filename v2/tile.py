@@ -18,6 +18,7 @@ class Tile(object):
         self.game = game
         self.next = None
         self.prev = None
+        self.effects_mode = "discard"
         
         self.children = []
         
@@ -60,6 +61,8 @@ class Tile(object):
         color = self.current_color
         if self.color_queue:
             next_color = self.color_queue.pop(0)
+            if self.effects_mode == "hold":
+                self.color_queue.append(next_color)
             if next_color:
                 color = next_color
             

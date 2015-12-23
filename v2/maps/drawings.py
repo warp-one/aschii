@@ -50,8 +50,6 @@ class GifReader(object):
     def __init__(self, img):
         self.image_file = img
         self.frames = []
-        self.frame_index = 0
-        self.current_frame = None
         self.read_image()
 
     def get_frame_data(self):
@@ -62,12 +60,6 @@ class GifReader(object):
                 frame_data[(i % self.w, i / self.h)].append((n, None))
         return frame_data
 
-    def advance_frame(self):
-        self.frame_index += 1
-        if self.frame_index >= len(self.frames):
-            self.frame_index = 0
-        self.current_frame = self.frames[self.frame_index]
-    
     def read_image(self):
         im = Image.open(self.image_file)
         self.w, self.h = im.size
@@ -80,7 +72,6 @@ class GifReader(object):
             except EOFError:
                 break
         im.close()
-        self.current_frame = self.frames[self.frame_index]
 
     def add_frame(self, img_data):
         self.frames.append([x for x in img_data])
