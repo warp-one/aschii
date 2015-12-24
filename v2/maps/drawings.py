@@ -114,4 +114,4 @@ lvl0 = MapDrawing("maps\lvl0.png")
 lvl1 = MapDrawing("maps\lvl1.png")
 lvl2 = MapDrawing("maps\lvl2.png")
 
-tv = SpecialEffect(GifReader("maps\\vision0.gif").get_frame_data(), (84, 14))
+tv = SpecialEffect(GifReader("maps\\trees-loop.gif").get_frame_data(), (84, 14))

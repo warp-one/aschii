@@ -147,19 +147,19 @@ class Player(Listener, Orders, Unit):
  
         if libtcod.console_is_key_pressed(libtcod.KEY_UP):
             self.change_direction((0, -1))
-#            self.move(0, -1)
+            self.move(0, -1)
             self.arrows[libtcod.CHAR_ARROW_N].pressed = True
         elif libtcod.console_is_key_pressed(libtcod.KEY_DOWN):
             self.change_direction((0, 1))
-#            self.move(0, 1)
+            self.move(0, 1)
             self.arrows[libtcod.CHAR_ARROW_S].pressed = True
         elif libtcod.console_is_key_pressed(libtcod.KEY_LEFT):
             self.change_direction((-1, 0))
-#            self.move(-1, 0)
+            self.move(-1, 0)
             self.arrows[libtcod.CHAR_ARROW_W].pressed = True
         elif libtcod.console_is_key_pressed(libtcod.KEY_RIGHT):
             self.change_direction((1, 0))
-#            self.move(1, 0)
+            self.move(1, 0)
             self.arrows[libtcod.CHAR_ARROW_E].pressed = True
             
     def add_child(self, child, offset=None):
@@ -195,6 +195,7 @@ class Player(Listener, Orders, Unit):
             return self.facing
 
     def move(self, dx, dy):
+        easy_move = True
         if super(Player, self).move(dx, dy):
             self.game.the_map.move(self.x, self.y, self)
             self.fov = libtcod.map_compute_fov(self.game.the_map.libtcod_map, self.x, self.y, self.sight_radius, algo=libtcod.FOV_DIAMOND)
@@ -207,6 +208,27 @@ class Player(Listener, Orders, Unit):
                     self.left_foot = False
                 else:
                     self.left_foot = True
+        elif easy_move:
+            if dx:
+                x, y = self.x + dx, self.y
+                for tile in ((x, y + 1), (x, y - 1)):
+                    if not self.game.the_map.run_collision(*tile):
+                        top_free = not self.game.the_map.run_collision(tile[0], tile[1] + 1)
+                        bottom_free = not self.game.the_map.run_collision(tile[0], tile[1] - 1)
+                        if top_free:
+                            self.move(0, 1)
+                        elif bottom_free:
+                            self.move(0, -1)
+            if dy:
+                x, y = self.x, self.y + dy
+                for tile in ((x + 1, y), (x - 1, y)):
+                    if not self.game.the_map.run_collision(*tile):
+                        top_free = not self.game.the_map.run_collision(tile[0] + 1, tile[1])
+                        bottom_free = not self.game.the_map.run_collision(tile[0] - 1, tile[1])
+                        if top_free:
+                            self.move(1, 0)
+                        elif bottom_free:
+                            self.move(-1, 0)
             
     def _draw(self):
         return

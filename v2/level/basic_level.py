@@ -25,7 +25,7 @@ class Level(object):
         self.game = game
         self.create_consoles()
         self.add_map()
-        self.player = Player(8, 26, ' ', libtcod.white, self.foreground, self)
+        self.player = Player(10, 6, ' ', libtcod.white, self.foreground, self)
         self.last_render = []
         self.special_effects = []
         

@@ -239,7 +239,6 @@ class TileMap(Listener, object):
                         #tile.char_queue = chars
         
     def schimb(self):
-        return
         waves = self._schimb(self.waves)
 #        race = self._schimb(self.race)
         wletter = 0
