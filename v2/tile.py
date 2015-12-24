@@ -60,6 +60,7 @@ class Tile(object):
     
     def _draw(self):
         color = self.current_color
+        char = self.current_char
 
         # awkward that there are two effects systems here, but maybe the 
         # checks are low cost enough that I don't have to worry about it?
@@ -85,11 +86,10 @@ class Tile(object):
                 libtcod.console_put_char(self.con, x, y, 
                                                 char, libtcod.BKGND_NONE)
         else:
-            self.current_char = self.char
             x, y = self.get_location()
             libtcod.console_set_default_foreground(self.con, color)
             libtcod.console_put_char(self.con, x, y, 
-                        self.current_char, libtcod.BKGND_NONE)
+                                            char, libtcod.BKGND_NONE)
 
     def clear(self):
         libtcod.console_put_char(self.con, self.x, self.y, 

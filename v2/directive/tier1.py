@@ -27,6 +27,7 @@ class Legs(Directive):
         self.phrase_clear = [False] * len(self.current_phrase) 
         self.phrase_index = 0
         self.completed = False
+        self.step_time = 10 * 3
         
     def complete(self):
         if self.current_phrase == self.phrase1:
@@ -36,6 +37,9 @@ class Legs(Directive):
         self.phrase_clear = [False] * len(self.current_phrase)
         self.phrase_index = 0
         self.anchor.move(*self.anchor.facing)
+        self.step_time += 3
+        for _ in range(self.step_time/9):
+            self.anchor.move(*self.anchor.facing)
         
     def reset(self):
         self.phrase_clear = [False] * len(self.current_phrase)
@@ -52,6 +56,7 @@ class Legs(Directive):
             return False
             
     def _draw(self):
+        self.step_time -= (1 if self.step_time > 0 else 0)
         return
         to_draw = self.current_phrase
         x_dir = self.anchor.facing[0]

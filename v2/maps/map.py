@@ -239,22 +239,23 @@ class TileMap(Listener, object):
                         #tile.char_queue = chars
         
     def schimb(self):
+        return
         waves = self._schimb(self.waves)
-        race = self._schimb(self.race)
+#        race = self._schimb(self.race)
         wletter = 0
         rletter = 0
         for i, t in enumerate(self.get_lit_tiles(self.get_tiles_in_clear_area())):
             if not t.blocked:
                 if isinstance(t, BottomlessPit):
                     continue
-                t.char = waves[wletter]
+                t.current_char = waves[wletter]
                 wletter += 1
-            elif t.blocked:
-                t.char = race[rletter]
-                while t.char == ' ':
-                    rletter += 1
-                    t.char = race[rletter]
-            rletter += 1        
+#            elif t.blocked:
+#                t.current_char = race[rletter]
+#                while t.current_char == ' ':
+#                    rletter += 1
+#                    t.current_char = race[rletter]
+#            rletter += 1        
                     
     def on_notify(self, entity, event):
         if event == "player move":

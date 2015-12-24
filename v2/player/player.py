@@ -147,19 +147,19 @@ class Player(Listener, Orders, Unit):
  
         if libtcod.console_is_key_pressed(libtcod.KEY_UP):
             self.change_direction((0, -1))
-            self.move(0, -1)
+#            self.move(0, -1)
             self.arrows[libtcod.CHAR_ARROW_N].pressed = True
         elif libtcod.console_is_key_pressed(libtcod.KEY_DOWN):
             self.change_direction((0, 1))
-            self.move(0, 1)
+#            self.move(0, 1)
             self.arrows[libtcod.CHAR_ARROW_S].pressed = True
         elif libtcod.console_is_key_pressed(libtcod.KEY_LEFT):
             self.change_direction((-1, 0))
-            self.move(-1, 0)
+#            self.move(-1, 0)
             self.arrows[libtcod.CHAR_ARROW_W].pressed = True
         elif libtcod.console_is_key_pressed(libtcod.KEY_RIGHT):
             self.change_direction((1, 0))
-            self.move(1, 0)
+#            self.move(1, 0)
             self.arrows[libtcod.CHAR_ARROW_E].pressed = True
             
     def add_child(self, child, offset=None):

@@ -58,8 +58,8 @@ class GifReader(object):
         xys = [get_xy(i) for i in range(len(self.frames[0]))]
         frame_data = dict(zip(xys, [[] for xy in xys]))
         for f in self.frames:
-            for i, n in enumerate(f):
-                frame_data[get_xy(i)].append((n, None))
+            for i, color_char in enumerate(f):
+                frame_data[get_xy(i)].append(color_char)
         return frame_data
 
     def read_image(self):
@@ -77,20 +77,20 @@ class GifReader(object):
 
     def create_data(self, img):
         for p in list(img.getdata()):
-            yield libtcod.Color(*p)
+            yield (libtcod.Color(*p), libtcod.CHAR_BLOCK2)
     
     def add_frame(self, img_data):
         self.frames.append([x for x in img_data])
 
 class SpecialEffect(object):
 
-    position = 0, 0
-    
+   
     def __init__(self, frames, position):
         self.current_frame = 0
         self.frames = frames # a dict of coordinates with lists of color, char data
+        self.position = position
         self.num_frames = self.frames[(0, 0)]
-
+        
     def get_char(self, x, y):
         x1, y1 = x - self.position[0], y - self.position[1]
         return self.frames[(x1, y1)][self.current_frame]
@@ -102,7 +102,9 @@ class SpecialEffect(object):
 
     def begin(self, tilemap):
         for xy in self.frames.keys():
-            tilemap.get_tile(*xy).effects.append(self)
+            x = xy[0] + self.position[0]
+            y = xy[1] + self.position[1]
+            tilemap.get_tile(x, y).effects.append(self)
 
     def complete(self, tilemap):
         for xy in self.frames.keys():
@@ -112,4 +114,4 @@ lvl0 = MapDrawing("maps\lvl0.png")
 lvl1 = MapDrawing("maps\lvl1.png")
 lvl2 = MapDrawing("maps\lvl2.png")
 
-tv = SpecialEffect(GifReader("maps\water.gif").get_frame_data(), (0, 0))
+tv = SpecialEffect(GifReader("maps\\vision0.gif").get_frame_data(), (84, 14))
