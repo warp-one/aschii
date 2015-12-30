@@ -219,16 +219,18 @@ class Player(Listener, Orders, Unit):
                             self.move(0, 1)
                         elif bottom_free:
                             self.move(0, -1)
+                        break
             if dy:
                 x, y = self.x, self.y + dy
                 for tile in ((x + 1, y), (x - 1, y)):
                     if not self.game.the_map.run_collision(*tile):
                         top_free = not self.game.the_map.run_collision(tile[0] + 1, tile[1])
                         bottom_free = not self.game.the_map.run_collision(tile[0] - 1, tile[1])
-                        if top_free:
-                            self.move(1, 0)
-                        elif bottom_free:
+                        if bottom_free:
                             self.move(-1, 0)
+                        elif top_free:
+                            self.move(1, 0)
+                        break
             
     def _draw(self):
         return
