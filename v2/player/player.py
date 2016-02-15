@@ -79,6 +79,7 @@ class Player(Listener, Orders, Unit):
     sight_radius = 21 # high in early levels, low in late...
     len_step = 10 # in frames
     char = ' '
+    left_foot = -1
 
     def __init__(self, *args):
         self.blocked = False
@@ -90,7 +91,6 @@ class Player(Listener, Orders, Unit):
         self.facing = (1, 0)
         self.powers = None
         self.step_timer = 0
-        self.left_foot = False
         
         self.create_orders()
         self.obs = []
@@ -99,6 +99,8 @@ class Player(Listener, Orders, Unit):
                        libtcod.CHAR_ARROW_E:None, libtcod.CHAR_ARROW_W:None}
         self.set_arrows()
         self.add_child(PlayerWASD(self, self.game))
+        
+        self.last_position = self.x, self.y
         
         
         
@@ -195,13 +197,14 @@ class Player(Listener, Orders, Unit):
             return self.facing
 
     def move(self, dx, dy):
+        self.last_position = self.x, self.y
         easy_move = True
         if super(Player, self).move(dx, dy):
             self.game.the_map.move(self.x, self.y, self)
             self.fov = libtcod.map_compute_fov(self.game.the_map.libtcod_map, self.x, self.y, self.sight_radius, algo=libtcod.FOV_DIAMOND)
             if dx or dy:
                 self.change_direction((dx, dy))
-            if self.step_timer >= self.len_step:
+            if self.step_timer >= self.len_step or self.last_position == self.get_location():
                 self.step_timer = 0
                 self.notify(self, "player move")
                 if self.left_foot:

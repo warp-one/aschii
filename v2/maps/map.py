@@ -36,6 +36,8 @@ class TileMap(Listener, object):
         self.obs = []
         self.render_area = (0, 0, 0, 0, "default")
         
+        self.mutated_waves = []
+        
     def load_doodad(self, x, y, doodad):
         for t in doodad.get_tile_data():
             blocked, c, r = t
@@ -230,25 +232,24 @@ class TileMap(Listener, object):
                 if mode == "add":
                     if colors:
                         tile.color_queue.extend(colors)
-                    #if chars:
-                        #tile.char_queue.extend(chars)
+                    if chars:
+                        tile.char_queue.extend(chars)
                 if mode == "replace":
                     if colors:
                         tile.color_queue = colors
-                    #if chars:
-                        #tile.char_queue = chars
+                    if chars:
+                        tile.char_queue = chars
         
     def schimb(self):
-        waves = self._schimb(self.waves)
-#        race = self._schimb(self.race)
-        wletter = 0
         rletter = 0
         for i, t in enumerate(self.get_lit_tiles(self.get_tiles_in_clear_area())):
             if not t.blocked:
                 if isinstance(t, BottomlessPit):
                     continue
-                t.current_char = waves[wletter]
-                wletter += 1
+                if len(self.mutated_waves) is 0:
+                    self.mutated_waves = self._schimb(self.waves)
+                t.current_char = self.mutated_waves[0]
+                self.mutated_waves = self.mutated_waves[1:]
 #            elif t.blocked:
 #                t.current_char = race[rletter]
 #                while t.current_char == ' ':
@@ -259,7 +260,11 @@ class TileMap(Listener, object):
     def on_notify(self, entity, event):
         if event == "player move":
             fade = [libtcod.Color(a, a, a) for a in range(255, libtcod.darkest_grey.r, -10)]
-            x = entity.x + (entity.facing[1] if entity.left_foot else 0)
-            y = entity.y + (entity.facing[0] if entity.left_foot else 0)
-            self.apply_tile_effect({(x, y):[(color, 'o') for color in fade]})
+            x = entity.x + (entity.facing[1]*entity.left_foot)
+            y = entity.y + (entity.facing[0]*entity.left_foot)
+            if self.run_collision(x, y):
+                entity.left_foot *= (-1)
+            x = entity.x + (entity.facing[1]*entity.left_foot)
+            y = entity.y + (entity.facing[0]*entity.left_foot)
+            self.apply_tile_effect({(x, y):[(color, '.') for color in fade]})
 

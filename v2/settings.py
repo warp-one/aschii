@@ -4,4 +4,4 @@ _DEBUG = False
 SCREEN_WIDTH = 160
 SCREEN_HEIGHT = 100
  
-LIMIT_FPS = 60  # frames-per-second maximum
+LIMIT_FPS = 15  # frames-per-second maximum

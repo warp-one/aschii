@@ -28,7 +28,6 @@ class ItemToggle(Power):
             
     def _draw(self):
         super(ItemToggle, self)._draw()
-        print "aga"
             
 
 

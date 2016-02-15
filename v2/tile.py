@@ -14,6 +14,7 @@ class Tile(object):
         self.color = color
         self.current_color = color
         self.color_queue = []
+        self.char_queue = []
         self.con = con
         self.game = game
         self.next = None
@@ -77,6 +78,13 @@ class Tile(object):
                 self.color_queue.append(next_color)
             if next_color:
                 color = next_color
+                
+        if self.char_queue:
+            next_char = self.char_queue.pop(0)
+            if self.effects_mode == "hold":
+                self.char_queue.append(next_char)
+            if next_char:
+                char = next_char
             
         if self.phrase:
             for i, char in enumerate(self.phrase):
