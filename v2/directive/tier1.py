@@ -339,6 +339,12 @@ class Statue(SpeakingObject):
         super(Statue, self).__init__(*args, **kwargs)
         self.blocked = True
         
+class ResetStatue(Statue):
+    def say_line(self, dialogue_choice):
+        super(ResetStatue, self).say_line(dialogue_choice)
+        if self.line != self.script["start"]:
+            self.update_queue.append((50, self.say_line, ["start"]))
+        
 class RealPerson(Statue): # inherits from statue (!)
     
     phrase = [choice(['o', 'O', libtcod.CHAR_BLOCK2]), libtcod.CHAR_DTEES, libtcod.CHAR_DVLINE]

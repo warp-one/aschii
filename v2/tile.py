@@ -26,6 +26,8 @@ class Tile(object):
         
         self.visible = True
         self.transparent = True
+        
+        self.update_queue = []
 
     def move(self, dx, dy):
         self.x += dx
@@ -106,8 +108,16 @@ class Tile(object):
             c.clear()
 
     def update(self):
-        pass
-        
+        to_remove = []
+        for i, action in enumerate(self.update_queue):
+            if action[0] == 0:
+                action[1](*action[2])
+                to_remove.append(action)
+            else:
+                self.update_queue[i] = (action[0] - 1, action[1], action[2])
+        for completed_action in to_remove:
+            self.update_queue.remove(completed_action)
+                
     def add_child(self, child, offset=None):
         self.children.append(child)
         if not offset:

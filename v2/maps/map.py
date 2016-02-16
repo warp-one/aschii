@@ -205,6 +205,7 @@ class TileMap(Listener, object):
         return False
         
     def _schimb(self, novel):
+        print "schimband..." # needs the a din a. looking into declaring text encodings
         num_cells = self.width * self.height
         prose = novel.generate_markov_text(size=num_cells/3)
         while not prose:

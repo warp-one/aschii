@@ -38,6 +38,10 @@ statue_script1 = {"start":("frozen, time", 'Everything is frozen, as if in time'
                           "like":("time", "It's fairly damp. And jacket weather. The time"),
                           "now":("", "It's very today, today.")}
                           
+reveal_script0 = {"start":("idols,", 'Lord, cried out the idols, don\'t let us be broken'),
+                      "idols,":("", 'Only we can convert the infidel tonight')}
+                          
+                          
 class FieldOfRealPeople(object):
 
     '''A little field of 3-character upright "people" with a title card. "THE
@@ -73,6 +77,14 @@ class LevelZero(Level):
             self.player.add_child(Waypoint(s, self, text="approach", 
                                             static=True, offset=(-1,-1)))
 
+            s = ResetStatue(reveal_script0, 75, 10, 'G', libtcod.light_red, self.foreground, self)
+            s.loop = False
+            self.statues.append(s)
+            self.the_map.add(s.x, s.y, s)
+#            self.player.add_child(Next(s, self, text="bow", static=True, offset = (2, 2)))
+            #self.player.add_child(Waypoint(s, self, text="approach", 
+#                                            static=True, offset=(-1,-1)))
+                                            
             rp = RealPerson(None, 15, 17, ' ', libtcod.light_blue, self.foreground, self)
             rp.loop = True
             self.statues.append(rp)
