@@ -1,6 +1,6 @@
 import libtcodpy as libtcod
 
-import tools
+import tools, settings
 from actions import ActionManager
 from directive import Directive, PlayerArrow, SCHIMB, Legs, PlayerWASD
 from items import Inventory
@@ -77,9 +77,10 @@ class Player(Listener, Orders, Unit):
     offsets = [(-2, -2), (-2, 2), (2, 3), (2, -3), 
                (-2, -2), (-2, 2), (2, 3), (2, -3)]
     sight_radius = 21 # high in early levels, low in late...
-    len_step = 10 # in frames
+    len_step = 6 # in frames
     char = ' '
-    left_foot = -1
+    left_foot = False
+    left_foot_displacement = -1
 
     def __init__(self, *args):
         self.blocked = False
@@ -132,6 +133,8 @@ class Player(Listener, Orders, Unit):
         is_space = (key.vk == libtcod.KEY_SPACE)
         if is_char or is_arrow or is_space:
             self.action_manager.handle_letter(key)
+        if is_space:
+            print self.get_location()
      
         if key.vk == libtcod.KEY_ENTER and key.lalt:
             libtcod.console_set_fullscreen(not libtcod.console_is_fullscreen())
@@ -216,8 +219,8 @@ class Player(Listener, Orders, Unit):
                 x, y = self.x + dx, self.y
                 for tile in ((x, y + 1), (x, y - 1)):
                     if not self.game.the_map.run_collision(*tile):
-                        top_free = not self.game.the_map.run_collision(tile[0], tile[1] + 1)
-                        bottom_free = not self.game.the_map.run_collision(tile[0], tile[1] - 1)
+                        top_free = not self.game.the_map.run_collision(self.x, self.y + 1)
+                        bottom_free = not self.game.the_map.run_collision(self.x, self.y - 1)
                         if top_free:
                             self.move(0, 1)
                         elif bottom_free:
@@ -227,11 +230,11 @@ class Player(Listener, Orders, Unit):
                 x, y = self.x, self.y + dy
                 for tile in ((x + 1, y), (x - 1, y)):
                     if not self.game.the_map.run_collision(*tile):
-                        top_free = not self.game.the_map.run_collision(tile[0] + 1, tile[1])
-                        bottom_free = not self.game.the_map.run_collision(tile[0] - 1, tile[1])
-                        if bottom_free:
+                        right_free = not self.game.the_map.run_collision(self.x + 1, self.y)
+                        left_free = not self.game.the_map.run_collision(self.x - 1, self.y)
+                        if left_free:
                             self.move(-1, 0)
-                        elif top_free:
+                        elif right_free:
                             self.move(1, 0)
                         break
             

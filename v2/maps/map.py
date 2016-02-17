@@ -35,6 +35,7 @@ class TileMap(Listener, object):
             
         self.obs = []
         self.render_area = (0, 0, 0, 0, "default")
+        self.last_render = []
         
         self.mutated_waves = []
         
@@ -82,6 +83,13 @@ class TileMap(Listener, object):
         for y in range(Ystart, Yend):
             for x in range(Xstart, Xend):
                 yield self.tilemap[x][y]
+
+    def get_round_area(self, origin, radius):
+        for p in tools.generate_Z2(radius, origin):
+            try:
+                yield self.tilemap[p[0]][p[1]]
+            except IndexError:
+                continue
             
     def get_item(self, x, y):
         try:
@@ -128,6 +136,7 @@ class TileMap(Listener, object):
         w = maxX - minX
         h = maxY - minY
         self.render_area = minX, minY, w, h, "default"
+#        return self.get_round_area(player.get_location(), player.sight_radius)
         return self.get_area(minX, minY, w, h, anchor="default")
 
     def get_tiles_in_clear_area(self):
@@ -207,10 +216,10 @@ class TileMap(Listener, object):
     def _schimb(self, novel):
         print "schimband..." # needs the a din a. looking into declaring text encodings
         num_cells = self.width * self.height
-        prose = novel.generate_markov_text(size=num_cells/3)
+        prose = novel.generate_markov_text(size=num_cells)
         while not prose:
-            prose = novel.generate_markov_text(size=num_cells/3)
-        text = prose[0:num_cells]
+            prose = novel.generate_markov_text(size=num_cells)
+        text = prose
         text = text.replace("Bernard", "XXXXXXX")
         text = text.replace("Jinny", "XXXXX")
         text = text.replace("Louis", "XXXXX")
@@ -243,14 +252,15 @@ class TileMap(Listener, object):
         
     def schimb(self):
         rletter = 0
-        for i, t in enumerate(self.get_lit_tiles(self.get_tiles_in_clear_area())):
+        tiles_to_write = [x for x in self.get_lit_tiles(self.get_tiles_in_clear_area())]
+        if len(self.mutated_waves) < len(tiles_to_write):
+            self.mutated_waves = self._schimb(self.waves)
+        for i, t in enumerate(tiles_to_write):
             if not t.blocked:
                 if isinstance(t, BottomlessPit):
                     continue
-                if len(self.mutated_waves) is 0:
-                    self.mutated_waves = self._schimb(self.waves)
-                t.current_char = self.mutated_waves[0]
-                self.mutated_waves = self.mutated_waves[1:]
+                t.current_char = self.mutated_waves[i]
+        self.mutated_waves = self.mutated_waves[len(tiles_to_write):]
 #            elif t.blocked:
 #                t.current_char = race[rletter]
 #                while t.current_char == ' ':
@@ -261,11 +271,16 @@ class TileMap(Listener, object):
     def on_notify(self, entity, event):
         if event == "player move":
             fade = [libtcod.Color(a, a, a) for a in range(255, libtcod.darkest_grey.r, -10)]
-            x = entity.x + (entity.facing[1]*entity.left_foot)
-            y = entity.y + (entity.facing[0]*entity.left_foot)
+            if entity.left_foot:
+                foot_displacement = entity.left_foot_displacement
+            else:
+                foot_displacement = 0
+            x = entity.x + (entity.facing[1]*foot_displacement)
+            y = entity.y + (entity.facing[0]*foot_displacement)
             if self.run_collision(x, y):
-                entity.left_foot *= (-1)
-            x = entity.x + (entity.facing[1]*entity.left_foot)
-            y = entity.y + (entity.facing[0]*entity.left_foot)
+                entity.left_foot_displacement *= (-1)
+                foot_displacement = entity.left_foot_displacement
+            x = entity.x + (entity.facing[1]*foot_displacement)
+            y = entity.y + (entity.facing[0]*foot_displacement)
             self.apply_tile_effect({(x, y):[(color, '.') for color in fade]})
 

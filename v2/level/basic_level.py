@@ -1,7 +1,7 @@
-import libtcodpy as libtcod
-import pyaudio
-import wave
+import profile
 import sys
+
+import libtcodpy as libtcod
 
 from maps import TileMap
 from player import Player
@@ -15,6 +15,8 @@ if len(sys.argv) < 2:
 wf = wave.open(sys.argv[1]
 p = pyaudio.PyAudio()
 stream = p.open(format=p.get_format_from_'''
+
+
 
 class Level(object):
 
@@ -41,15 +43,13 @@ class Level(object):
     def get_all_tiles(self):
         all_tiles = [self.player]
         map_tiles = self.the_map.get_tiles()
-        for t in self.the_map.get_tiles_by_layer(map_tiles):
-            all_tiles.append(t)
-        return all_tiles
+        return self.the_map.get_tiles_by_layer(map_tiles)
         
     def render_all(self):
         lights = self.the_map.light_sources
         all_render_objects = self.the_map.get_all_in_render_area()
         for t in all_render_objects:
-            self.last_render.append(t)
+            self.the_map.last_render.append(t)
             seen = libtcod.map_is_in_fov(self.the_map.libtcod_map, t.x, t.y)
             lit = False
             for l in lights:
@@ -64,10 +64,11 @@ class Level(object):
             i.draw()
 
     def clear_all(self):
-        to_clear = self.the_map.get_all_in_clear_area()
+#        to_clear = self.the_map.get_all_in_clear_area()
+        to_clear = self.the_map.last_render
         for t in to_clear:#self.last_render:
             t.clear()
-        self.last_render = []
+        self.the_map.last_render = []
         
         for a in self.player.action_manager.actions:
             a.clear()

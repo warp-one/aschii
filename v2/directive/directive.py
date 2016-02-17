@@ -15,7 +15,6 @@ class Directive(Attachment, Tile):
 
     char = 'X'
     range = 5
-    fader = faders.DirectiveFade()
 
     def __init__(self, anchor, game, static=False, text="Destroy", offset=(0, 0), new_fader=None):
         self.anchor = anchor
@@ -36,6 +35,8 @@ class Directive(Attachment, Tile):
         self.visible = True
         if new_fader:
             self.fader = new_fader()
+        else:
+            self.fader = faders.DirectiveFade()
         
     def toggle_active(self):
         if self.active:
