@@ -1,3 +1,5 @@
+import libtcodpy as libtcod
+
 from directive import Directive
 
 class Power(Directive):
@@ -11,6 +13,15 @@ class Power(Directive):
     def complete(self):
         self.reset()
 
+    def _draw(self):
+        self.dormant_color = libtcod.red 
+        to_draw = self.phrase
+        for i, char in enumerate(to_draw):
+            x, y = self.x + i, self.y
+            color = (self.current_color if self.phrase_clear[i] else self.dormant_color)
+            libtcod.console_set_default_foreground(self.con, color)
+            libtcod.console_put_char(self.con, x, y, 
+                                            char, libtcod.BKGND_NONE)
  
 class ItemToggle(Power):
 
@@ -26,8 +37,7 @@ class ItemToggle(Power):
         else:
             self.change_text(self.item.ontext)
             
-    def _draw(self):
-        super(ItemToggle, self)._draw()
+        
             
 
 

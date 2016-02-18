@@ -102,7 +102,7 @@ class Player(Listener, Orders, Unit):
         self.add_child(PlayerWASD(self, self.game))
         
         self.last_position = self.x, self.y
-        self.idle_time = -50
+        self.idle_time = -90
         
         
         
@@ -251,6 +251,8 @@ class Player(Listener, Orders, Unit):
             if self.sight_radius < 21:
                 self.sight_radius += 3
                 self.idle_time = -20
+            else:
+                self.idle_time = -50
         if self.idle_time >= dark_time:
             if self.sight_radius > 6:
                 self.sight_radius -= 3

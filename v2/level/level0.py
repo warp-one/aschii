@@ -77,7 +77,7 @@ class LevelZero(Level):
         
         self.statues = []
         for _ in range(1):
-            s = Statue(statue_script1, 10 + _*3, 10 + _, 'S', libtcod.green, self.foreground, self)
+            s = Statue(statue_script1, 19, 27 + _, 'S', libtcod.green, self.foreground, self)
             s.loop = True
             self.statues.append(s)
             self.the_map.add(s.x, s.y, s)
@@ -99,7 +99,7 @@ class LevelZero(Level):
             #self.player.add_child(Waypoint(s, self, text="approach", 
 #                                            static=True, offset=(-1,-1)))
                                             
-            rp = RealPerson(None, 15, 17, ' ', libtcod.light_blue, self.foreground, self)
+            rp = RealPerson(None, 11, 89, ' ', libtcod.light_blue, self.foreground, self)
             rp.loop = True
             self.statues.append(rp)
             self.the_map.add(rp.x, rp.y, rp)
@@ -114,13 +114,13 @@ class LevelZero(Level):
             u.add_link(t)
             t.add_link(u)
             
-            v = LinkedStatue({}, 10, 25, 'L', libtcod.brass, self.foreground, self)
+            v = LinkedStatue({}, 56, 60, 'L', libtcod.brass, self.foreground, self)
             self.the_map.add(v.x, v.y, v)
             v_ = WordMatch(["holy", "look", "angle", "stalagmite"], 
                                     v, self, static=True, offset=(-1,-1))
             self.player.add_child(v_)
 
-            w = LinkedStatue({}, 17, 31, 'T', libtcod.brass, self.foreground, self)
+            w = LinkedStatue({}, 67, 57, 'T', libtcod.brass, self.foreground, self)
             self.the_map.add(w.x, w.y, w)
             w_ = WordMatch(["bite", "tap", "set", "frighten"], 
                                     w, self, static=True, offset=(-1,-1))
@@ -129,11 +129,11 @@ class LevelZero(Level):
             v.add_link(w)
             
 
-        self.flashlight = Flashlight(False, 20, 20, 'I', libtcod.yellow, self.foreground, self)
+        self.flashlight = Flashlight(False, 101, 89, 'I', libtcod.yellow, self.foreground, self)
         x, y = self.flashlight.get_location()
         self.the_map.add(x, y, self.flashlight)
         
-        self.lamp = Lamp(False, 17, 26, 'T', libtcod.yellow, self.foreground, self)
+        self.lamp = Lamp(False, 149, 19, 'T', libtcod.yellow, self.foreground, self)
         x, y = self.lamp.get_location()
         self.the_map.add(x, y, self.lamp)
         

@@ -163,9 +163,10 @@ class WordMatch(Bow):
         self.dormant_color = libtcod.red if in_range else libtcod.grey
         to_draw = self.phrase
         x_minus = self.phrase.index(self.anchor.char.lower())
+        in_fov = libtcod.map_is_in_fov(self.game.the_map.libtcod_map, self.x, self.y)
         for i, char in enumerate(to_draw):
             x, y = Sloc[0] + i - x_minus, Sloc[1]
-            if not self.game.the_map.run_collision(x, y):
+            if (in_range or in_fov) and not (x, y) == self.anchor.get_location():
                 color = (self.current_color if self.phrase_clear[i] else self.dormant_color)
                 libtcod.console_set_default_foreground(self.con, color)
                 libtcod.console_put_char(self.con, x, y, 
@@ -347,7 +348,6 @@ class Statue(SpeakingObject):
 class LStatue(Statue):
     def clear(self):
         super(LStatue, self).clear()
-        print "clearin."
         
 class ResetStatue(Statue):
     def say_line(self, dialogue_choice):
