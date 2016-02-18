@@ -40,6 +40,14 @@ statue_script1 = {"start":("frozen, time", 'Everything is frozen, as if in time'
                           
 reveal_script0 = {"start":("idols,", 'Lord, cried out the idols, don\'t let us be broken'),
                       "idols,":("", 'Only we can convert the infidel tonight')}
+                      
+gates_data = [((123, 16), "I"),
+              ((141, 16), "swear"),
+              ((149, 28), "I"),
+              ((144, 46), "didn't"),
+              ((130, 55), "do"),
+              ((132, 67), "it"),
+              ((139, 81), "please")]
                           
                           
 class FieldOfRealPeople(object):
@@ -76,7 +84,13 @@ class LevelZero(Level):
 #            self.player.add_child(Next(s, self, text="bow", static=True, offset = (2, 2)))
             self.player.add_child(Waypoint(s, self, text="approach", 
                                             static=True, offset=(-1,-1)))
-
+                                            
+            for info in gates_data:
+                g = LStatue({}, info[0][0], info[0][1], 'X', libtcod.yellow, self.foreground, self)
+                self.statues.append(g)
+                self.the_map.add(g.x, g.y, g)
+                self.player.add_child(Ban(g, self, text=info[1], static=True, offset=(-2, 2)))
+                
             s = ResetStatue(reveal_script0, 75, 10, 'G', libtcod.light_red, self.foreground, self)
             s.loop = False
             self.statues.append(s)
@@ -90,11 +104,11 @@ class LevelZero(Level):
             self.statues.append(rp)
             self.the_map.add(rp.x, rp.y, rp)
                                  
-            t = LinkedStatue({}, 10, 10, 'S', libtcod.brass, self.foreground, self)
+            t = LinkedStatue({}, 37, 28, 'S', libtcod.brass, self.foreground, self)
             self.the_map.add(t.x, t.y, t)
             self.player.add_child(Bow(t, self, text="scatter", static=True, offset=(-1,-1)))
 
-            u = LinkedStatue({}, 10, 15, 'S', libtcod.brass, self.foreground, self)
+            u = LinkedStatue({}, 33, 33, 'S', libtcod.brass, self.foreground, self)
             self.the_map.add(u.x, u.y, u)
             self.player.add_child(Bow(u, self, text="fade", static=True, offset=(-1,-1), new_fader=DirectiveLineFade))
             u.add_link(t)

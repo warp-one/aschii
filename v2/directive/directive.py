@@ -75,14 +75,14 @@ class Directive(Attachment, Tile):
         to_draw = self.phrase
         for i, char in enumerate(to_draw):
             x, y = self.x + i, self.y
-            if True:#not self.game.the_map.run_collision(x, y): 
-                    # dunno about the above, visuals-wise
+            is_lit = self.game.the_map.tile_is_lit(*self.get_location())
+            in_fov = libtcod.map_is_in_fov(self.game.the_map.libtcod_map, self.x, self.y)
+#            if not self.game.the_map.run_collision(x, y) and (is_lit or in_fov):
+            if tools.get_distance(Ploc, Sloc) < self.game.player.sight_radius:
                 color = (self.current_color if self.phrase_clear[i] else self.dormant_color)
                 libtcod.console_set_default_foreground(self.con, color)
                 libtcod.console_put_char(self.con, x, y, 
                                                 char, libtcod.BKGND_NONE)
-                                            
-            
     def complete(self):
         self.completed = True
         if self.fader:
@@ -98,7 +98,8 @@ class Directive(Attachment, Tile):
                 libtcod.console_put_char(self.con, x, y, 
                                                 ' ', libtcod.BKGND_NONE)
         except TypeError:
-            return self.phrase
+            libtcod.console_put_char(self.con, self.x, self.y, 
+                                            ' ', libtcod.BKGND_NONE)
             
     def tick_phrase(self, letter):
         if not self.completed:

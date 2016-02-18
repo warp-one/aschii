@@ -102,6 +102,7 @@ class Player(Listener, Orders, Unit):
         self.add_child(PlayerWASD(self, self.game))
         
         self.last_position = self.x, self.y
+        self.idle_time = -50
         
         
         
@@ -122,6 +123,7 @@ class Player(Listener, Orders, Unit):
         self.arrows[arrow.phrase] = arrow
 
     def handle_keys(self):
+        self.last_position = self.get_location()
         for a in self.arrows.values():
             if a:
                 a.pressed = False
@@ -200,11 +202,9 @@ class Player(Listener, Orders, Unit):
             return self.facing
 
     def move(self, dx, dy):
-        self.last_position = self.x, self.y
         easy_move = True
         if super(Player, self).move(dx, dy):
             self.game.the_map.move(self.x, self.y, self)
-            self.fov = libtcod.map_compute_fov(self.game.the_map.libtcod_map, self.x, self.y, self.sight_radius, algo=libtcod.FOV_DIAMOND)
             if dx or dy:
                 self.change_direction((dx, dy))
             if self.step_timer >= self.len_step or self.last_position == self.get_location():
@@ -219,26 +219,20 @@ class Player(Listener, Orders, Unit):
                 x, y = self.x + dx, self.y
                 for tile in ((x, y + 1), (x, y - 1)):
                     if not self.game.the_map.run_collision(*tile):
-                        top_free = not self.game.the_map.run_collision(self.x, self.y + 1)
-                        bottom_free = not self.game.the_map.run_collision(self.x, self.y - 1)
-                        if top_free:
-                            self.move(0, 1)
-                        elif bottom_free:
-                            self.move(0, -1)
+                        if not self.game.the_map.run_collision(self.x, tile[1]):
+                            self.move(0, tile[1] - y)
                         break
             if dy:
                 x, y = self.x, self.y + dy
                 for tile in ((x + 1, y), (x - 1, y)):
                     if not self.game.the_map.run_collision(*tile):
-                        right_free = not self.game.the_map.run_collision(self.x + 1, self.y)
-                        left_free = not self.game.the_map.run_collision(self.x - 1, self.y)
-                        if left_free:
-                            self.move(-1, 0)
-                        elif right_free:
-                            self.move(1, 0)
+                        if not self.game.the_map.run_collision(tile[0], self.y):
+                            self.move(tile[0] - x, 0)
                         break
+                        
             
-    def _draw(self):
+    def _draw(self): # THE UNDERSCORE IS IMPORTANT; KEEP IT
+                     # OR OTHERWISE ALL THE ACTIONS DISAPPEAR
         return
 
     def update(self):
@@ -249,6 +243,22 @@ class Player(Listener, Orders, Unit):
         for c in self.children:
             if not c.static:
                 c.update()
+                
+        dark_time = 40
+        if self.last_position == self.get_location():
+            self.idle_time += 1
+        else:
+            if self.sight_radius < 21:
+                self.sight_radius += 3
+                self.idle_time = -20
+        if self.idle_time >= dark_time:
+            if self.sight_radius > 6:
+                self.sight_radius -= 3
+            self.game.the_map.schimb()
+            self.idle_time = 0
+        self.fov = libtcod.map_compute_fov(self.game.the_map.libtcod_map, 
+                    self.x, self.y, self.sight_radius, algo=libtcod.FOV_DIAMOND)
+            
                 
     def on_notify(self, entity, event):
         pass

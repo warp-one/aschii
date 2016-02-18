@@ -64,14 +64,19 @@ class Level(object):
             i.draw()
 
     def clear_all(self):
-#        to_clear = self.the_map.get_all_in_clear_area()
-        to_clear = self.the_map.last_render
+        to_clear = self.the_map.get_all_in_clear_area()
+#        to_clear = self.the_map.last_render
+#        to_clear = self.get_all_tiles()
         for t in to_clear:#self.last_render:
             t.clear()
         self.the_map.last_render = []
         
         for a in self.player.action_manager.actions:
             a.clear()
+        for d in self.player.children:
+            d.clear()
+        for s in self.statues:
+            s.clear()
 
     def update_all(self):
         for t in self.get_all_tiles():

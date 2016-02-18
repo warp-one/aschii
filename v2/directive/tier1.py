@@ -88,6 +88,11 @@ class Next(Directive):
 #        else:
         super(Next, self).complete()
         
+class Ban(Directive):
+    def complete(self):
+        super(Ban, self).complete()
+        self.anchor.delete()
+        
 class Bow(Directive):
     def __init__(self, *args, **kwargs):
         self.blue = False
@@ -173,23 +178,22 @@ class WordMatch(Bow):
 class DialogueChoice(Next):
     def complete(self):
         self.anchor.say_line(self.phrase)
-        self.game.player
         
-    def _draw(self):
-        Ploc = self.game.player.get_location()
-        Sloc = self.anchor.get_location()
-        in_range = tools.get_distance(Ploc, Sloc) < self.range
-        self.dormant_color = libtcod.red if in_range else libtcod.grey
-        to_draw = self.phrase
-        for i, char in enumerate(to_draw):
-            x, y = self.x + i, self.y
-            is_lit = self.game.the_map.tile_is_lit(*self.get_location())
-            in_fov = libtcod.map_is_in_fov(self.game.the_map.libtcod_map, self.x, self.y)
-            if not self.game.the_map.run_collision(x, y) and (is_lit or in_fov):
-                color = (self.current_color if self.phrase_clear[i] else self.dormant_color)
-                libtcod.console_set_default_foreground(self.con, color)
-                libtcod.console_put_char(self.con, x, y, 
-                                                char, libtcod.BKGND_NONE)
+#    def _draw(self):
+#        Ploc = self.game.player.get_location()
+#        Sloc = self.anchor.get_location()
+#        in_range = tools.get_distance(Ploc, Sloc) < self.range
+#        self.dormant_color = libtcod.red if in_range else libtcod.grey
+#        to_draw = self.phrase
+#        for i, char in enumerate(to_draw):
+#            x, y = self.x + i, self.y
+#            is_lit = self.game.the_map.tile_is_lit(*self.get_location())
+#            in_fov = libtcod.map_is_in_fov(self.game.the_map.libtcod_map, self.x, self.y)
+#            if not self.game.the_map.run_collision(x, y) and (is_lit or in_fov):
+#                color = (self.current_color if self.phrase_clear[i] else self.dormant_color)
+#                libtcod.console_set_default_foreground(self.con, color)
+#                libtcod.console_put_char(self.con, x, y, 
+#                                                char, libtcod.BKGND_NONE)
 
 class PlayerArrow(Directive):
     def change_text(self, text):
@@ -338,6 +342,12 @@ class Statue(SpeakingObject):
     def __init__(self, *args, **kwargs):
         super(Statue, self).__init__(*args, **kwargs)
         self.blocked = True
+        
+        
+class LStatue(Statue):
+    def clear(self):
+        super(LStatue, self).clear()
+        print "clearin."
         
 class ResetStatue(Statue):
     def say_line(self, dialogue_choice):

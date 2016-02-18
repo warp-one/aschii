@@ -113,5 +113,6 @@ class SpecialEffect(object):
 lvl0 = MapDrawing("maps\lvl0.png")
 lvl1 = MapDrawing("maps\lvl1.png")
 lvl2 = MapDrawing("maps\lvl2.png")
+cave = MapDrawing("maps\cave.png")
 
 tv = SpecialEffect(GifReader("maps\\trees-loop.gif").get_frame_data(), (84, 14))

@@ -17,7 +17,7 @@ class TileMap(Listener, object):
         self.con = con
         self.game = game
         self.width, self.height = w, h
-        drawing = drawings.lvl2
+        drawing = drawings.cave
         self.tilemap = [[drawings.make_tile(drawing, x, y, self.con, self.game)
                             for y in range(h)]
                             for x in range(w)]
