@@ -5,7 +5,6 @@ import libtcodpy as libtcod
 import tools, settings
 from directive import Directive, DirectiveLink
 from tile import Unit, Word
-import faders
 
 
 
@@ -215,6 +214,7 @@ class PlayerArrow(Directive):
                                         
     def tick_phrase(self, letter):
         return
+
         
 class PlayerWASD(Directive):
     def _draw(self):
@@ -229,6 +229,7 @@ class PlayerWASD(Directive):
             self.anchor.facing = (0, 1)
         if letter == 'D':
             self.anchor.facing = (1, 0)
+
            
 class SCHIMB(Directive):
     def __init__(self, indices, *args, **kwargs):
@@ -253,9 +254,6 @@ class SCHIMB(Directive):
     def complete(self):
         super(SCHIMB, self).complete()
         self.game.the_map.schimb()
-            
-
-
 
         
 class Waypoint(Directive):

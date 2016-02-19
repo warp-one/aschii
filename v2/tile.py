@@ -28,6 +28,8 @@ class Tile(object):
         self.transparent = True
         
         self.update_queue = []
+        self.next_char = None
+        self.next_color = None
 
     def move(self, dx, dy):
         self.x += dx
@@ -59,35 +61,20 @@ class Tile(object):
                 c.draw()
 #        else:
 #            self.clear()
-    
-    
+
     def _draw(self):
-        color = self.current_color
-        char = self.current_char
+        if self.next_char:
+            char = self.next_char
+        else:
+            char = self.current_char
+        if self.next_color:
+            color = self.next_color
+        else:
+            color = self.current_color
 
         # awkward that there are two effects systems here, but maybe the 
         # checks are low cost enough that I don't have to worry about it?
-        if self.effects and not self.game.the_map.run_collision(*self.get_location()):
-            next_color, next_char = self.effects[-1].get_char(*self.get_location())
-            if next_color:
-                color = next_color
-            if next_char:
-                char = next_char
 
-        if self.color_queue:
-            next_color = self.color_queue.pop(0)
-            if self.effects_mode == "hold":
-                self.color_queue.append(next_color)
-            if next_color:
-                color = next_color
-                
-        if self.char_queue:
-            next_char = self.char_queue.pop(0)
-            if self.effects_mode == "hold":
-                self.char_queue.append(next_char)
-            if next_char:
-                char = next_char
-            
         if self.phrase:
             for i, char in enumerate(self.phrase):
                 x, y = self.x, self.y + i
@@ -108,6 +95,7 @@ class Tile(object):
             c.clear()
 
     def update(self):
+        # ACTIONS
         to_remove = []
         for i, action in enumerate(self.update_queue):
             if action[0] == 0:
@@ -117,7 +105,27 @@ class Tile(object):
                 self.update_queue[i] = (action[0] - 1, action[1], action[2])
         for completed_action in to_remove:
             self.update_queue.remove(completed_action)
-                
+
+        # DRAWING EFFECTS
+        if self.effects and not self.game.the_map.run_collision(*self.get_location()):
+            self.next_color, self.next_char = self.effects[-1].get_char(*self.get_location())
+        else:
+            self.next_color, self.next_char = None, None
+
+        if self.color_queue:
+            self.next_color = self.color_queue.pop(0)
+            if self.effects_mode == "hold":
+                self.color_queue.append(self.next_color)
+        else:
+            self.next_color = None
+
+        if self.char_queue:
+            self.next_char = self.char_queue.pop(0)
+            if self.effects_mode == "hold":
+                self.char_queue.append(self.next_char)
+        else:
+            self.next_char = None
+
     def add_child(self, child, offset=None):
         self.children.append(child)
         if not offset:
@@ -142,7 +150,7 @@ class EnvironmentTile(Tile):
         if self.blocked:
             self.char = '#'
             self.transparent = False
-            
+
 class BottomlessPit(EnvironmentTile):
     def __init__(self, *args):
         super(BottomlessPit, self).__init__(*args)
@@ -159,7 +167,7 @@ class Unit(Tile):   # has collision
             self.y += dy
             return True
         return False
-        
+
 class Word(Tile):
     def __init__(self, word, *args):
         super(Word, self).__init__(*args)
