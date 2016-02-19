@@ -24,7 +24,7 @@ class Tile(object):
         self.children = []
         self.effects = []
         
-        self.visible = True
+        self.visible = False
         self.transparent = True
         
         self.update_queue = []
@@ -97,14 +97,15 @@ class Tile(object):
     def update(self):
         # ACTIONS
         to_remove = []
-        for i, action in enumerate(self.update_queue):
-            if action[0] == 0:
-                action[1](*action[2])
-                to_remove.append(action)
-            else:
-                self.update_queue[i] = (action[0] - 1, action[1], action[2])
-        for completed_action in to_remove:
-            self.update_queue.remove(completed_action)
+        if self.update_queue:
+            for i, action in enumerate(self.update_queue):
+                if action[0] == 0:
+                    action[1](*action[2])
+                    to_remove.append(action)
+                else:
+                    self.update_queue[i] = (action[0] - 1, action[1], action[2])
+            for completed_action in to_remove:
+                self.update_queue.remove(completed_action)
 
         # DRAWING EFFECTS
         if self.effects and not self.game.the_map.run_collision(*self.get_location()):
@@ -173,15 +174,12 @@ class Word(Tile):
         super(Word, self).__init__(*args)
         self.word = word
         
-    def draw(self):
+    def _draw(self):
         for i, letter in enumerate(self.word):
             x, y = self.x + i, self.y
-            in_fov = libtcod.map_is_in_fov(self.game.the_map.libtcod_map, x, y)
-            is_lit = self.game.the_map.tile_is_lit(*self.get_location())
-            if in_fov or is_lit:
-                libtcod.console_set_default_foreground(self.con, self.current_color)
-                libtcod.console_put_char(self.con, x, y, 
-                                                letter, libtcod.BKGND_NONE)
+            libtcod.console_set_default_foreground(self.con, self.current_color)
+            libtcod.console_put_char(self.con, x, y, 
+                                            letter, libtcod.BKGND_NONE)
                                                 
     def clear(self):
         for i, letter in enumerate(self.word):

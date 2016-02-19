@@ -107,12 +107,6 @@ class TileMap(Listener, object):
             for x in range(self.width):
                 yield self.tilemap[x][y]
                 
-    def tile_is_lit(self, x, y):
-        if self.tilemap[x][y].visible:
-            return True
-        else:
-            return False
-        
     def get_tiles_in_render_area(self):
         player = self.game.player
         def x(light):
@@ -245,8 +239,6 @@ class TileMap(Listener, object):
         if len(self.mutated_waves) < len(tiles_to_write):
             self.mutated_waves = self._schimb(self.waves)
         for i, t in enumerate(tiles_to_write):
-            if isinstance(t, BottomlessPit):
-                continue
             t.current_char = self.mutated_waves[i]
         self.mutated_waves = self.mutated_waves[len(tiles_to_write):]
 #            elif t.blocked:

@@ -74,6 +74,7 @@ class Player(Listener, Orders, Unit):
     offsets = [(-2, -2), (-2, 2), (2, 3), (2, -3), 
                (-2, -2), (-2, 2), (2, 3), (2, -3)]
     sight_radius = 21 # high in early levels, low in late...
+    max_sight = sight_radius
     len_step = 6 # in frames
     char = ' '
     left_foot = False
@@ -103,6 +104,9 @@ class Player(Listener, Orders, Unit):
         self.moved = False
         self.easy_move = True
         self.schimb = False
+        
+    def is_visible(self):
+        return True
 
     def set_arrows(self):
         NSEW = {(0, 4): libtcod.CHAR_ARROW_N, 
@@ -245,7 +249,7 @@ class Player(Listener, Orders, Unit):
         if self.last_position == self.get_location():
             self.idle_time += 1
         else:
-            if self.sight_radius < 21:
+            if self.sight_radius < self.max_sight:
                 self.sight_radius += 3
                 self.idle_time = 0
             else:

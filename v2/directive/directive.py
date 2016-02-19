@@ -32,7 +32,7 @@ class Directive(Attachment, Tile):
         self.change_text(text)
         self.pressed = False
 
-        self.visible = True
+        self.visible = False
         if new_fader:
             self.fader = new_fader()
         else:
@@ -53,7 +53,7 @@ class Directive(Attachment, Tile):
     def is_visible(self):
         dv = super(Directive, self).is_visible()
         av = self.anchor.is_visible()
-        return dv and av
+        return av
        
     def draw(self):
         if self.completed: # should only pass if there's a fader
@@ -74,14 +74,10 @@ class Directive(Attachment, Tile):
         to_draw = self.phrase
         for i, char in enumerate(to_draw):
             x, y = self.x + i, self.y
-            is_lit = self.game.the_map.tile_is_lit(*self.get_location())
-            in_fov = libtcod.map_is_in_fov(self.game.the_map.libtcod_map, self.x, self.y)
-            if (is_lit or in_fov):
-                if tools.get_distance(Ploc, Sloc) < self.game.player.sight_radius:
-                    color = (self.current_color if self.phrase_clear[i] else self.dormant_color)
-                    libtcod.console_set_default_foreground(self.con, color)
-                    libtcod.console_put_char(self.con, x, y, 
-                                                    char, libtcod.BKGND_NONE)
+            color = (self.current_color if self.phrase_clear[i] else self.dormant_color)
+            libtcod.console_set_default_foreground(self.con, color)
+            libtcod.console_put_char(self.con, x, y, 
+                                            char, libtcod.BKGND_NONE)
                                                     
     def complete(self):
         self.completed = True

@@ -329,7 +329,8 @@ class SpeakingObject(Unit):
     def draw(self):
         super(SpeakingObject, self).draw()
         for w in self.words:
-            w.draw()
+            if self.is_visible():
+                w._draw()
             
     def clear(self):
         for w in self.words:
