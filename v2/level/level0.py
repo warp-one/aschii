@@ -1,11 +1,7 @@
-from random import randint
-
-import libtcodpy as libtcod
 
 from basic_level import Level
 from directive import *
 from items import *
-from maps import Med10x10_1 as m1, Boulders
 from maps import drawings
 from directive.faders import DirectiveLineFade
 
@@ -37,6 +33,9 @@ statue_script1 = {"start":("frozen, time", 'Everything is frozen, as if in time'
                         "specific":("like now", "What is it like right now?"),
                           "like":("time", "It's fairly damp. And jacket weather. The time"),
                           "now":("", "It's very today, today.")}
+
+#statue_script2 = {
+            
                           
 reveal_script0 = {"start":("idols,", 'Lord, cried out the idols, don\'t let us be broken'),
                       "idols,":("", 'Only we can convert the infidel tonight')}
@@ -77,7 +76,7 @@ class LevelZero(Level):
         
         self.statues = []
         for _ in range(1):
-            s = Statue(statue_script1, 19, 27 + _, 'S', libtcod.green, self.foreground, self)
+            s = Statue(statue_script, 19, 27 + _, 'S', libtcod.green, self.foreground, self)
             s.loop = True
             self.statues.append(s)
             self.the_map.add(s.x, s.y, s)
@@ -145,7 +144,7 @@ class LevelZero(Level):
         self.player.add_child(ItemGrab(self.flashlight, self, text="pick up", offset = (-2, 2)))
         self.player.add_child(ItemGrab(self.gam, self, text="pick up", offset = (-2, 2)))
         self.player.add_child(ItemGrab(self.lamp, self, text="pick up", offset = (-2, 2)))
-        s = self.the_map.schimb()
+#        s = self.the_map.schimb()
 #        self.the_map.load_doodad(25, 25, m1)
 #        for b in Boulders:
 #            x, y = randint(0, 100), randint(0, 80)

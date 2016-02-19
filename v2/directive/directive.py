@@ -64,8 +64,7 @@ class Directive(Attachment, Tile):
                     self.game.player.remove_child(self)
         elif self.is_visible():
             self._draw()
-        else:
-            self.clear()
+
 
     def _draw(self):
         Ploc = self.game.player.get_location()

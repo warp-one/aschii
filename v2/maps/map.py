@@ -1,9 +1,7 @@
-from random import randint, choice
 
 import libtcodpy as libtcod
-import pyglet
 
-from items import Item, Flashlight
+from items import Flashlight
 from tile import EnvironmentTile, BottomlessPit
 from observer import Listener
 import markovgen as mg
@@ -110,12 +108,10 @@ class TileMap(Listener, object):
                 yield self.tilemap[x][y]
                 
     def tile_is_lit(self, x, y):
-        player = self.game.player
-        for l in self.light_sources + [player]:
-            Lradius = (l.Lradius if not l is player else l.sight_radius)
-            if tools.get_distance((x, y), l.get_location()) <= Lradius:
-                return True
-        return False
+        if self.tilemap[x][y].visible:
+            return True
+        else:
+            return False
         
     def get_tiles_in_render_area(self):
         player = self.game.player
@@ -151,14 +147,9 @@ class TileMap(Listener, object):
                 
     def get_visible_tiles(self, tiles):
         for t in tiles:
-            if t.is_visible() and self.tile_is_lit(*t.get_location()):
+            if t.is_visible():
                 yield t
-                
-    def get_lit_tiles(self, tiles):
-        for t in tiles:
-            if self.tile_is_lit(*t.get_location()):
-                yield t
-                
+
     def get_tiles_by_layer(self, tiles):
         while tiles:
             next_layer = []
@@ -188,7 +179,6 @@ class TileMap(Listener, object):
     def remove(self, unit):
         if not unit.prev:
             return
-        old_chain = unit.prev
         if unit.next:
             unit.prev.next = unit.next
             unit.next.prev = unit.prev
@@ -251,15 +241,13 @@ class TileMap(Listener, object):
                         tile.char_queue = chars
         
     def schimb(self):
-        rletter = 0
-        tiles_to_write = [x for x in self.get_lit_tiles(self.get_tiles_in_clear_area())]
+        tiles_to_write = [x for x in self.get_visible_tiles(self.get_tiles_in_render_area()) if not x.blocked]
         if len(self.mutated_waves) < len(tiles_to_write):
             self.mutated_waves = self._schimb(self.waves)
         for i, t in enumerate(tiles_to_write):
-            if not t.blocked:
-                if isinstance(t, BottomlessPit):
-                    continue
-                t.current_char = self.mutated_waves[i]
+            if isinstance(t, BottomlessPit):
+                continue
+            t.current_char = self.mutated_waves[i]
         self.mutated_waves = self.mutated_waves[len(tiles_to_write):]
 #            elif t.blocked:
 #                t.current_char = race[rletter]
@@ -282,5 +270,5 @@ class TileMap(Listener, object):
                 foot_displacement = entity.left_foot_displacement
             x = entity.x + (entity.facing[1]*foot_displacement)
             y = entity.y + (entity.facing[0]*foot_displacement)
-            self.apply_tile_effect({(x, y):[(color, '.') for color in fade]})
+            self.apply_tile_effect({(x, y): [(color, '.') for color in fade]})
 

@@ -1,20 +1,8 @@
-import profile
-import sys
 
 import libtcodpy as libtcod
 
 from maps import TileMap
 from player import Player
-import tools
-
-'''# pyaudio
-CHUNK = 1024
-if len(sys.argv) < 2:
-    print("Plays a wave file. \n\nUsage: %s sys.argv[0])
-    sys.exit(-1)
-wf = wave.open(sys.argv[1]
-p = pyaudio.PyAudio()
-stream = p.open(format=p.get_format_from_'''
 
 
 
@@ -29,6 +17,7 @@ class Level(object):
         self.add_map()
         self.player = Player(10, 6, ' ', libtcod.white, self.foreground, self)
         self.last_render = []
+        self.next_render = []
         self.special_effects = []
         
     def create_consoles(self):
@@ -41,48 +30,45 @@ class Level(object):
         self.tilemap = self.the_map.tilemap
 
     def get_all_tiles(self):
-        all_tiles = [self.player]
         map_tiles = self.the_map.get_tiles()
         return self.the_map.get_tiles_by_layer(map_tiles)
         
-    def render_all(self):
-        lights = self.the_map.light_sources
-        all_render_objects = self.the_map.get_all_in_render_area()
-        for t in all_render_objects:
-            self.the_map.last_render.append(t)
+    def update_all(self):
+        self.next_render = [x for x in self.the_map.get_tiles_by_layer(self.the_map.get_tiles_in_render_area())]
+        self.player.update()
+        for t in self.next_render:
+            if not isinstance(t, Player):
+                t.update()
             seen = libtcod.map_is_in_fov(self.the_map.libtcod_map, t.x, t.y)
-            lit = False
-            for l in lights:
-                if tools.get_distance(l.get_location(), t.get_location()) < l.Lradius:
-                    lit = True
-            if lit or seen:
+            if seen:
                 t.visible = True
             else:
                 t.visible = False
+
+        for i in self.hud:
+            i.update()
+        for e in self.special_effects:
+            e.update()
+
+        if self.player.schimb:
+            self.the_map.schimb()
+            self.player.schimb = False
+
+    def render_all(self):
+        for t in self.next_render:
             t.draw()
         for i in self.hud:
             i.draw()
+        self.last_render = self.next_render
+        self.next_render = []
 
     def clear_all(self):
-        to_clear = self.the_map.get_all_in_clear_area()
-#        to_clear = self.the_map.last_render
-#        to_clear = self.get_all_tiles()
-        for t in to_clear:#self.last_render:
+        for t in self.last_render:
             t.clear()
-        self.the_map.last_render = []
+        self.last_render = []
         
         for a in self.player.action_manager.actions:
             a.clear()
         for d in self.player.children:
             d.clear()
-        for s in self.statues:
-            s.clear()
 
-    def update_all(self):
-        for t in self.get_all_tiles():
-            t.update()
-        for i in self.hud:
-            i.update()
-        for e in self.special_effects:
-            e.update()
-        

@@ -1,11 +1,11 @@
 import libtcodpy as libtcod
 
-import tools, settings
 from actions import ActionManager
 from directive import Directive, PlayerArrow, SCHIMB, Legs, PlayerWASD
 from items import Inventory
 from observer import Listener
 from tile import Unit
+
 
 class Orders(object):
     def create_orders(self):
@@ -66,10 +66,7 @@ class Orders(object):
         self.current_action = None
         self.time_left = 0
             
-    def update(self):
-        pass
-    
-    
+
 class Player(Listener, Orders, Unit):
 
     arrow_keys = [libtcod.KEY_UP, libtcod.KEY_DOWN,
@@ -103,9 +100,10 @@ class Player(Listener, Orders, Unit):
         
         self.last_position = self.x, self.y
         self.idle_time = -90
-        
-        
-        
+        self.moved = False
+        self.easy_move = True
+        self.schimb = False
+
     def set_arrows(self):
         NSEW = {(0, 4): libtcod.CHAR_ARROW_N, 
                 (0, -4): libtcod.CHAR_ARROW_S, 
@@ -194,7 +192,7 @@ class Player(Listener, Orders, Unit):
         
     def change_direction(self, direction):
         x, y = direction
-        self.game.the_map.schimb()
+        self.schimb = True
         if self.facing == direction:
             return False
         else:
@@ -202,19 +200,15 @@ class Player(Listener, Orders, Unit):
             return self.facing
 
     def move(self, dx, dy):
-        easy_move = True
         if super(Player, self).move(dx, dy):
             self.game.the_map.move(self.x, self.y, self)
             if dx or dy:
                 self.change_direction((dx, dy))
-            if self.step_timer >= self.len_step or self.last_position == self.get_location():
+            if self.step_timer >= self.len_step or self.moved is False:
                 self.step_timer = 0
-                self.notify(self, "player move")
-                if self.left_foot:
-                    self.left_foot = False
-                else:
-                    self.left_foot = True
-        elif easy_move:
+                self.take_step()
+                self.moved = True
+        elif self.easy_move:
             if dx:
                 x, y = self.x + dx, self.y
                 for tile in ((x, y + 1), (x, y - 1)):
@@ -229,8 +223,7 @@ class Player(Listener, Orders, Unit):
                         if not self.game.the_map.run_collision(tile[0], self.y):
                             self.move(tile[0] - x, 0)
                         break
-                        
-            
+
     def _draw(self): # THE UNDERSCORE IS IMPORTANT; KEEP IT
                      # OR OTHERWISE ALL THE ACTIONS DISAPPEAR
         return
@@ -239,6 +232,10 @@ class Player(Listener, Orders, Unit):
         self.act()
         if self.step_timer < self.len_step:
             self.step_timer += 1
+        if self.moved and self.get_location() == self.last_position:
+            self.moved = False
+            if self.step_timer > 5:
+                self.take_step()
         super(Player, self).update()
         for c in self.children:
             if not c.static:
@@ -250,17 +247,23 @@ class Player(Listener, Orders, Unit):
         else:
             if self.sight_radius < 21:
                 self.sight_radius += 3
-                self.idle_time = -20
+                self.idle_time = 0
             else:
                 self.idle_time = -50
         if self.idle_time >= dark_time:
-            if self.sight_radius > 6:
+            if self.sight_radius > 3:
                 self.sight_radius -= 3
-            self.game.the_map.schimb()
+            self.schimb = True
             self.idle_time = 0
-        self.fov = libtcod.map_compute_fov(self.game.the_map.libtcod_map, 
+        libtcod.map_compute_fov(self.game.the_map.libtcod_map,
                     self.x, self.y, self.sight_radius, algo=libtcod.FOV_DIAMOND)
-            
-                
+
     def on_notify(self, entity, event):
         pass
+
+    def take_step(self):
+        self.notify(self, 'player move')
+        if self.left_foot:
+            self.left_foot = False
+        else:
+            self.left_foot = True

@@ -110,9 +110,9 @@ class SpecialEffect(object):
         for xy in self.frames.keys():
             tilemap.get_tile(*xy).effects.remove(self)
         
-lvl0 = MapDrawing("maps\lvl0.png")
-lvl1 = MapDrawing("maps\lvl1.png")
-lvl2 = MapDrawing("maps\lvl2.png")
-cave = MapDrawing("maps\cave.png")
+lvl0 = MapDrawing("maps/lvl0.png")
+lvl1 = MapDrawing("maps/lvl1.png")
+lvl2 = MapDrawing("maps/lvl2.png")
+cave = MapDrawing("maps/cave.png")
 
-tv = SpecialEffect(GifReader("maps\\trees-loop.gif").get_frame_data(), (84, 14))
+tv = SpecialEffect(GifReader("maps/trees-loop.gif").get_frame_data(), (84, 14))
