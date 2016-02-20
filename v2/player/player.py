@@ -1,3 +1,5 @@
+from random import shuffle
+
 import libtcodpy as libtcod
 
 from actions import ActionManager
@@ -215,18 +217,22 @@ class Player(Listener, Orders, Unit):
         elif self.easy_move:
             if dx:
                 x, y = self.x + dx, self.y
-                for tile in ((x, y + 1), (x, y - 1)):
+                destinations = [(x, y + 1), (x, y - 1)]
+                shuffle(destinations)
+                for tile in destinations:
                     if not self.game.the_map.run_collision(*tile):
                         if not self.game.the_map.run_collision(self.x, tile[1]):
                             self.move(0, tile[1] - y)
-                        break
+                            break
             if dy:
                 x, y = self.x, self.y + dy
-                for tile in ((x + 1, y), (x - 1, y)):
+                destinations = [(x + 1, y), (x - 1, y)]
+                shuffle(destinations)
+                for tile in destinations:
                     if not self.game.the_map.run_collision(*tile):
                         if not self.game.the_map.run_collision(tile[0], self.y):
                             self.move(tile[0] - x, 0)
-                        break
+                            break
 
     def _draw(self): # THE UNDERSCORE IS IMPORTANT; KEEP IT
                      # OR OTHERWISE ALL THE ACTIONS DISAPPEAR
