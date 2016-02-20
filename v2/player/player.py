@@ -203,7 +203,7 @@ class Player(Listener, orders.Orders, Unit):
                 self.sight_radius += 3
                 self.idle_time = 0
             else:
-                self.idle_time = -100
+                self.idle_time = self.idle_start
         if self.idle_time >= dark_time:
             if self.sight_radius > 3:
                 self.sight_radius -= 3

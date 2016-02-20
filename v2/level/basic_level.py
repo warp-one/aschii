@@ -12,8 +12,8 @@ class Camera(object):
     
     def __init__(self, level):
         self.map_width, self.map_height = settings.LVL0_MAP_WIDTH, settings.LVL0_MAP_HEIGHT
-        self.w = self.map_width/2
-        self.h = self.map_height/2
+        self.w = settings.SCREEN_WIDTH
+        self.h = settings.SCREEN_HEIGHT
 
     def to_camera_coordinates(self, x, y):
         x, y = x - self.camera_x, y - self.camera_y

@@ -108,6 +108,10 @@ class LevelZero(Level):
             
             
             for info in gates_data:
+                # something different should happen based on which order you complete them
+                # "please I didn't do it"
+                # "please do it"
+                # "it didn't"
                 g = LStatue({}, info[0][0], info[0][1], 'X', libtcod.yellow, self.foreground, self)
                 self.statues.append(g)
                 self.the_map.add(g.x, g.y, g)
