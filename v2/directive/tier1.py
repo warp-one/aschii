@@ -1,10 +1,11 @@
-from random import choice
+from random import choice, randint
 
 import libtcodpy as libtcod
 
 import tools, settings
 from directive import Directive, DirectiveLink
-from tile import Unit, Word
+from tile import Unit, Tile
+from orders import Orders
 
 
 
@@ -87,6 +88,8 @@ class Next(Directive):
 #        else:
         super(Next, self).complete()
         
+
+        
 class Ban(Directive):
     def complete(self):
         super(Ban, self).complete()
@@ -122,6 +125,14 @@ class Bow(Directive):
     def reset(self):
         if not self.blue:
             super(Bow, self).reset()
+            
+class Dismiss(Directive):
+    def complete(self):
+        self.anchor.honored = True
+        self.blue = True
+        for l in self.anchor.links:
+            l.delete()
+        
             
 class WordMatch(Bow):
     def __init__(self, words, *args, **kwargs):
@@ -292,11 +303,12 @@ class SpeakingObject(Unit):
         self.words = []
         self.nextwords = []
         self.line = ""
+        
         super(SpeakingObject, self).__init__(*args)
         self.say_line("start")
         
     def say_line(self, dialogue_choice):
-        # "start":("town city", 'I will go to town or city')
+        # {"start":("town city", 'I will go to town or city')}
         if self.script:
             self.line = self.script[dialogue_choice]
             self.keywords = self.line[0].split()
@@ -325,9 +337,9 @@ class SpeakingObject(Unit):
                     self.nextwords.append(choice)
                     self.game.player.add_child(choice)
                     continue
-                next_word = Word(w, x, y, ' ', libtcod.grey, self.con, self.game)
+                next_word = Tile(x, y, ' ', libtcod.grey, self.con, self.game, phrase=w)
                 self.words.append(next_word)
-
+                
                     
     def draw(self):
         for w in self.words:
@@ -353,15 +365,53 @@ class LStatue(Statue):
         super(LStatue, self).clear()
         
 class ResetStatue(Statue):
+
+    def __init__(self, *args, **kwargs):
+        super(ResetStatue, self).__init__(*args, **kwargs)
+        self.repeat_count = 0
+        self.repeat_max = 3
+        
     def say_line(self, dialogue_choice):
         super(ResetStatue, self).say_line(dialogue_choice)
         if self.line != self.script["start"]:
-            self.update_queue.append((50, self.say_line, ["start"]))
+            self.repeat_count += 1
+            if self.repeat_count > self.repeat_max and self.repeat_max != 0:
+                self.script["start"] = (self.script["newchoices"], self.script["start"][1])
+            if not self.keywords:
+                self.update_queue.append((50, self.say_line, ["start"]))
+                
+class MovingStatue(Orders, ResetStatue):
+
+    def __init__(self, *args, **kwargs):
+        self.create_orders()
+        super(MovingStatue, self).__init__(*args, **kwargs)
+        self.repeat_max = 0
+
+    def say_line(self, dialogue_choice):
+        super(MovingStatue, self).say_line(dialogue_choice)
+        newX, newY = self.x + randint(-5, 5), self.y + randint(-5, 5)
+        walk_path = libtcod.path_new_using_map(self.game.the_map.libtcod_map, 0.0)
+        libtcod.path_compute(walk_path, self.x, self.y, newX, newY)
+        path_steps = libtcod.path_size(walk_path)
+        path_coords = [libtcod.path_get(walk_path, x) for x in range(path_steps)]
+        self.set_path(path_coords)
+        libtcod.path_delete(walk_path)
+        self.add_order(path_steps, self.move_along_path)
+        
+    def update(self):
+        super(MovingStatue, self).update()
+        self.act()
+            
+class AnnoyStatue(ResetStatue):
+    pass
         
 class RealPerson(Statue): # inherits from statue (!)
-    
-    phrase = [choice(['o', 'O', libtcod.CHAR_BLOCK2]), libtcod.CHAR_DTEES, libtcod.CHAR_DVLINE]
-        
+
+
+    def __init__(self, *args, **kwargs):
+        super(RealPerson, self).__init__(*args, **kwargs)
+        self.phrase = [choice(['o', 'O', libtcod.CHAR_BLOCK2]), libtcod.CHAR_DTEES, libtcod.CHAR_DVLINE]
+
     def clear(self):
         for i, char in enumerate(self.phrase):
             x, y = self.game.camera.to_camera_coordinates(self.x, self.y + i)

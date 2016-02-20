@@ -14,7 +14,7 @@ class Attachment(object):
 class Directive(Attachment, Tile):
 
     char = 'X'
-    range = 5
+    range = 9
 
     def __init__(self, anchor, game, static=False, text="Destroy", offset=(0, 0), new_fader=None):
         self.anchor = anchor

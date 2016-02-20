@@ -7,9 +7,10 @@ class Tile(object):
     name = ""
     phrase = None
 
-    def __init__(self, x, y, char, color, con, game):
+    def __init__(self, x, y, char, color, con, game, phrase=None):
         self.x, self.y = x, y
         self.char = char
+        self.phrase = phrase
         self.current_char = char
         self.color = color
         self.current_color = color
@@ -30,6 +31,7 @@ class Tile(object):
         self.update_queue = []
         self.next_char = None
         self.next_color = None
+        
 
     def move(self, dx, dy):
         self.x += dx
@@ -77,7 +79,7 @@ class Tile(object):
 
         if self.phrase:
             for i, char in enumerate(self.phrase):
-                x, y = self.game.camera.to_camera_coordinates(self.x, self.y + i)
+                x, y = self.game.camera.to_camera_coordinates(self.x + i, self.y)
 #                if not self.game.the_map.run_collision(x, y):
                 libtcod.console_set_default_foreground(self.con, color)
                 libtcod.console_put_char(self.con, x, y, 
@@ -90,11 +92,17 @@ class Tile(object):
                                             char, libtcod.BKGND_NONE)
 
     def clear(self):
-        x, y = self.game.camera.to_camera_coordinates(self.x, self.y)
-        libtcod.console_put_char(self.con, x, y, 
-                                       ' ', libtcod.BKGND_NONE)
         for c in self.children:
             c.clear()
+        if self.phrase:
+            for i, char in enumerate(self.phrase):
+                x, y = self.game.camera.to_camera_coordinates(self.x + i, self.y)
+                libtcod.console_put_char(self.con, x, y, 
+                                                ' ', libtcod.BKGND_NONE)
+        else:
+            x, y = self.game.camera.to_camera_coordinates(*self.get_location())
+            libtcod.console_put_char(self.con, x, y, 
+                                            ' ', libtcod.BKGND_NONE)
 
     def update(self):
         # ACTIONS

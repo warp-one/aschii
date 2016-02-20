@@ -43,7 +43,7 @@ class Level(object):
         self.the_map = TileMap(self.game.width, self.game.height, self.foreground, self)
         self.tilemap = self.the_map.tilemap
         self.camera = Camera(self)
-        self.player = Player(10, 6, ' ', libtcod.white, self.foreground, self)
+        self.player = Player(3, 3, ' ', libtcod.white, self.foreground, self)
         self.last_render = []
         self.next_render = []
         self.special_effects = []
