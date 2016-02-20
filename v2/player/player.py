@@ -24,6 +24,7 @@ class Player(Listener, orders.Orders, Unit):
     char = ' '
     left_foot = False
     left_foot_displacement = -1
+    idle_start = -210
 
     def __init__(self, *args):
         self.blocked = False
@@ -45,7 +46,7 @@ class Player(Listener, orders.Orders, Unit):
         self.add_child(PlayerWASD(self, self.game))
         
         self.last_position = self.x, self.y
-        self.idle_time = -90
+        self.idle_time = self.idle_start
         self.moved = False
         self.easy_move = True
         self.schimb = False
@@ -83,7 +84,7 @@ class Player(Listener, orders.Orders, Unit):
         if is_char or is_arrow or is_space:
             self.action_manager.handle_letter(key)
         if is_space:
-            print self.get_location()
+            print self.get_location(), self.game.camera.to_camera_coordinates(*self.get_location())
      
         if key.vk == libtcod.KEY_ENTER and key.lalt:
             libtcod.console_set_fullscreen(not libtcod.console_is_fullscreen())
@@ -202,7 +203,7 @@ class Player(Listener, orders.Orders, Unit):
                 self.sight_radius += 3
                 self.idle_time = 0
             else:
-                self.idle_time = -50
+                self.idle_time = -100
         if self.idle_time >= dark_time:
             if self.sight_radius > 3:
                 self.sight_radius -= 3

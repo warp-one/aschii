@@ -90,6 +90,8 @@ class Level(object):
     def clear_all(self):
         for t in self.last_render:
             t.clear()
+        for i in self.hud:
+            i.clear()
         self.last_render = []
         
         for a in self.player.action_manager.actions:

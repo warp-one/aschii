@@ -1,5 +1,6 @@
 import libtcodpy as libtcod
 
+import settings
 from tile import EnvironmentTile
 from directive import ItemGrab, ItemToggle, Directive, Power
 
@@ -87,8 +88,8 @@ class InventoryDisplay(object):
     length = 20
 
     def __init__(self, game_map, con):
-        self.x = game_map.width - self.length
-        self.y = game_map.height - 1
+        self.x = settings.SCREEN_WIDTH - self.length
+        self.y = settings.SCREEN_HEIGHT - 1
         self.con = con
 
         self.current_item = None
@@ -100,6 +101,7 @@ class InventoryDisplay(object):
         self.current_color = self.color
 
     def cycle_display(self, item):
+        self.clear()
         self.current_item = item
         if self.current_item:
             self.text = item.name
@@ -130,6 +132,13 @@ class InventoryDisplay(object):
             libtcod.console_set_default_foreground(self.con, color)
             libtcod.console_put_char(self.con, x, y, 
                                             char, libtcod.BKGND_NONE)
+                                            
+    def clear(self):
+        for i, char in enumerate(self.status):
+            x, y = self.x + len(self.text) + 2 + i, self.y
+            libtcod.console_put_char(self.con, x, y, 
+                                            ' ', libtcod.BKGND_NONE)
+
                                             
     def get_toggle_location(self):
         return self.x + len(self.text) + 2, self.y
