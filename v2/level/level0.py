@@ -40,13 +40,13 @@ statue_script1 = {"start":("frozen, time", 'Everything is frozen, as if in time'
 reveal_script0 = {"start":("idols,", 'Lord, cried out the idols, don\'t let us be broken'),
                       "idols,":("", 'Only we can convert the infidel tonight')}
                       
-gates_data = [((123, 16), "I"),
-              ((141, 16), "swear"),
-              ((149, 28), "I"),
-              ((144, 46), "didn't"),
-              ((130, 55), "do"),
-              ((132, 67), "it"),
-              ((139, 81), "please")]
+gates_data = [((70, 16), "I"),
+              ((71, 16), "swear"),
+              ((79, 28), "I"),
+              ((74, 44), "didn't"),
+              ((70, 41), "do"),
+              ((72, 37), "it"),
+              ((79, 31), "please")]
                           
                           
 class FieldOfRealPeople(object):
@@ -98,7 +98,7 @@ class LevelZero(Level):
             #self.player.add_child(Waypoint(s, self, text="approach", 
 #                                            static=True, offset=(-1,-1)))
                                             
-            rp = RealPerson(None, 11, 89, ' ', libtcod.light_blue, self.foreground, self)
+            rp = RealPerson(None, 11, 40, ' ', libtcod.light_blue, self.foreground, self)
             rp.loop = True
             self.statues.append(rp)
             self.the_map.add(rp.x, rp.y, rp)
@@ -113,13 +113,13 @@ class LevelZero(Level):
             u.add_link(t)
             t.add_link(u)
             
-            v = LinkedStatue({}, 56, 60, 'L', libtcod.brass, self.foreground, self)
+            v = LinkedStatue({}, 56, 40, 'L', libtcod.brass, self.foreground, self)
             self.the_map.add(v.x, v.y, v)
             v_ = WordMatch(["holy", "look", "angle", "stalagmite"], 
                                     v, self, static=True, offset=(-1,-1))
             self.player.add_child(v_)
 
-            w = LinkedStatue({}, 67, 57, 'T', libtcod.brass, self.foreground, self)
+            w = LinkedStatue({}, 67, 40, 'T', libtcod.brass, self.foreground, self)
             self.the_map.add(w.x, w.y, w)
             w_ = WordMatch(["bite", "tap", "set", "frighten"], 
                                     w, self, static=True, offset=(-1,-1))
@@ -128,11 +128,11 @@ class LevelZero(Level):
             v.add_link(w)
             
 
-        self.flashlight = Flashlight(False, 101, 89, 'I', libtcod.yellow, self.foreground, self)
+        self.flashlight = Flashlight(False, 60, 30, 'I', libtcod.yellow, self.foreground, self)
         x, y = self.flashlight.get_location()
         self.the_map.add(x, y, self.flashlight)
         
-        self.lamp = Lamp(False, 149, 19, 'T', libtcod.yellow, self.foreground, self)
+        self.lamp = Lamp(False, 70, 19, 'T', libtcod.yellow, self.foreground, self)
         x, y = self.lamp.get_location()
         self.the_map.add(x, y, self.lamp)
         

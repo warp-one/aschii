@@ -165,6 +165,9 @@ class WordMatch(Bow):
         in_fov = libtcod.map_is_in_fov(self.game.the_map.libtcod_map, self.x, self.y)
         for i, char in enumerate(to_draw):
             x, y = Sloc[0] + i - x_minus, Sloc[1]
+            if (x, y) == self.anchor.get_location():
+                continue
+            x, y = self.game.camera.to_camera_coordinates(x, y)
             if (in_range or in_fov) and not (x, y) == self.anchor.get_location():
                 color = (self.current_color if self.phrase_clear[i] else self.dormant_color)
                 libtcod.console_set_default_foreground(self.con, color)
@@ -231,7 +234,7 @@ class PlayerWASD(Directive):
             self.anchor.facing = (1, 0)
 
            
-class SCHIMB(Directive):
+class SCHIMB(Directive): # Deprecated, and non-functional
     def __init__(self, indices, *args, **kwargs):
         super(SCHIMB, self).__init__(*args, **kwargs)
         self.coordinates = []
@@ -327,12 +330,13 @@ class SpeakingObject(Unit):
 
                     
     def draw(self):
-        super(SpeakingObject, self).draw()
         for w in self.words:
             if self.is_visible():
                 w._draw()
+        super(SpeakingObject, self).draw()
             
     def clear(self):
+        super(SpeakingObject, self).clear()
         for w in self.words:
             w.clear()
         for n in self.nextwords:
@@ -358,7 +362,17 @@ class RealPerson(Statue): # inherits from statue (!)
     
     phrase = [choice(['o', 'O', libtcod.CHAR_BLOCK2]), libtcod.CHAR_DTEES, libtcod.CHAR_DVLINE]
         
-        
+    def clear(self):
+        for i, char in enumerate(self.phrase):
+            x, y = self.game.camera.to_camera_coordinates(self.x, self.y + i)
+            libtcod.console_put_char(self.con, x, y, 
+                                           ' ', libtcod.BKGND_NONE)
+        for c in self.children:
+            c.clear()
+        for w in self.words:
+            w.clear()
+        for n in self.nextwords:
+            n.clear()
         
 class LinkedStatue(Statue):
     def __init__(self, *args, **kwargs):

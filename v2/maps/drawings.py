@@ -55,7 +55,7 @@ class GifReader(object):
     def get_frame_data(self):
         def get_xy(i):
             return i % self.w, i / self.w
-        xys = [get_xy(i) for i in range(len(self.frames[0]))]
+        xys = [get_xy(i) for i in xrange(len(self.frames[0]))]
         frame_data = dict(zip(xys, [[] for xy in xys]))
         for f in self.frames:
             for i, color_char in enumerate(f):
@@ -115,4 +115,4 @@ lvl1 = MapDrawing("maps/lvl1.png")
 lvl2 = MapDrawing("maps/lvl2.png")
 cave = MapDrawing("maps/cave.png")
 
-tv = SpecialEffect(GifReader("maps/trees-loop.gif").get_frame_data(), (84, 14))
+tv = SpecialEffect(GifReader("maps/trees-loop.gif").get_frame_data(), (88, 14))

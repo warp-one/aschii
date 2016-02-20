@@ -77,19 +77,21 @@ class Tile(object):
 
         if self.phrase:
             for i, char in enumerate(self.phrase):
-                x, y = self.x, self.y + i
+                x, y = self.game.camera.to_camera_coordinates(self.x, self.y + i)
 #                if not self.game.the_map.run_collision(x, y):
                 libtcod.console_set_default_foreground(self.con, color)
                 libtcod.console_put_char(self.con, x, y, 
                                                 char, libtcod.BKGND_NONE)
         else:
-            x, y = self.get_location()
+            x, y = self.game.camera.to_camera_coordinates(*self.get_location())
+            
             libtcod.console_set_default_foreground(self.con, color)
             libtcod.console_put_char(self.con, x, y, 
                                             char, libtcod.BKGND_NONE)
 
     def clear(self):
-        libtcod.console_put_char(self.con, self.x, self.y, 
+        x, y = self.game.camera.to_camera_coordinates(self.x, self.y)
+        libtcod.console_put_char(self.con, x, y, 
                                        ' ', libtcod.BKGND_NONE)
         for c in self.children:
             c.clear()
@@ -117,15 +119,11 @@ class Tile(object):
             self.next_color = self.color_queue.pop(0)
             if self.effects_mode == "hold":
                 self.color_queue.append(self.next_color)
-        else:
-            self.next_color = None
 
         if self.char_queue:
             self.next_char = self.char_queue.pop(0)
             if self.effects_mode == "hold":
                 self.char_queue.append(self.next_char)
-        else:
-            self.next_char = None
 
     def add_child(self, child, offset=None):
         self.children.append(child)
@@ -176,14 +174,14 @@ class Word(Tile):
         
     def _draw(self):
         for i, letter in enumerate(self.word):
-            x, y = self.x + i, self.y
+            x, y = self.game.camera.to_camera_coordinates(self.x + i, self.y)
             libtcod.console_set_default_foreground(self.con, self.current_color)
             libtcod.console_put_char(self.con, x, y, 
                                             letter, libtcod.BKGND_NONE)
                                                 
     def clear(self):
         for i, letter in enumerate(self.word):
-            x, y = self.x + i, self.y
+            x, y = self.game.camera.to_camera_coordinates(self.x + i, self.y)
             libtcod.console_put_char(self.con, x, y, 
                                             ' ', libtcod.BKGND_NONE)
     
