@@ -41,7 +41,7 @@ statue_script2 = {"start":("", 'I would rather be...')}
 reveal_script0 = {"start":("bug", 'bug'),
                       "bug":("", 'noo noooo no')}
                       
-reveal_script1 = {"start":("GOBLINS", 'WELCOME TO THE CAVE OF THE GOBLINS !'),
+reveal_script1 = {"start":("GOBLINS", 'CAVE OF THE GOBLINS ---->'),
                     "GOBLINS":("",'grrr'),
                     "newchoices":(" CAVE"),
                     "CAVE":("dark", 'Pretty dark in here, isn\'t it?'),

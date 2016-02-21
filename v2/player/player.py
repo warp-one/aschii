@@ -2,7 +2,7 @@ from random import shuffle
 
 import libtcodpy as libtcod
 
-import orders
+import orders, settings
 from actions import ActionManager
 from directive import Directive, PlayerArrow, SCHIMB, Legs, PlayerWASD
 from items import Inventory
@@ -133,7 +133,7 @@ class Player(Listener, orders.Orders, Unit):
         self.add_child(power)
         self.powers.append(power)
         power.x = 0
-        power.y = self.game.the_map.height - len(self.powers)
+        power.y = settings.SCREEN_HEIGHT - len(self.powers)
         power.update()
         
     def remove_power(self, power):

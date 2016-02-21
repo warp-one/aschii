@@ -53,5 +53,7 @@ class Game(object):
 
 if __name__ == '__main__':
     game = Game(settings.SCREEN_WIDTH, settings.SCREEN_HEIGHT)
-    #game.execute()
-    profile.run('game.execute()')
+    if not settings.PROFILE:
+        game.execute()
+    else:
+        profile.run('game.execute()')

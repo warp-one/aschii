@@ -32,6 +32,7 @@ class MapDrawing(object):
     def read_image(self):
         self.open_image = Image.open(self.image_name)
         self.w, self.h = self.open_image.size
+        settings.LVL0_MAP_WIDTH, settings.LVL0_MAP_HEIGHT = self.w, self.h
         for p in list(self.open_image.getdata()):
             yield p
         self.open_image.close()
@@ -113,6 +114,6 @@ class SpecialEffect(object):
 lvl0 = MapDrawing("maps/lvl0.png")
 lvl1 = MapDrawing("maps/lvl1.png")
 lvl2 = MapDrawing("maps/lvl2.png")
-cave = MapDrawing("maps/bigcave.png")
+cave = MapDrawing("maps/longcave.png")
 
-tv = SpecialEffect(GifReader("maps/trees-loop.gif").get_frame_data(), (88, 14))
+tv = SpecialEffect(GifReader("maps/trees-loop.gif").get_frame_data(), (50, 14))
