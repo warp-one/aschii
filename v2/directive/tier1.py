@@ -369,7 +369,7 @@ class ResetStatue(Statue):
     def __init__(self, *args, **kwargs):
         super(ResetStatue, self).__init__(*args, **kwargs)
         self.repeat_count = 0
-        self.repeat_max = 3
+        self.repeat_max = 2
         
     def say_line(self, dialogue_choice):
         super(ResetStatue, self).say_line(dialogue_choice)

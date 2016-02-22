@@ -1,5 +1,6 @@
 import libtcodpy as libtcod
 from PIL import Image
+from random import choice
 
 
 from tile import EnvironmentTile, BottomlessPit
@@ -19,7 +20,7 @@ def make_tile(map_drawing, x, y, con, game):
     color = (libtcod.darkest_grey if sum(tile_rgb) == 0 else libtcod.Color(*tile_rgb))
     return EnvironmentTile(
             blocked,
-            x, y, '@', color, con, game
+            x, y, choice(['@', '%', '#']), color, con, game
                                      )
 
 class MapDrawing(object):

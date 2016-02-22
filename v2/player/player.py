@@ -10,8 +10,6 @@ from observer import Listener
 from tile import Unit
 
 
-            
-
 class Player(Listener, orders.Orders, Unit):
 
     arrow_keys = [libtcod.KEY_UP, libtcod.KEY_DOWN,
