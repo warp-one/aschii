@@ -46,7 +46,6 @@ class Player(Listener, orders.Orders, Unit):
         self.last_position = self.x, self.y
         self.idle_time = self.idle_start
         self.moved = False
-        self.easy_move = True
         self.schimb = False
         
     def is_visible(self):
@@ -147,7 +146,7 @@ class Player(Listener, orders.Orders, Unit):
             self.facing = (x/abs(x) if x else 0), (y/abs(y) if y else 0)
             return self.facing
 
-    def move(self, dx, dy):
+    def move(self, dx, dy, easy_move=True):
         if super(Player, self).move(dx, dy):
             self.game.the_map.move(self.x, self.y, self)
             if dx or dy:
@@ -156,7 +155,7 @@ class Player(Listener, orders.Orders, Unit):
                 self.step_timer = 0
                 self.take_step()
                 self.moved = True
-        elif self.easy_move:
+        elif easy_move:
             if dx:
                 x, y = self.x + dx, self.y
                 destinations = [(x, y + 1), (x, y - 1)]

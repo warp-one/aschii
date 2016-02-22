@@ -88,7 +88,7 @@ class LevelZero(Level):
             self.statues.append(s)
             self.the_map.add(s.x, s.y, s)
             
-            s = MovingStatue(reveal_script0, 56, 49 + _, 'R', libtcod.grey, self.foreground, self)
+            s = MovingStatue(0, 50, reveal_script0, 56, 49 + _, 'R', libtcod.grey, self.foreground, self)
             s.loop = False
             self.statues.append(s)
             self.the_map.add(s.x, s.y, s)
@@ -117,7 +117,7 @@ class LevelZero(Level):
                 self.the_map.add(g.x, g.y, g)
                 self.player.add_child(Ban(g, self, text=info[1], static=True, offset=(-2, 2)))
                 
-            s = ResetStatue(reveal_script1, 8, 1, ' ', libtcod.light_red, self.foreground, self)
+            s = ResetStatue(2, 30, reveal_script1, 8, 1, ' ', libtcod.light_red, self.foreground, self)
             s.loop = False
             self.statues.append(s)
             self.the_map.add(s.x, s.y, s)

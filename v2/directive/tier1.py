@@ -366,10 +366,11 @@ class LStatue(Statue):
         
 class ResetStatue(Statue):
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, repeat_max, repeat_time, *args, **kwargs):
         super(ResetStatue, self).__init__(*args, **kwargs)
         self.repeat_count = 0
-        self.repeat_max = 2
+        self.repeat_max = repeat_max
+        self.repeat_time = repeat_time
         
     def say_line(self, dialogue_choice):
         super(ResetStatue, self).say_line(dialogue_choice)
@@ -378,7 +379,7 @@ class ResetStatue(Statue):
             if self.repeat_count > self.repeat_max and self.repeat_max != 0:
                 self.script["start"] = (self.script["newchoices"], self.script["start"][1])
             if not self.keywords:
-                self.update_queue.append((50, self.say_line, ["start"]))
+                self.update_queue.append((self.repeat_time, self.say_line, ["start"]))
                 
 class MovingStatue(Orders, ResetStatue):
 
