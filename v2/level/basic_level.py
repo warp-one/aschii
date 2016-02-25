@@ -44,6 +44,7 @@ class Level(object):
         self.tilemap = self.the_map.tilemap
         self.camera = Camera(self)
         self.player = Player(3, 3, ' ', libtcod.white, self.foreground, self)
+        self.player.new_con = self.background
         self.last_render = []
         self.next_render = []
         self.special_effects = []
@@ -51,6 +52,7 @@ class Level(object):
     def create_consoles(self):
         self.background = libtcod.console_new(self.game.width, self.game.height)
         self.foreground = libtcod.console_new(self.game.width, self.game.height)
+        libtcod.console_set_default_background(self.background, libtcod.blue)
         self.consoles = [self.background, self.foreground]
 
     def get_all_tiles(self):

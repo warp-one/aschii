@@ -43,8 +43,7 @@ class Game(object):
             libtcod.console_set_default_foreground(0, libtcod.white)
             self.current_level.update_all()
             self.current_level.render_all()
-            for c in self.current_level.consoles:
-                libtcod.console_blit(c, 0, 0, self.width, self.height, 0, 0, 0)
+            libtcod.console_blit(self.current_level.foreground, 0, 0, self.width, self.height, 0, 0, 0)
             libtcod.console_flush()
             self.current_level.clear_all()
             exit = self.current_level.player.handle_keys()

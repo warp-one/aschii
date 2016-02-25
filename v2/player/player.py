@@ -8,6 +8,7 @@ from directive import Directive, PlayerArrow, SCHIMB, Legs, PlayerWASD
 from items import Inventory
 from observer import Listener
 from tile import Unit
+from comics import cycl
 
 
 class Player(Listener, orders.Orders, Unit):
