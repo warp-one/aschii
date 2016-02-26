@@ -67,6 +67,8 @@ class Inventory(object):
             for d in self.owner.children:
                 if isinstance(d, ItemToggle):
                     self.owner.remove_child(d)
+                    d.clear()
+                    del d
             self.owner.add_child(ItemToggle(self.current_item, 
                     self.owner, 
                     self.owner.game, 
@@ -77,6 +79,8 @@ class Inventory(object):
             for d in self.owner.children:
                 if isinstance(d, ItemToggle):
                     self.owner.remove_child(d)
+                    d.clear()
+                    del d
 
             
             
@@ -116,6 +120,7 @@ class InventoryDisplay(object):
         item = self.current_item
         colon = ":"
         color = (item.current_color if item.on else libtcod.grey)
+            
         for i, char in enumerate(self.text + colon):
             x, y = self.x + i, self.y
             libtcod.console_set_default_foreground(self.con, color)
@@ -128,18 +133,18 @@ class InventoryDisplay(object):
 #            self.current_item.item_toggle.change_text(self.current_item.ontext)
  #           self.status = self.current_item.ontext
             
-        for i, char in enumerate(self.status):
-            x, y = self.x + len(self.text) + 2 + i, self.y
-            libtcod.console_set_default_foreground(self.con, color)
-            libtcod.console_put_char(self.con, x, y, 
-                                            char, libtcod.BKGND_NONE)
+#        for i, char in enumerate(self.status):
+#            x, y = self.x + len(self.text) + 2 + i, self.y
+#            libtcod.console_set_default_foreground(self.con, color)
+#            libtcod.console_put_char(self.con, x, y, 
+#                                            char, libtcod.BKGND_NONE)
         #libtcod.image_blit_rect(self.current_item.image, self.con, 0, 0, -1, -1, libtcod.BKGND_SET)                                    
         x, y = settings.SCREEN_WIDTH - 10, settings.SCREEN_HEIGHT - 11
         libtcod.image_blit_2x(self.current_item.image, self.con, x, y, 0, 0, -1, -1)
                                             
     def clear(self):
-        for i, char in enumerate(self.status):
-            x, y = self.x + len(self.text) + 2 + i, self.y
+        for i, char in enumerate(self.text + ":"):
+            x, y = self.x + i, self.y
             libtcod.console_put_char(self.con, x, y, 
                                             ' ', libtcod.BKGND_NONE)
 

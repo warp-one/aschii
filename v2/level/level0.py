@@ -146,9 +146,9 @@ class LevelZero(Level):
             v.add_link(w)
             
 
-        self.flashlight = Flashlight(False, 60, 30, 'I', libtcod.yellow, self.foreground, self)
-        x, y = self.flashlight.get_location()
-        self.the_map.add(x, y, self.flashlight)
+        self.figurine = Idol(False, 28, 28, 'i', libtcod.white, self.foreground, self)
+        x, y = self.figurine.get_location()
+        self.the_map.add(x, y, self.figurine)
         
         self.lamp = Lamp(False, 24, 24, 'T', libtcod.yellow, self.foreground, self)
         x, y = self.lamp.get_location()
@@ -158,7 +158,7 @@ class LevelZero(Level):
         x, y = self.gam.get_location()
         self.the_map.add(x, y, self.gam)
 
-        self.player.add_child(ItemGrab(self.flashlight, self, text="pick up", offset = (-2, 2)))
+        self.player.add_child(ItemGrab(self.figurine, self, text="pick up", offset = (-2, 2)))
         self.player.add_child(ItemGrab(self.gam, self, text="pick up", offset = (-2, 2)))
         self.player.add_child(ItemGrab(self.lamp, self, text="pick up", offset = (-2, 2)))
 #        s = self.the_map.schimb()
