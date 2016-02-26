@@ -18,6 +18,7 @@ class Inventory(object):
         self.display = InventoryDisplay(self.owner.game.the_map, self.owner.con)
         self.owner.game.hud.append(self.display)
         
+        
     def pick_up_item(self, item):
         if item:
             item.pick_up(self.owner)
@@ -132,6 +133,8 @@ class InventoryDisplay(object):
             libtcod.console_set_default_foreground(self.con, color)
             libtcod.console_put_char(self.con, x, y, 
                                             char, libtcod.BKGND_NONE)
+        #libtcod.image_blit_rect(self.current_item.image, self.con, 0, 0, -1, -1, libtcod.BKGND_SET)                                    
+        libtcod.image_blit_2x(self.current_item.image, self.con, 0, 0, 0, 0, -1, -1)
                                             
     def clear(self):
         for i, char in enumerate(self.status):
@@ -159,6 +162,9 @@ class Item(EnvironmentTile):
         super(Item, self).__init__(*args)
         self.on = False
         self.owner = None
+        
+        self.image = libtcod.image_load('comics/cycl.png')
+
     
     def pick_up(self, owner):
         self.toggle_visible()
