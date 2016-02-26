@@ -134,7 +134,8 @@ class InventoryDisplay(object):
             libtcod.console_put_char(self.con, x, y, 
                                             char, libtcod.BKGND_NONE)
         #libtcod.image_blit_rect(self.current_item.image, self.con, 0, 0, -1, -1, libtcod.BKGND_SET)                                    
-        libtcod.image_blit_2x(self.current_item.image, self.con, 0, 0, 0, 0, -1, -1)
+        x, y = settings.SCREEN_WIDTH - 10, settings.SCREEN_HEIGHT - 11
+        libtcod.image_blit_2x(self.current_item.image, self.con, x, y, 0, 0, -1, -1)
                                             
     def clear(self):
         for i, char in enumerate(self.status):

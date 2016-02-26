@@ -29,7 +29,7 @@ class Game(object):
     def __init__(self, w, h):
         self.width, self.height = w, h
 
-        libtcod.console_set_custom_font('16x16.png',#'terminal8x8_gs_ro.png', 
+        libtcod.console_set_custom_font('16x16mod.png',#'terminal8x8_gs_ro.png', 
                 libtcod.FONT_TYPE_GREYSCALE | libtcod.FONT_LAYOUT_ASCII_INROW,
                 )
         libtcod.console_init_root(self.width, self.height, 

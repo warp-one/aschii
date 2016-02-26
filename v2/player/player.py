@@ -52,6 +52,13 @@ class Player(Listener, orders.Orders, Unit):
     def is_visible(self):
         return True
 
+    def change_sight_radius(self, delta_s, set=False):
+        self.schimb = True
+        if set:
+            self.sight_radius = delta_s
+        else:
+            self.sight_radius += delta_s
+
     def set_arrows(self):
         NSEW = {(0, 4): libtcod.CHAR_ARROW_N, 
                 (0, -4): libtcod.CHAR_ARROW_S, 
@@ -198,14 +205,13 @@ class Player(Listener, orders.Orders, Unit):
             self.idle_time += 1
         else:
             if self.sight_radius < self.max_sight:
-                self.sight_radius += 3
+                self.change_sight_radius(3)
                 self.idle_time = 0
             else:
                 self.idle_time = self.idle_start
         if self.idle_time >= dark_time:
             if self.sight_radius > 3:
-                self.sight_radius -= 3
-            self.schimb = True
+                self.change_sight_radius(-3)
             self.idle_time = 0
         libtcod.map_compute_fov(self.game.the_map.libtcod_map,
                     self.x, self.y, self.sight_radius, algo=libtcod.FOV_DIAMOND)

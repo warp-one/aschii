@@ -150,7 +150,7 @@ class LevelZero(Level):
         x, y = self.flashlight.get_location()
         self.the_map.add(x, y, self.flashlight)
         
-        self.lamp = Lamp(False, 70, 19, 'T', libtcod.yellow, self.foreground, self)
+        self.lamp = Lamp(False, 24, 24, 'T', libtcod.yellow, self.foreground, self)
         x, y = self.lamp.get_location()
         self.the_map.add(x, y, self.lamp)
         
