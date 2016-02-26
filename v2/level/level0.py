@@ -33,20 +33,27 @@ statue_script1 = {"start":("frozen, time", 'Everything is frozen, as if in time'
                         "specific":("like now", "What is it like right now?"),
                           "like":("time", "It's fairly damp. And jacket weather. The time"),
                           "now":("", "It's very today, today.")}
+                          
+statue_script2 = {"start":("", 'I would rather be...')}
 
-#statue_script2 = {
             
                           
-reveal_script0 = {"start":("idols,", 'Lord, cried out the idols, don\'t let us be broken'),
-                      "idols,":("", 'Only we can convert the infidel tonight')}
+reveal_script0 = {"start":("bug", 'bug'),
+                      "bug":("", 'noo noooo no')}
                       
-gates_data = [((123, 16), "I"),
-              ((141, 16), "swear"),
-              ((149, 28), "I"),
-              ((144, 46), "didn't"),
-              ((130, 55), "do"),
-              ((132, 67), "it"),
-              ((139, 81), "please")]
+reveal_script1 = {"start":("GOBLINS", 'CAVE OF THE GOBLINS ---->'),
+                    "GOBLINS":("",'grrr'),
+                    "newchoices":(" CAVE"),
+                    "CAVE":("dark", 'Pretty dark in here, isn\'t it?'),
+                    "dark":("", 'Almost too dark to see.')}
+                    
+gates_data = [((70, 16), "I"),
+              ((71, 16), "swear"),
+              ((79, 28), "I"),
+              ((74, 44), "didn't"),
+              ((70, 41), "do"),
+              ((72, 37), "it"),
+              ((79, 31), "please")]
                           
                           
 class FieldOfRealPeople(object):
@@ -65,7 +72,7 @@ class FieldOfRealPeople(object):
 
 class LevelZero(Level):
 
-    start_location = 15, 15
+    start_location = 8, 5
 
     def __init__(self, *args):
         super(LevelZero, self).__init__(*args)
@@ -76,21 +83,41 @@ class LevelZero(Level):
         
         self.statues = []
         for _ in range(1):
-            s = Statue(statue_script, 19, 27 + _, 'S', libtcod.green, self.foreground, self)
-            s.loop = True
+            s = Statue(statue_script2, 19, 27 + _, ' ', libtcod.green, self.foreground, self)
+            s.loop = False
+            self.statues.append(s)
+            self.the_map.add(s.x, s.y, s)
+            
+            s = MovingStatue(0, 50, reveal_script0, 56, 49 + _, 'R', libtcod.grey, self.foreground, self)
+            s.loop = False
             self.statues.append(s)
             self.the_map.add(s.x, s.y, s)
 #            self.player.add_child(Next(s, self, text="bow", static=True, offset = (2, 2)))
-            self.player.add_child(Waypoint(s, self, text="approach", 
-                                            static=True, offset=(-1,-1)))
+#            self.player.add_child(Waypoint(s, self, text="approach", 
+#                                            static=True, offset=(-1,-1)))
                                             
+            t = LinkedStatue({}, 15, 31, ' ', libtcod.brass, self.foreground, self)
+            self.the_map.add(t.x, t.y, t)
+            self.player.add_child(Bow(t, self, text="brighter", static=True, offset=(-1,-1)))
+
+            u = LinkedStatue({}, 24, 32, ' ', libtcod.brass, self.foreground, self)
+            self.the_map.add(u.x, u.y, u)
+            self.player.add_child(Bow(u, self, text="fleeter", static=True, offset=(-1,-1), new_fader=DirectiveLineFade))
+            u.add_link(t)
+            t.add_link(u)
+            
+            
             for info in gates_data:
+                # something different should happen based on which order you complete them
+                # "please I didn't do it"
+                # "please do it"
+                # "it didn't"
                 g = LStatue({}, info[0][0], info[0][1], 'X', libtcod.yellow, self.foreground, self)
                 self.statues.append(g)
                 self.the_map.add(g.x, g.y, g)
                 self.player.add_child(Ban(g, self, text=info[1], static=True, offset=(-2, 2)))
                 
-            s = ResetStatue(reveal_script0, 75, 10, 'G', libtcod.light_red, self.foreground, self)
+            s = ResetStatue(2, 30, reveal_script1, 8, 1, ' ', libtcod.light_red, self.foreground, self)
             s.loop = False
             self.statues.append(s)
             self.the_map.add(s.x, s.y, s)
@@ -98,28 +125,19 @@ class LevelZero(Level):
             #self.player.add_child(Waypoint(s, self, text="approach", 
 #                                            static=True, offset=(-1,-1)))
                                             
-            rp = RealPerson(None, 11, 89, ' ', libtcod.light_blue, self.foreground, self)
+            rp = RealPerson(None, 11, 40, ' ', libtcod.light_blue, self.foreground, self)
             rp.loop = True
             self.statues.append(rp)
             self.the_map.add(rp.x, rp.y, rp)
                                  
-            t = LinkedStatue({}, 37, 28, 'S', libtcod.brass, self.foreground, self)
-            self.the_map.add(t.x, t.y, t)
-            self.player.add_child(Bow(t, self, text="scatter", static=True, offset=(-1,-1)))
-
-            u = LinkedStatue({}, 33, 33, 'S', libtcod.brass, self.foreground, self)
-            self.the_map.add(u.x, u.y, u)
-            self.player.add_child(Bow(u, self, text="fade", static=True, offset=(-1,-1), new_fader=DirectiveLineFade))
-            u.add_link(t)
-            t.add_link(u)
             
-            v = LinkedStatue({}, 56, 60, 'L', libtcod.brass, self.foreground, self)
+            v = LinkedStatue({}, 56, 40, 'L', libtcod.brass, self.foreground, self)
             self.the_map.add(v.x, v.y, v)
             v_ = WordMatch(["holy", "look", "angle", "stalagmite"], 
                                     v, self, static=True, offset=(-1,-1))
             self.player.add_child(v_)
 
-            w = LinkedStatue({}, 67, 57, 'T', libtcod.brass, self.foreground, self)
+            w = LinkedStatue({}, 67, 40, 'T', libtcod.brass, self.foreground, self)
             self.the_map.add(w.x, w.y, w)
             w_ = WordMatch(["bite", "tap", "set", "frighten"], 
                                     w, self, static=True, offset=(-1,-1))
@@ -128,11 +146,11 @@ class LevelZero(Level):
             v.add_link(w)
             
 
-        self.flashlight = Flashlight(False, 101, 89, 'I', libtcod.yellow, self.foreground, self)
-        x, y = self.flashlight.get_location()
-        self.the_map.add(x, y, self.flashlight)
+        self.figurine = Idol(False, 28, 28, 'i', libtcod.white, self.foreground, self)
+        x, y = self.figurine.get_location()
+        self.the_map.add(x, y, self.figurine)
         
-        self.lamp = Lamp(False, 149, 19, 'T', libtcod.yellow, self.foreground, self)
+        self.lamp = Lamp(False, 24, 24, 'T', libtcod.yellow, self.foreground, self)
         x, y = self.lamp.get_location()
         self.the_map.add(x, y, self.lamp)
         
@@ -140,8 +158,7 @@ class LevelZero(Level):
         x, y = self.gam.get_location()
         self.the_map.add(x, y, self.gam)
 
-        
-        self.player.add_child(ItemGrab(self.flashlight, self, text="pick up", offset = (-2, 2)))
+        self.player.add_child(ItemGrab(self.figurine, self, text="pick up", offset = (-2, 2)))
         self.player.add_child(ItemGrab(self.gam, self, text="pick up", offset = (-2, 2)))
         self.player.add_child(ItemGrab(self.lamp, self, text="pick up", offset = (-2, 2)))
 #        s = self.the_map.schimb()

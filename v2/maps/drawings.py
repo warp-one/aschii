@@ -1,5 +1,6 @@
 import libtcodpy as libtcod
 from PIL import Image
+from random import choice
 
 
 from tile import EnvironmentTile, BottomlessPit
@@ -19,7 +20,7 @@ def make_tile(map_drawing, x, y, con, game):
     color = (libtcod.darkest_grey if sum(tile_rgb) == 0 else libtcod.Color(*tile_rgb))
     return EnvironmentTile(
             blocked,
-            x, y, '@', color, con, game
+            x, y, choice(['@', '%', '#']), color, con, game
                                      )
 
 class MapDrawing(object):
@@ -32,6 +33,7 @@ class MapDrawing(object):
     def read_image(self):
         self.open_image = Image.open(self.image_name)
         self.w, self.h = self.open_image.size
+        settings.LVL0_MAP_WIDTH, settings.LVL0_MAP_HEIGHT = self.w, self.h
         for p in list(self.open_image.getdata()):
             yield p
         self.open_image.close()
@@ -55,7 +57,7 @@ class GifReader(object):
     def get_frame_data(self):
         def get_xy(i):
             return i % self.w, i / self.w
-        xys = [get_xy(i) for i in range(len(self.frames[0]))]
+        xys = [get_xy(i) for i in xrange(len(self.frames[0]))]
         frame_data = dict(zip(xys, [[] for xy in xys]))
         for f in self.frames:
             for i, color_char in enumerate(f):
@@ -113,6 +115,6 @@ class SpecialEffect(object):
 lvl0 = MapDrawing("maps/lvl0.png")
 lvl1 = MapDrawing("maps/lvl1.png")
 lvl2 = MapDrawing("maps/lvl2.png")
-cave = MapDrawing("maps/cave.png")
+cave = MapDrawing("maps/longcave.png")
 
-tv = SpecialEffect(GifReader("maps/trees-loop.gif").get_frame_data(), (84, 14))
+tv = SpecialEffect(GifReader("maps/trees-loop.gif").get_frame_data(), (50, 14))

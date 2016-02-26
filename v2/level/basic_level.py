@@ -1,10 +1,36 @@
 
 import libtcodpy as libtcod
 
+import settings
 from maps import TileMap
 from player import Player
 
+class Camera(object):
+    
+    camera_x = 0
+    camera_y = 0
+    
+    def __init__(self, level):
+        self.map_width, self.map_height = settings.LVL0_MAP_WIDTH, settings.LVL0_MAP_HEIGHT
+        self.w = settings.SCREEN_WIDTH
+        self.h = settings.SCREEN_HEIGHT
 
+    def to_camera_coordinates(self, x, y):
+        x, y = x - self.camera_x, y - self.camera_y
+        return x, y
+        
+    def move_camera(self, target_x, target_y):
+        x = target_x - self.w/2
+        y = target_y - self.h/2
+        
+        if x < 0: x = 0
+        if y < 0: y = 0
+        x_overset = self.map_width - self.w - 1
+        y_overset = self.map_height - self.h - 1
+        if x > x_overset: x = x_overset
+        if y > y_overset: y = y_overset
+        
+        self.camera_x, self.camera_y = x, y
 
 class Level(object):
 
@@ -14,8 +40,11 @@ class Level(object):
     def __init__(self, game):
         self.game = game
         self.create_consoles()
-        self.add_map()
-        self.player = Player(10, 6, ' ', libtcod.white, self.foreground, self)
+        self.the_map = TileMap(self.game.width, self.game.height, self.foreground, self)
+        self.tilemap = self.the_map.tilemap
+        self.camera = Camera(self)
+        self.player = Player(3, 3, ' ', libtcod.white, self.foreground, self)
+        self.player.new_con = self.background
         self.last_render = []
         self.next_render = []
         self.special_effects = []
@@ -23,11 +52,8 @@ class Level(object):
     def create_consoles(self):
         self.background = libtcod.console_new(self.game.width, self.game.height)
         self.foreground = libtcod.console_new(self.game.width, self.game.height)
+        libtcod.console_set_default_background(self.background, libtcod.blue)
         self.consoles = [self.background, self.foreground]
-
-    def add_map(self):
-        self.the_map = TileMap(self.game.width, self.game.height, self.foreground, self)
-        self.tilemap = self.the_map.tilemap
 
     def get_all_tiles(self):
         map_tiles = self.the_map.get_tiles()
@@ -37,7 +63,7 @@ class Level(object):
         self.next_render = [x for x in self.the_map.get_tiles_by_layer(self.the_map.get_tiles_in_render_area())]
         self.player.update()
         for t in self.next_render:
-            if not isinstance(t, Player):
+            if not t is Player:
                 t.update()
             seen = libtcod.map_is_in_fov(self.the_map.libtcod_map, t.x, t.y)
             if seen:
@@ -55,6 +81,7 @@ class Level(object):
             self.player.schimb = False
 
     def render_all(self):
+        self.camera.move_camera(self.player.x, self.player.y)
         for t in self.next_render:
             t.draw()
         for i in self.hud:
@@ -65,6 +92,8 @@ class Level(object):
     def clear_all(self):
         for t in self.last_render:
             t.clear()
+        for i in self.hud:
+            i.clear()
         self.last_render = []
         
         for a in self.player.action_manager.actions:

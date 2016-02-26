@@ -7,9 +7,10 @@ class Tile(object):
     name = ""
     phrase = None
 
-    def __init__(self, x, y, char, color, con, game):
+    def __init__(self, x, y, char, color, con, game, phrase=None):
         self.x, self.y = x, y
         self.char = char
+        self.phrase = phrase
         self.current_char = char
         self.color = color
         self.current_color = color
@@ -24,12 +25,13 @@ class Tile(object):
         self.children = []
         self.effects = []
         
-        self.visible = True
+        self.visible = False
         self.transparent = True
         
         self.update_queue = []
         self.next_char = None
         self.next_color = None
+        
 
     def move(self, dx, dy):
         self.x += dx
@@ -77,34 +79,43 @@ class Tile(object):
 
         if self.phrase:
             for i, char in enumerate(self.phrase):
-                x, y = self.x, self.y + i
+                x, y = self.game.camera.to_camera_coordinates(self.x + i, self.y)
 #                if not self.game.the_map.run_collision(x, y):
                 libtcod.console_set_default_foreground(self.con, color)
                 libtcod.console_put_char(self.con, x, y, 
                                                 char, libtcod.BKGND_NONE)
         else:
-            x, y = self.get_location()
+            x, y = self.game.camera.to_camera_coordinates(*self.get_location())
+            
             libtcod.console_set_default_foreground(self.con, color)
             libtcod.console_put_char(self.con, x, y, 
                                             char, libtcod.BKGND_NONE)
 
     def clear(self):
-        libtcod.console_put_char(self.con, self.x, self.y, 
-                                       ' ', libtcod.BKGND_NONE)
         for c in self.children:
             c.clear()
+        if self.phrase:
+            for i, char in enumerate(self.phrase):
+                x, y = self.game.camera.to_camera_coordinates(self.x + i, self.y)
+                libtcod.console_put_char(self.con, x, y, 
+                                                ' ', libtcod.BKGND_NONE)
+        else:
+            x, y = self.game.camera.to_camera_coordinates(*self.get_location())
+            libtcod.console_put_char(self.con, x, y, 
+                                            ' ', libtcod.BKGND_NONE)
 
     def update(self):
         # ACTIONS
         to_remove = []
-        for i, action in enumerate(self.update_queue):
-            if action[0] == 0:
-                action[1](*action[2])
-                to_remove.append(action)
-            else:
-                self.update_queue[i] = (action[0] - 1, action[1], action[2])
-        for completed_action in to_remove:
-            self.update_queue.remove(completed_action)
+        if self.update_queue:
+            for i, action in enumerate(self.update_queue):
+                if action[0] == 0:
+                    action[1](*action[2])
+                    to_remove.append(action)
+                else:
+                    self.update_queue[i] = (action[0] - 1, action[1], action[2])
+            for completed_action in to_remove:
+                self.update_queue.remove(completed_action)
 
         # DRAWING EFFECTS
         if self.effects and not self.game.the_map.run_collision(*self.get_location()):
@@ -116,15 +127,11 @@ class Tile(object):
             self.next_color = self.color_queue.pop(0)
             if self.effects_mode == "hold":
                 self.color_queue.append(self.next_color)
-        else:
-            self.next_color = None
 
         if self.char_queue:
             self.next_char = self.char_queue.pop(0)
             if self.effects_mode == "hold":
                 self.char_queue.append(self.next_char)
-        else:
-            self.next_char = None
 
     def add_child(self, child, offset=None):
         self.children.append(child)
@@ -173,19 +180,16 @@ class Word(Tile):
         super(Word, self).__init__(*args)
         self.word = word
         
-    def draw(self):
+    def _draw(self):
         for i, letter in enumerate(self.word):
-            x, y = self.x + i, self.y
-            in_fov = libtcod.map_is_in_fov(self.game.the_map.libtcod_map, x, y)
-            is_lit = self.game.the_map.tile_is_lit(*self.get_location())
-            if in_fov or is_lit:
-                libtcod.console_set_default_foreground(self.con, self.current_color)
-                libtcod.console_put_char(self.con, x, y, 
-                                                letter, libtcod.BKGND_NONE)
+            x, y = self.game.camera.to_camera_coordinates(self.x + i, self.y)
+            libtcod.console_set_default_foreground(self.con, self.current_color)
+            libtcod.console_put_char(self.con, x, y, 
+                                            letter, libtcod.BKGND_NONE)
                                                 
     def clear(self):
         for i, letter in enumerate(self.word):
-            x, y = self.x + i, self.y
+            x, y = self.game.camera.to_camera_coordinates(self.x + i, self.y)
             libtcod.console_put_char(self.con, x, y, 
                                             ' ', libtcod.BKGND_NONE)
     

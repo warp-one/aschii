@@ -1,5 +1,6 @@
 import libtcodpy as libtcod
 
+import settings
 from tile import EnvironmentTile
 from directive import ItemGrab, ItemToggle, Directive, Power
 
@@ -16,6 +17,7 @@ class Inventory(object):
 
         self.display = InventoryDisplay(self.owner.game.the_map, self.owner.con)
         self.owner.game.hud.append(self.display)
+        
         
     def pick_up_item(self, item):
         if item:
@@ -65,6 +67,8 @@ class Inventory(object):
             for d in self.owner.children:
                 if isinstance(d, ItemToggle):
                     self.owner.remove_child(d)
+                    d.clear()
+                    del d
             self.owner.add_child(ItemToggle(self.current_item, 
                     self.owner, 
                     self.owner.game, 
@@ -75,6 +79,8 @@ class Inventory(object):
             for d in self.owner.children:
                 if isinstance(d, ItemToggle):
                     self.owner.remove_child(d)
+                    d.clear()
+                    del d
 
             
             
@@ -87,8 +93,8 @@ class InventoryDisplay(object):
     length = 20
 
     def __init__(self, game_map, con):
-        self.x = game_map.width - self.length
-        self.y = game_map.height - 1
+        self.x = settings.SCREEN_WIDTH - self.length
+        self.y = settings.SCREEN_HEIGHT - 1
         self.con = con
 
         self.current_item = None
@@ -100,6 +106,7 @@ class InventoryDisplay(object):
         self.current_color = self.color
 
     def cycle_display(self, item):
+        self.clear()
         self.current_item = item
         if self.current_item:
             self.text = item.name
@@ -113,6 +120,7 @@ class InventoryDisplay(object):
         item = self.current_item
         colon = ":"
         color = (item.current_color if item.on else libtcod.grey)
+            
         for i, char in enumerate(self.text + colon):
             x, y = self.x + i, self.y
             libtcod.console_set_default_foreground(self.con, color)
@@ -125,11 +133,21 @@ class InventoryDisplay(object):
 #            self.current_item.item_toggle.change_text(self.current_item.ontext)
  #           self.status = self.current_item.ontext
             
-        for i, char in enumerate(self.status):
-            x, y = self.x + len(self.text) + 2 + i, self.y
-            libtcod.console_set_default_foreground(self.con, color)
+#        for i, char in enumerate(self.status):
+#            x, y = self.x + len(self.text) + 2 + i, self.y
+#            libtcod.console_set_default_foreground(self.con, color)
+#            libtcod.console_put_char(self.con, x, y, 
+#                                            char, libtcod.BKGND_NONE)
+        #libtcod.image_blit_rect(self.current_item.image, self.con, 0, 0, -1, -1, libtcod.BKGND_SET)                                    
+        x, y = settings.SCREEN_WIDTH - 10, settings.SCREEN_HEIGHT - 11
+        libtcod.image_blit_2x(self.current_item.image, self.con, x, y, 0, 0, -1, -1)
+                                            
+    def clear(self):
+        for i, char in enumerate(self.text + ":"):
+            x, y = self.x + i, self.y
             libtcod.console_put_char(self.con, x, y, 
-                                            char, libtcod.BKGND_NONE)
+                                            ' ', libtcod.BKGND_NONE)
+
                                             
     def get_toggle_location(self):
         return self.x + len(self.text) + 2, self.y
@@ -150,6 +168,9 @@ class Item(EnvironmentTile):
         super(Item, self).__init__(*args)
         self.on = False
         self.owner = None
+        
+        self.image = libtcod.image_load('comics/cycl.png')
+
     
     def pick_up(self, owner):
         self.toggle_visible()

@@ -14,11 +14,11 @@ class TileMap(Listener, object):
     def __init__(self, w, h, con, game):
         self.con = con
         self.game = game
-        self.width, self.height = w, h
         drawing = drawings.cave
+        self.width, self.height = drawing.w, drawing.h
         self.tilemap = [[drawings.make_tile(drawing, x, y, self.con, self.game)
-                            for y in range(h)]
-                            for x in range(w)]
+                            for y in xrange(self.height)]
+                            for x in xrange(self.width)]
                             
         self.libtcod_map = libtcod.map_new(self.width, self.height)
         for t in self.get_tiles():
@@ -78,8 +78,8 @@ class TileMap(Listener, object):
         if Ystart < 0: Ystart = 0
         if Yend >= self.height: Yend = self.height
         
-        for y in range(Ystart, Yend):
-            for x in range(Xstart, Xend):
+        for y in xrange(Ystart, Yend):
+            for x in xrange(Xstart, Xend):
                 yield self.tilemap[x][y]
 
     def get_round_area(self, origin, radius):
@@ -103,16 +103,10 @@ class TileMap(Listener, object):
             return False
 
     def get_tiles(self):
-        for y in range(self.height):
-            for x in range(self.width):
+        for y in xrange(self.height):
+            for x in xrange(self.width):
                 yield self.tilemap[x][y]
                 
-    def tile_is_lit(self, x, y):
-        if self.tilemap[x][y].visible:
-            return True
-        else:
-            return False
-        
     def get_tiles_in_render_area(self):
         player = self.game.player
         def x(light):
@@ -206,9 +200,9 @@ class TileMap(Listener, object):
     def _schimb(self, novel):
         print "schimband..." # needs the a din a. looking into declaring text encodings
         num_cells = self.width * self.height
-        prose = novel.generate_markov_text(size=num_cells)
+        prose = novel.generate_markov_text(size=num_cells/3)
         while not prose:
-            prose = novel.generate_markov_text(size=num_cells)
+            prose = novel.generate_markov_text(size=num_cells/3)
         text = prose
         text = text.replace("Bernard", "XXXXXXX")
         text = text.replace("Jinny", "XXXXX")
@@ -239,14 +233,12 @@ class TileMap(Listener, object):
                         tile.color_queue = colors
                     if chars:
                         tile.char_queue = chars
-
+        
     def schimb(self):
         tiles_to_write = [x for x in self.get_visible_tiles(self.get_tiles_in_render_area()) if not x.blocked]
         if len(self.mutated_waves) < len(tiles_to_write):
             self.mutated_waves = self._schimb(self.waves)
         for i, t in enumerate(tiles_to_write):
-            if isinstance(t, BottomlessPit):
-                continue
             t.current_char = self.mutated_waves[i]
         self.mutated_waves = self.mutated_waves[len(tiles_to_write):]
 #            elif t.blocked:
@@ -258,7 +250,7 @@ class TileMap(Listener, object):
                     
     def on_notify(self, entity, event):
         if event == "player move":
-            fade = [libtcod.Color(a, a, a) for a in range(255, libtcod.darkest_grey.r, -10)]
+            fade = [libtcod.Color(a, a, a) for a in xrange(255, libtcod.darkest_grey.r, -10)]
             if entity.left_foot:
                 foot_displacement = entity.left_foot_displacement
             else:

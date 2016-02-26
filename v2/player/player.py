@@ -1,83 +1,29 @@
+from random import shuffle
+
 import libtcodpy as libtcod
 
+import orders, settings
 from actions import ActionManager
 from directive import Directive, PlayerArrow, SCHIMB, Legs, PlayerWASD
 from items import Inventory
 from observer import Listener
 from tile import Unit
+from comics import cycl
 
 
-class Orders(object):
-    def create_orders(self):
-        self.orders = [] # (t, callable)
-        self.current_action = None
-        self.time_left = 0
-        self.path = []
-        
-    def act(self):
-        if self.current_action:
-            self.current_action()
-            self.time_left -= .1
-            if self.time_left <= 0:
-                self.end_action()
-        else:
-            if self.orders:
-                self.time_left, self.current_action = self.orders.pop(0)
-                
-    def add_order(self, time, order):
-        self.orders.append((time, order))
-        
-    def move_along_path(self):
-        try:
-            next_tile = self.path.pop(0)
-        except IndexError:
-            self.end_action()
-            return
-        dx = next_tile[0] - self.x
-        dy = next_tile[1] - self.y
-        if self.game.the_map.run_collision(self.x + dx, self.y + dy):
-            self.end_action()
-            return
-        self.move(dx, dy)
-        
-    def set_path(self, path):
-        self.path = path
-        return self.path
-        
-    def get_path(self, start, finish):
-        self.path = []
-        x_dif = finish[0] - start[0] 
-        y_dif = finish[1] - start[1]
-        if x_dif: 
-            x_sign = x_dif/abs(x_dif)
-        else:
-            x_sign = 1
-        for x in range(x_sign, x_dif + 1, x_sign):
-            self.path.append((start[0] + x, start[1]))
-        if y_dif: 
-            y_sign = y_dif/abs(y_dif)
-        else:
-            y_sign = 1
-        for y in range(y_sign, y_dif + 1, y_sign):
-            self.path.append((start[0] + x_dif, start[1] + y))
-        return self.path
-        
-    def end_action(self):
-        self.current_action = None
-        self.time_left = 0
-            
-
-class Player(Listener, Orders, Unit):
+class Player(Listener, orders.Orders, Unit):
 
     arrow_keys = [libtcod.KEY_UP, libtcod.KEY_DOWN,
                   libtcod.KEY_RIGHT, libtcod.KEY_LEFT]
     offsets = [(-2, -2), (-2, 2), (2, 3), (2, -3), 
                (-2, -2), (-2, 2), (2, 3), (2, -3)]
-    sight_radius = 21 # high in early levels, low in late...
+    sight_radius = 15 # high in early levels, low in late...
+    max_sight = sight_radius
     len_step = 6 # in frames
     char = ' '
     left_foot = False
     left_foot_displacement = -1
+    idle_start = -210
 
     def __init__(self, *args):
         self.blocked = False
@@ -99,10 +45,19 @@ class Player(Listener, Orders, Unit):
         self.add_child(PlayerWASD(self, self.game))
         
         self.last_position = self.x, self.y
-        self.idle_time = -90
+        self.idle_time = self.idle_start
         self.moved = False
-        self.easy_move = True
         self.schimb = False
+        
+    def is_visible(self):
+        return True
+
+    def change_sight_radius(self, delta_s, set=False):
+        self.schimb = True
+        if set:
+            self.sight_radius = delta_s
+        else:
+            self.sight_radius += delta_s
 
     def set_arrows(self):
         NSEW = {(0, 4): libtcod.CHAR_ARROW_N, 
@@ -134,7 +89,7 @@ class Player(Listener, Orders, Unit):
         if is_char or is_arrow or is_space:
             self.action_manager.handle_letter(key)
         if is_space:
-            print self.get_location()
+            print self.get_location(), self.game.camera.to_camera_coordinates(*self.get_location())
      
         if key.vk == libtcod.KEY_ENTER and key.lalt:
             libtcod.console_set_fullscreen(not libtcod.console_is_fullscreen())
@@ -183,7 +138,7 @@ class Player(Listener, Orders, Unit):
         self.add_child(power)
         self.powers.append(power)
         power.x = 0
-        power.y = self.game.the_map.height - len(self.powers)
+        power.y = settings.SCREEN_HEIGHT - len(self.powers)
         power.update()
         
     def remove_power(self, power):
@@ -199,7 +154,7 @@ class Player(Listener, Orders, Unit):
             self.facing = (x/abs(x) if x else 0), (y/abs(y) if y else 0)
             return self.facing
 
-    def move(self, dx, dy):
+    def move(self, dx, dy, easy_move=True):
         if super(Player, self).move(dx, dy):
             self.game.the_map.move(self.x, self.y, self)
             if dx or dy:
@@ -208,21 +163,25 @@ class Player(Listener, Orders, Unit):
                 self.step_timer = 0
                 self.take_step()
                 self.moved = True
-        elif self.easy_move:
+        elif easy_move:
             if dx:
                 x, y = self.x + dx, self.y
-                for tile in ((x, y + 1), (x, y - 1)):
+                destinations = [(x, y + 1), (x, y - 1)]
+                shuffle(destinations)
+                for tile in destinations:
                     if not self.game.the_map.run_collision(*tile):
                         if not self.game.the_map.run_collision(self.x, tile[1]):
                             self.move(0, tile[1] - y)
-                        break
+                            break
             if dy:
                 x, y = self.x, self.y + dy
-                for tile in ((x + 1, y), (x - 1, y)):
+                destinations = [(x + 1, y), (x - 1, y)]
+                shuffle(destinations)
+                for tile in destinations:
                     if not self.game.the_map.run_collision(*tile):
                         if not self.game.the_map.run_collision(tile[0], self.y):
                             self.move(tile[0] - x, 0)
-                        break
+                            break
 
     def _draw(self): # THE UNDERSCORE IS IMPORTANT; KEEP IT
                      # OR OTHERWISE ALL THE ACTIONS DISAPPEAR
@@ -245,15 +204,14 @@ class Player(Listener, Orders, Unit):
         if self.last_position == self.get_location():
             self.idle_time += 1
         else:
-            if self.sight_radius < 21:
-                self.sight_radius += 3
+            if self.sight_radius < self.max_sight:
+                self.change_sight_radius(3)
                 self.idle_time = 0
             else:
-                self.idle_time = -50
+                self.idle_time = self.idle_start
         if self.idle_time >= dark_time:
             if self.sight_radius > 3:
-                self.sight_radius -= 3
-            self.schimb = True
+                self.change_sight_radius(-3)
             self.idle_time = 0
         libtcod.map_compute_fov(self.game.the_map.libtcod_map,
                     self.x, self.y, self.sight_radius, algo=libtcod.FOV_DIAMOND)

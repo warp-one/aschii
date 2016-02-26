@@ -1,5 +1,8 @@
+import libtcodpy as libtcod
+
 from inventory import Item
 from directive import Directive
+
 
 class Flashlight(Item):
     
@@ -43,18 +46,23 @@ class Lamp(Item):
 
     name = "Candelabra"
     on = False
-    ontext = "turn on"
-    offtext = "turn off"
+    ontext = "light"
+    offtext = "extinguish"
     Lradius = 3
     
+    def __init__(self, *args):
+        super(Lamp, self).__init__(*args)
+
+        self.image = libtcod.image_load('comics/candle.png')
+
     def turn_on(self):
         if super(Lamp, self).turn_on():
-            self.owner.sight_radius += self.Lradius
+            self.owner.change_sight_radius(self.Lradius)
         self.on = True
         
     def turn_off(self):
         if super(Lamp, self).turn_off():
-            self.owner.sight_radius -= self.Lradius
+            self.owner.change_sight_radius(-self.Lradius)
         self.on = False
         
     def do(self):
@@ -65,6 +73,31 @@ class Lamp(Item):
         self.game.the_map.schimb()
     
 
+class Idol(Item):
+
+    name = "Figurine"
+    on = False
+    ontext = "venerate"
+    offtext = "smash"
+    
+    def __init__(self, *args):
+        super(Idol, self).__init__(*args)
+
+        self.image = libtcod.image_load('comics/cycl.png')
+
+    def turn_on(self):
+        self.on = True
+        
+    def turn_off(self):
+        self.on = False
+        
+    def do(self):
+        if self.on:
+            self.turn_off()
+        else:
+            self.turn_on()
+
+
 class Gammon(Item):
 
     name = "gammon"
@@ -72,6 +105,11 @@ class Gammon(Item):
     on = False
     ontext = "eat"
     offtext = " "
+
+    def __init__(self, *args):
+        super(Gammon, self).__init__(*args)
+
+        self.image = libtcod.image_load('comics/ham.png')
 
     def turn_on(self):
         # not hungry any more

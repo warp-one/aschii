@@ -14,7 +14,7 @@ class Attachment(object):
 class Directive(Attachment, Tile):
 
     char = 'X'
-    range = 5
+    range = 9
 
     def __init__(self, anchor, game, static=False, text="Destroy", offset=(0, 0), new_fader=None):
         self.anchor = anchor
@@ -32,11 +32,11 @@ class Directive(Attachment, Tile):
         self.change_text(text)
         self.pressed = False
 
-        self.visible = True
+        self.visible = False
         if new_fader:
-            self.fader = new_fader()
+            self.fader = new_fader(self.game.camera)
         else:
-            self.fader = faders.DirectiveFade()
+            self.fader = faders.DirectiveFade(self.game.camera)
         
     def toggle_active(self):
         if self.active:
@@ -53,7 +53,7 @@ class Directive(Attachment, Tile):
     def is_visible(self):
         dv = super(Directive, self).is_visible()
         av = self.anchor.is_visible()
-        return dv and av
+        return av
        
     def draw(self):
         if self.completed: # should only pass if there's a fader
@@ -74,14 +74,13 @@ class Directive(Attachment, Tile):
         to_draw = self.phrase
         for i, char in enumerate(to_draw):
             x, y = self.x + i, self.y
-            is_lit = self.game.the_map.tile_is_lit(*self.get_location())
-            in_fov = libtcod.map_is_in_fov(self.game.the_map.libtcod_map, self.x, self.y)
-            if (is_lit or in_fov):
-                if tools.get_distance(Ploc, Sloc) < self.game.player.sight_radius:
-                    color = (self.current_color if self.phrase_clear[i] else self.dormant_color)
-                    libtcod.console_set_default_foreground(self.con, color)
-                    libtcod.console_put_char(self.con, x, y, 
-                                                    char, libtcod.BKGND_NONE)
+            if (x, y) == self.anchor.get_location():
+                continue
+            x, y = self.game.camera.to_camera_coordinates(x, y)
+            color = (self.current_color if self.phrase_clear[i] else self.dormant_color)
+            libtcod.console_set_default_foreground(self.con, color)
+            libtcod.console_put_char(self.con, x, y, 
+                                            char, libtcod.BKGND_NONE)
                                                     
     def complete(self):
         self.completed = True
@@ -93,11 +92,12 @@ class Directive(Attachment, Tile):
         
     def clear(self):
         try:
-            for i in range(len(self.phrase)):
-                x, y = self.x + i, self.y
+            for i in xrange(len(self.phrase)):
+                x, y = self.game.camera.to_camera_coordinates(self.x + i, self.y)
                 libtcod.console_put_char(self.con, x, y, 
                                                 ' ', libtcod.BKGND_NONE)
         except TypeError:
+            x, y = self.game.camera.to_camera_coordinates(self.x, self.y)
             libtcod.console_put_char(self.con, self.x, self.y, 
                                             ' ', libtcod.BKGND_NONE)
             
@@ -116,6 +116,7 @@ class Directive(Attachment, Tile):
     def reset(self):
         self.phrase_clear = [False] * len(self.phrase)
         self.phrase_index = 0
+        self.clear()
         
 class DirectiveLink(object):
     def __init__(self):
