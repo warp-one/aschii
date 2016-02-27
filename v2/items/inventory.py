@@ -2,7 +2,8 @@ import libtcodpy as libtcod
 
 import settings
 from tile import EnvironmentTile
-from directive import ItemGrab, ItemToggle, Directive, Power
+from directive import ItemGrab, ItemToggle
+
 
 class Inventory(object):
 
@@ -17,8 +18,16 @@ class Inventory(object):
 
         self.display = InventoryDisplay(self.owner.game.the_map, self.owner.con)
         self.owner.game.hud.append(self.display)
-        
-        
+        ox = settings.SCREEN_WIDTH - self.owner.x - 20
+        oy = settings.SCREEN_HEIGHT - 5
+        self.item_toggle = ItemToggle(self.current_item,
+                                      self.owner,
+                                      self.owner.game,
+                                      text="",
+                                      static=True,
+                                      offset=(ox, oy))
+        self.owner.add_child(self.item_toggle, offset=(ox, oy))
+
     def pick_up_item(self, item):
         if item:
             item.pick_up(self.owner)
@@ -33,7 +42,7 @@ class Inventory(object):
     def drop_item(self):
         if self.current_item:
             self.current_item.put_down()
-            self.owner.add_child(ItemGrab(self.current_item, self.owner.game, text="pick up", offset = (-2, 2)))
+            self.owner.add_child(ItemGrab(self.current_item, self.owner.game, text="pick up", offset=(-2, 2)))
             self.inventory.remove(self.current_item)
             self.current_item = None
             self.switch_item()
@@ -57,36 +66,18 @@ class Inventory(object):
             previous_item.put_away()
         if self.current_item:
             self.current_item.equip()
-#            self.current_item.turn_on()
+            self.item_toggle.item = self.current_item
+            self.item_toggle.change_text(self.current_item.get_toggle_text())
+        else:
+            self.item_toggle.change_text("")
         self.display.cycle_display(self.current_item)
-        
-        if self.current_item and previous_item is not self.current_item:
-            display_location = self.display.get_toggle_location()
-            x = display_location[0] - self.owner.x
-            y = display_location[1] - self.owner.y
-            for d in self.owner.children:
-                if isinstance(d, ItemToggle):
-                    self.owner.remove_child(d)
-                    d.clear()
-                    del d
-            self.owner.add_child(ItemToggle(self.current_item, 
-                    self.owner, 
-                    self.owner.game, 
-                    text=(self.current_item.offtext if self.current_item.on else self.current_item.ontext), 
-                    static=True, 
-                    offset=(x, y)))
-        elif self.current_item is None:
-            for d in self.owner.children:
-                if isinstance(d, ItemToggle):
-                    self.owner.remove_child(d)
-                    d.clear()
-                    del d
+        self.display.x = settings.SCREEN_WIDTH - (len(self.display.text) + 2 + len(self.item_toggle.phrase))
+        self.item_toggle.x = self.display.x + len(self.display.text) + 2
 
-            
-            
     def toggle_item(self):
         if self.current_item:
             self.current_item.do()
+
 
 class InventoryDisplay(object):
 
@@ -126,19 +117,6 @@ class InventoryDisplay(object):
             libtcod.console_set_default_foreground(self.con, color)
             libtcod.console_put_char(self.con, x, y, 
                                             char, libtcod.BKGND_NONE)
-#        if self.current_item.on:
-#            self.current_item.item_toggle.change_text(self.current_item.offtext)
-#            self.status = self.current_item.offtext
-#        else:
-#            self.current_item.item_toggle.change_text(self.current_item.ontext)
- #           self.status = self.current_item.ontext
-            
-#        for i, char in enumerate(self.status):
-#            x, y = self.x + len(self.text) + 2 + i, self.y
-#            libtcod.console_set_default_foreground(self.con, color)
-#            libtcod.console_put_char(self.con, x, y, 
-#                                            char, libtcod.BKGND_NONE)
-        #libtcod.image_blit_rect(self.current_item.image, self.con, 0, 0, -1, -1, libtcod.BKGND_SET)                                    
         x, y = settings.SCREEN_WIDTH - 10, settings.SCREEN_HEIGHT - 11
         libtcod.image_blit_2x(self.current_item.image, self.con, x, y, 0, 0, -1, -1)
                                             
@@ -148,7 +126,6 @@ class InventoryDisplay(object):
             libtcod.console_put_char(self.con, x, y, 
                                             ' ', libtcod.BKGND_NONE)
 
-                                            
     def get_toggle_location(self):
         return self.x + len(self.text) + 2, self.y
 
@@ -159,10 +136,13 @@ class InventoryDisplay(object):
             else:
                 self.status = "off"
 
+
 class Item(EnvironmentTile):
 
     name = "Generic Item"
-    description = ""
+    description = "an item"
+    ontext = "turn on"
+    offtext = "turn off"
 
     def __init__(self, *args):
         super(Item, self).__init__(*args)
@@ -171,7 +151,6 @@ class Item(EnvironmentTile):
         
         self.image = libtcod.image_load('comics/cycl.png')
 
-    
     def pick_up(self, owner):
         self.toggle_visible()
         self.owner = owner
@@ -203,6 +182,12 @@ class Item(EnvironmentTile):
             self.turn_off()
         else:
             self.turn_on()
+
+    def get_toggle_text(self):
+        if self.on:
+            return self.offtext
+        else:
+            return self.ontext
         
     def equip(self):
         print "You equip your " + self.name
@@ -221,4 +206,3 @@ class Item(EnvironmentTile):
                 return super(Item, self)._draw()
         except AttributeError:
             return super(Item, self)._draw()
-        

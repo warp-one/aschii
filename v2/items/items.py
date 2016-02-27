@@ -1,15 +1,12 @@
 import libtcodpy as libtcod
 
 from inventory import Item
-from directive import Directive
 
 
 class Flashlight(Item):
     
     name = "flashlight"
     on = False
-    ontext = "turn on"
-    offtext = "turn off"
     distance = 20
     Lradius = 5
     
@@ -47,7 +44,7 @@ class Lamp(Item):
     name = "Candelabra"
     on = False
     ontext = "light"
-    offtext = "extinguish"
+    offtext = "snuff"
     Lradius = 3
     
     def __init__(self, *args):
@@ -91,6 +88,31 @@ class Idol(Item):
     def turn_off(self):
         self.on = False
         
+    def do(self):
+        if self.on:
+            self.turn_off()
+        else:
+            self.turn_on()
+
+
+class Lute(Item):
+
+    name = "gittern"
+    on = False
+    ontext = "play"
+    offtext = "mute"
+
+    def __init__(self, *args):
+        super(Lute, self).__init__(*args)
+
+        self.image = libtcod.image_load('comics/lute.png')
+
+    def turn_on(self):
+        self.on = True
+
+    def turn_off(self):
+        self.on = False
+
     def do(self):
         if self.on:
             self.turn_off()

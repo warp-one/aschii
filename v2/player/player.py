@@ -4,11 +4,10 @@ import libtcodpy as libtcod
 
 import orders, settings
 from actions import ActionManager
-from directive import Directive, PlayerArrow, SCHIMB, Legs, PlayerWASD
+from directive import Directive, PlayerArrow, Legs, PlayerWASD
 from items import Inventory
 from observer import Listener
 from tile import Unit
-from comics import cycl
 
 
 class Player(Listener, orders.Orders, Unit):
@@ -39,8 +38,8 @@ class Player(Listener, orders.Orders, Unit):
         self.create_orders()
         self.obs = []
 
-        self.arrows = {libtcod.CHAR_ARROW_N:None, libtcod.CHAR_ARROW_S:None, 
-                       libtcod.CHAR_ARROW_E:None, libtcod.CHAR_ARROW_W:None}
+        self.arrows = {libtcod.CHAR_ARROW_N: None, libtcod.CHAR_ARROW_S: None,
+                       libtcod.CHAR_ARROW_E: None, libtcod.CHAR_ARROW_W: None}
         self.set_arrows()
         self.add_child(PlayerWASD(self, self.game))
         

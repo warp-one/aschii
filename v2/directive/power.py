@@ -1,6 +1,8 @@
 import libtcodpy as libtcod
 
+import settings
 from directive import Directive
+
 
 class Power(Directive):
 
@@ -22,6 +24,18 @@ class Power(Directive):
             libtcod.console_set_default_foreground(self.con, color)
             libtcod.console_put_char(self.con, x, y, 
                                             char, libtcod.BKGND_NONE)
+
+    def clear(self):
+        try:
+            for i in xrange(len(self.phrase)):
+                x, y = self.x + i, self.y
+                libtcod.console_put_char(self.con, x, y,
+                                                ' ', libtcod.BKGND_NONE)
+        except TypeError:
+            x, y = self.game.camera.to_camera_coordinates(self.x, self.y)
+            libtcod.console_put_char(self.con, self.x, self.y,
+                                            ' ', libtcod.BKGND_NONE)
+
  
 class ItemToggle(Power):
 
@@ -36,7 +50,27 @@ class ItemToggle(Power):
             self.change_text(self.item.offtext)
         else:
             self.change_text(self.item.ontext)
-            
+
+    def _draw(self):
+        self.dormant_color = libtcod.red
+        to_draw = self.phrase
+        for i, char in enumerate(to_draw):
+            x, y = self.x + i, settings.SCREEN_HEIGHT - 1
+            color = (self.current_color if self.phrase_clear[i] else self.dormant_color)
+            libtcod.console_set_default_foreground(self.con, color)
+            libtcod.console_put_char(self.con, x, y,
+                                            char, libtcod.BKGND_NONE)
+
+    def clear(self):
+        try:
+            for i in xrange(len(self.phrase)):
+                x, y = self.x + i, settings.SCREEN_HEIGHT - 1
+                libtcod.console_put_char(self.con, x, y,
+                                                ' ', libtcod.BKGND_NONE)
+        except TypeError:
+            x, y = self.game.camera.to_camera_coordinates(self.x, self.y)
+            libtcod.console_put_char(self.con, self.x, self.y,
+                                            ' ', libtcod.BKGND_NONE)
         
             
 
@@ -59,4 +93,4 @@ class Sprint(Power):
         
 class LeaveTheCaves(Power):
     def complete(self):
-        self.game
+        pass

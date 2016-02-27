@@ -1,9 +1,9 @@
-
 import libtcodpy as libtcod
 
 import settings
 from maps import TileMap
 from player import Player
+
 
 class Camera(object):
     
@@ -31,6 +31,7 @@ class Camera(object):
         if y > y_overset: y = y_overset
         
         self.camera_x, self.camera_y = x, y
+
 
 class Level(object):
 
@@ -63,7 +64,7 @@ class Level(object):
         self.next_render = [x for x in self.the_map.get_tiles_by_layer(self.the_map.get_tiles_in_render_area())]
         self.player.update()
         for t in self.next_render:
-            if not t is Player:
+            if t is not Player:
                 t.update()
             seen = libtcod.map_is_in_fov(self.the_map.libtcod_map, t.x, t.y)
             if seen:

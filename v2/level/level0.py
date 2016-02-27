@@ -1,4 +1,3 @@
-
 from basic_level import Level
 from directive import *
 from items import *
@@ -62,13 +61,10 @@ class FieldOfRealPeople(object):
     FIELD OF REAL PEOPLE". All of them have the same looping voice lines, which
     the persistent find lead to an end path: join the field in the available
     place.'''
-    
-    
 
     def __init__(self):
         pass
-        
-        
+
 
 class LevelZero(Level):
 
@@ -105,8 +101,7 @@ class LevelZero(Level):
             self.player.add_child(Bow(u, self, text="fleeter", static=True, offset=(-1,-1), new_fader=DirectiveLineFade))
             u.add_link(t)
             t.add_link(u)
-            
-            
+
             for info in gates_data:
                 # something different should happen based on which order you complete them
                 # "please I didn't do it"
@@ -129,7 +124,6 @@ class LevelZero(Level):
             rp.loop = True
             self.statues.append(rp)
             self.the_map.add(rp.x, rp.y, rp)
-                                 
             
             v = LinkedStatue({}, 56, 40, 'L', libtcod.brass, self.foreground, self)
             self.the_map.add(v.x, v.y, v)
@@ -144,7 +138,6 @@ class LevelZero(Level):
             self.player.add_child(w_)
             w.add_link(v)
             v.add_link(w)
-            
 
         self.figurine = Idol(False, 28, 28, 'i', libtcod.white, self.foreground, self)
         x, y = self.figurine.get_location()
@@ -154,12 +147,12 @@ class LevelZero(Level):
         x, y = self.lamp.get_location()
         self.the_map.add(x, y, self.lamp)
         
-        self.gam = Gammon(False, 22, 20, 'd', libtcod.pink, self.foreground, self)
-        x, y = self.gam.get_location()
-        self.the_map.add(x, y, self.gam)
+        self.lute = Lute(False, 22, 20, 'Q', libtcod.light_sepia, self.foreground, self)
+        x, y = self.lute.get_location()
+        self.the_map.add(x, y, self.lute)
 
         self.player.add_child(ItemGrab(self.figurine, self, text="pick up", offset = (-2, 2)))
-        self.player.add_child(ItemGrab(self.gam, self, text="pick up", offset = (-2, 2)))
+        self.player.add_child(ItemGrab(self.lute, self, text="pick up", offset = (-2, 2)))
         self.player.add_child(ItemGrab(self.lamp, self, text="pick up", offset = (-2, 2)))
 #        s = self.the_map.schimb()
 #        self.the_map.load_doodad(25, 25, m1)

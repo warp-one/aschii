@@ -1,6 +1,5 @@
 import libtcodpy as libtcod
 
-import tools
 
 class Tile(object):
 
@@ -31,7 +30,6 @@ class Tile(object):
         self.update_queue = []
         self.next_char = None
         self.next_color = None
-        
 
     def move(self, dx, dy):
         self.x += dx
@@ -150,6 +148,7 @@ class Tile(object):
         self.game.the_map.remove(self)
         del self
 
+
 class EnvironmentTile(Tile):
     def __init__(self, blocked, *args):
         super(EnvironmentTile, self).__init__(*args)
@@ -157,6 +156,7 @@ class EnvironmentTile(Tile):
         if self.blocked:
             self.char = '#'
             self.transparent = False
+
 
 class BottomlessPit(EnvironmentTile):
     def __init__(self, *args):
@@ -175,6 +175,7 @@ class Unit(Tile):   # has collision
             return True
         return False
 
+
 class Word(Tile):
     def __init__(self, word, *args):
         super(Word, self).__init__(*args)
@@ -192,6 +193,3 @@ class Word(Tile):
             x, y = self.game.camera.to_camera_coordinates(self.x + i, self.y)
             libtcod.console_put_char(self.con, x, y, 
                                             ' ', libtcod.BKGND_NONE)
-    
-
-    

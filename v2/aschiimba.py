@@ -22,6 +22,17 @@ import tile, settings
 # titles:
 # like a s hell (the waves)
 
+# dodge, run from a goblin
+# maze
+# re-up the light, keep it active
+# standing still increases light radius
+# walking reduces it
+# piecing narrative together
+# tracking sensical story vs. generated nonsense
+# typing light words in the backgroudn
+# stopping to look for what you need in the floor
+# collectibles in background, generally
+
 class Game(object):
 
     the_map = None

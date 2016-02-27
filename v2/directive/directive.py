@@ -3,6 +3,7 @@ import libtcodpy as libtcod
 from tile import Tile
 import tools, faders
 
+
 class Attachment(object):
     def update(self):
         if not self.static:
@@ -45,6 +46,7 @@ class Directive(Attachment, Tile):
             self.active = True
             
     def change_text(self, text):
+        self.clear()
         self.phrase = text
         self.phrase_clear = [False] * len(self.phrase) 
         self.phrase_index = 0
@@ -64,7 +66,6 @@ class Directive(Attachment, Tile):
                     self.game.player.remove_child(self)
         elif self.is_visible():
             self._draw()
-
 
     def _draw(self):
         Ploc = self.game.player.get_location()
@@ -102,6 +103,8 @@ class Directive(Attachment, Tile):
                                             ' ', libtcod.BKGND_NONE)
             
     def tick_phrase(self, letter):
+        if len(self.phrase) is 0:
+            return
         if not self.completed:
             if self.anchor.is_visible() and self.is_visible():
                 if self.phrase[self.phrase_index] == letter:
@@ -117,7 +120,8 @@ class Directive(Attachment, Tile):
         self.phrase_clear = [False] * len(self.phrase)
         self.phrase_index = 0
         self.clear()
-        
+
+
 class DirectiveLink(object):
     def __init__(self):
         self.links = []
