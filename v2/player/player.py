@@ -198,7 +198,13 @@ class Player(Listener, orders.Orders, Unit):
         for c in self.children:
             if not c.static:
                 c.update()
+
+        self.darken_while_standing()
                 
+        libtcod.map_compute_fov(self.game.the_map.libtcod_map,
+                    self.x, self.y, self.sight_radius, algo=libtcod.FOV_DIAMOND)
+
+    def darken_while_standing(self):
         dark_time = 40
         if self.last_position == self.get_location():
             self.idle_time += 1
@@ -212,8 +218,6 @@ class Player(Listener, orders.Orders, Unit):
             if self.sight_radius > 3:
                 self.change_sight_radius(-3)
             self.idle_time = 0
-        libtcod.map_compute_fov(self.game.the_map.libtcod_map,
-                    self.x, self.y, self.sight_radius, algo=libtcod.FOV_DIAMOND)
 
     def on_notify(self, entity, event):
         pass
