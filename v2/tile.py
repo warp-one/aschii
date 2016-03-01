@@ -134,8 +134,6 @@ class Tile(object):
         #
         
         self.visible = libtcod.map_is_in_fov(self.game.the_map.libtcod_map, self.x, self.y)
-        if self.visible != self.is_visible():
-            raise RuntimeError
 
     def add_child(self, child, offset=None):
         self.children.append(child)

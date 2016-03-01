@@ -64,7 +64,7 @@ class Level(object):
         self.player.update()
         self.next_render = [x for x in self.the_map.get_all_in_render_area()]
         for t in self.next_render:
-            if not (t is Player):
+            if not (isinstance(t, Player)):
                 t.update()
 
         if self.player.schimb:

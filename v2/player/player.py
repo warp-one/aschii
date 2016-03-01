@@ -17,9 +17,9 @@ class Player(Listener, orders.Orders, Unit):
     offsets = [(-2, -2), (-2, 2), (2, 3), (2, -3), 
                (-2, -2), (-2, 2), (2, 3), (2, -3)]
     sight_radius = 5 # high in early levels, low in late...
-    max_sight = 15
-    min_sight = 3
-    len_step = 6 # in frames
+    max_sight = 21
+    min_sight = 15
+    len_step = 3 # in frames
     char = ' '
     left_foot = False
     left_foot_displacement = -1

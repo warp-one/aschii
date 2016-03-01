@@ -240,7 +240,7 @@ class TileMap(Listener, object):
             # THIS FUCKING GOES CRAZY IF YOU TRY TO APPLY A VISIBILITY TEST
             # STRAIGHT UP LIES
             # NO IDEA WHAT'S GOING ON
-            tiles_to_write = [x for x in render_tiles if not x.blocked]#self.get_visible_tiles(render_tiles)]# if not x.blocked]
+            tiles_to_write = [x for x in self.get_visible_tiles(render_tiles) if not x.blocked]#self.get_visible_tiles(render_tiles)]# if not x.blocked]
         else:
             tiles_to_write = tiles
         print len(tiles_to_write), "SCHIMBING THIS MANY"
