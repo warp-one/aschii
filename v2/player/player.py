@@ -16,13 +16,14 @@ class Player(Listener, orders.Orders, Unit):
                   libtcod.KEY_RIGHT, libtcod.KEY_LEFT]
     offsets = [(-2, -2), (-2, 2), (2, 3), (2, -3), 
                (-2, -2), (-2, 2), (2, 3), (2, -3)]
-    sight_radius = 15 # high in early levels, low in late...
-    max_sight = sight_radius
+    sight_radius = 5 # high in early levels, low in late...
+    max_sight = 15
+    min_sight = 3
     len_step = 6 # in frames
     char = ' '
     left_foot = False
     left_foot_displacement = -1
-    idle_start = -210
+    idle_start = 0
 
     def __init__(self, *args):
         self.blocked = False
@@ -57,6 +58,12 @@ class Player(Listener, orders.Orders, Unit):
             self.sight_radius = delta_s
         else:
             self.sight_radius += delta_s
+        if self.sight_radius > self.max_sight:
+            self.sight_radius = self.max_sight
+        elif self.sight_radius < self.min_sight:
+            self.sight_radius = self.min_sight
+            
+        self.idle_time = 0
 
     def set_arrows(self):
         NSEW = {(0, 4): libtcod.CHAR_ARROW_N, 
@@ -198,26 +205,32 @@ class Player(Listener, orders.Orders, Unit):
         for c in self.children:
             if not c.static:
                 c.update()
-
-        self.darken_while_standing()
                 
-        libtcod.map_compute_fov(self.game.the_map.libtcod_map,
-                    self.x, self.y, self.sight_radius, algo=libtcod.FOV_DIAMOND)
-
-    def darken_while_standing(self):
-        dark_time = 40
+                
         if self.last_position == self.get_location():
             self.idle_time += 1
         else:
+            self.change_sight_radius(-1)
+
+        #self.darken_while_standing()
+        self.lighten_while_standing()
+        libtcod.map_compute_fov(self.game.the_map.libtcod_map,
+                    self.x, self.y, self.sight_radius, algo=libtcod.FOV_DIAMOND)
+                
+
+    def darken_while_standing(self):
+        dark_time = 40
+        if self.last_position != self.get_location():
             if self.sight_radius < self.max_sight:
                 self.change_sight_radius(3)
-                self.idle_time = 0
             else:
                 self.idle_time = self.idle_start
         if self.idle_time >= dark_time:
-            if self.sight_radius > 3:
-                self.change_sight_radius(-3)
-            self.idle_time = 0
+            self.change_sight_radius(-3)
+            
+    def lighten_while_standing(self):
+        if self.idle_time > 40:
+            self.change_sight_radius(3)
 
     def on_notify(self, entity, event):
         pass

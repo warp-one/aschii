@@ -130,6 +130,12 @@ class Tile(object):
             self.next_char = self.char_queue.pop(0)
             if self.effects_mode == "hold":
                 self.char_queue.append(self.next_char)
+                
+        #
+        
+        self.visible = libtcod.map_is_in_fov(self.game.the_map.libtcod_map, self.x, self.y)
+        if self.visible != self.is_visible():
+            raise RuntimeError
 
     def add_child(self, child, offset=None):
         self.children.append(child)

@@ -61,25 +61,20 @@ class Level(object):
         return self.the_map.get_tiles_by_layer(map_tiles)
         
     def update_all(self):
-        self.next_render = [x for x in self.the_map.get_tiles_by_layer(self.the_map.get_tiles_in_render_area())]
         self.player.update()
+        self.next_render = [x for x in self.the_map.get_all_in_render_area()]
         for t in self.next_render:
-            if t is not Player:
+            if not (t is Player):
                 t.update()
-            seen = libtcod.map_is_in_fov(self.the_map.libtcod_map, t.x, t.y)
-            if seen:
-                t.visible = True
-            else:
-                t.visible = False
 
+        if self.player.schimb:
+            self.the_map.schimb()
+            self.player.schimb = False
         for i in self.hud:
             i.update()
         for e in self.special_effects:
             e.update()
 
-        if self.player.schimb:
-            self.the_map.schimb()
-            self.player.schimb = False
 
     def render_all(self):
         self.camera.move_camera(self.player.x, self.player.y)
