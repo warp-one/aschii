@@ -16,9 +16,9 @@ class Player(Listener, orders.Orders, Unit):
                   libtcod.KEY_RIGHT, libtcod.KEY_LEFT]
     offsets = [(-2, -2), (-2, 2), (2, 3), (2, -3), 
                (-2, -2), (-2, 2), (2, 3), (2, -3)]
-    sight_radius = 5 # high in early levels, low in late...
-    max_sight = 21
-    min_sight = 15
+    sight_radius = 5 
+    max_sight = 21 # high in early levels, low in late...
+    min_sight = 6
     len_step = 3 # in frames
     char = ' '
     left_foot = False
@@ -229,7 +229,7 @@ class Player(Listener, orders.Orders, Unit):
             self.change_sight_radius(-3)
             
     def lighten_while_standing(self):
-        if self.idle_time > 40:
+        if self.idle_time > 20:
             self.change_sight_radius(3)
 
     def on_notify(self, entity, event):
