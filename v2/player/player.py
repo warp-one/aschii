@@ -229,7 +229,7 @@ class Player(Listener, orders.Orders, Unit):
             self.change_sight_radius(-3)
             
     def lighten_while_standing(self):
-        if self.idle_time > 20:
+        if self.idle_time > 40 and self.sight_radius < self.max_sight:
             self.change_sight_radius(3)
 
     def on_notify(self, entity, event):

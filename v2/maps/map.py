@@ -28,8 +28,8 @@ class TileMap(Listener, object):
            
         with open('waves.txt', 'r') as f:
             self.waves = mg.Markov(f)
-        with open('race.txt', 'r') as f:
-            self.race = mg.Markov(f)
+        with open('nightland.txt', 'r') as f:
+            self.nightland = mg.Markov(f)
             
         self.obs = []
         self.render_area = (0, 0, 0, 0, "default")
@@ -236,16 +236,12 @@ class TileMap(Listener, object):
         
     def schimb(self, tiles=None):
         if tiles is None:
-            render_tiles = [x for x in self.get_tiles_in_render_area()]
-            # THIS FUCKING GOES CRAZY IF YOU TRY TO APPLY A VISIBILITY TEST
-            # STRAIGHT UP LIES
-            # NO IDEA WHAT'S GOING ON
+            render_tiles = self.get_tiles_in_render_area()
             tiles_to_write = [x for x in self.get_visible_tiles(render_tiles) if not x.blocked]#self.get_visible_tiles(render_tiles)]# if not x.blocked]
         else:
             tiles_to_write = tiles
-        print len(tiles_to_write), "SCHIMBING THIS MANY"
         if len(self.mutated_waves) < len(tiles_to_write):
-            self.mutated_waves = self._schimb(self.waves)
+            self.mutated_waves = self._schimb(self.nightland)
         for i, t in enumerate(tiles_to_write):
             t.current_char = self.mutated_waves[i]
         self.mutated_waves = self.mutated_waves[len(tiles_to_write):]
