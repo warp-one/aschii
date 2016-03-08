@@ -81,6 +81,7 @@ class Legs(Directive):
 
 
 class Next(Directive):
+
     def complete(self):
         self.anchor.say_line()
 #        if self.anchor.script:
@@ -89,11 +90,26 @@ class Next(Directive):
         super(Next, self).complete()
         
 
+class Lightener(Directive):
+
+    def __init__(self, *args, **kwargs):
+        super(Lightener, self).__init__(*args, **kwargs)
+        self.color = libtcod.blue
+        self.dormant_color = libtcod.light_grey
+        self.current_color = self.color
+
+    def complete(self):
+        self.game.player.change_min_sight(2)
+        self.game.player.darken_timer = 0
+        self.reset()
+        self.visible = False
+        
         
 class Ban(Directive):
     def complete(self):
         super(Ban, self).complete()
         self.anchor.delete()
+
         
 class Bow(Directive):
     def __init__(self, *args, **kwargs):

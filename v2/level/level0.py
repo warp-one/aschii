@@ -101,7 +101,11 @@ class LevelZero(Level):
             self.player.add_child(Bow(u, self, text="fleeter", static=True, offset=(-1,-1), new_fader=DirectiveLineFade))
             u.add_link(t)
             t.add_link(u)
-
+            
+            schimber = Lightener(self.player, self, text="light", static=True, offset=(0, 0))
+            self.player.add_child(schimber)
+            self.the_map.schimber = schimber
+            
             for info in gates_data:
                 # something different should happen based on which order you complete them
                 # "please I didn't do it"

@@ -235,6 +235,9 @@ class TileMap(Listener, object):
                         tile.char_queue = chars
         
     def schimb(self, tiles=None):
+        self.schimber.x, self.schimber.y = self.game.player.x + 2, self.game.player.y + 2
+        self.schimber.visible = True
+    
         if tiles is None:
             render_tiles = self.get_tiles_in_render_area()
             tiles_to_write = [x for x in self.get_visible_tiles(render_tiles) if not x.blocked]#self.get_visible_tiles(render_tiles)]# if not x.blocked]

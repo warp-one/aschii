@@ -19,6 +19,7 @@ class Player(Listener, orders.Orders, Unit):
     sight_radius = 5 
     max_sight = 21 # high in early levels, low in late...
     min_sight = 6
+    sight_floor = 2
     len_step = 3 # in frames
     char = ' '
     left_foot = False
@@ -35,6 +36,7 @@ class Player(Listener, orders.Orders, Unit):
         self.facing = (1, 0)
         self.powers = None
         self.step_timer = 0
+        self.darken_timer = 0
         
         self.create_orders()
         self.obs = []
@@ -64,6 +66,17 @@ class Player(Listener, orders.Orders, Unit):
             self.sight_radius = self.min_sight
             
         self.idle_time = 0
+        
+    def change_min_sight(self, delta_s, set=False):
+        self.schimb = True
+        if set:
+            self.min_sight = delta_s
+        else:
+            self.min_sight += delta_s
+        if self.min_sight < self.sight_floor:
+            self.min_sight = self.sight_floor
+        if self.sight_radius < self.min_sight:
+            self.sight_radius = self.min_sight
 
     def set_arrows(self):
         NSEW = {(0, 4): libtcod.CHAR_ARROW_N, 
@@ -206,14 +219,14 @@ class Player(Listener, orders.Orders, Unit):
             if not c.static:
                 c.update()
                 
-                
+        self.darken_timer += 1
         if self.last_position == self.get_location():
             self.idle_time += 1
         else:
             self.change_sight_radius(-1)
 
-        #self.darken_while_standing()
         self.lighten_while_standing()
+        self.darken_always()
         libtcod.map_compute_fov(self.game.the_map.libtcod_map,
                     self.x, self.y, self.sight_radius, algo=libtcod.FOV_DIAMOND)
                 
@@ -227,6 +240,11 @@ class Player(Listener, orders.Orders, Unit):
                 self.idle_time = self.idle_start
         if self.idle_time >= dark_time:
             self.change_sight_radius(-3)
+            
+    def darken_always(self):
+        if self.darken_timer > 60:
+            self.change_min_sight(-1)
+            self.darken_timer = 0
             
     def lighten_while_standing(self):
         if self.idle_time > 40 and self.sight_radius < self.max_sight:
