@@ -114,9 +114,14 @@ class Lightener(Directive):
         self.dormant_color = (libtcod.darkest_grey * .5 if not randint(0, 20) else libtcod.darkest_grey)
         to_draw = self.phrase
         for i, char in enumerate(to_draw):
+
             x, y = self.x + i, self.y
+            if tools.get_distance((x, y), self.game.player.get_location()) > self.game.player.min_sight:
+                color = self.dormant_color * .5
+            else:
+                color = self.dormant_color
             x, y = self.game.camera.to_camera_coordinates(x, y)
-            color = (self.current_color if self.phrase_clear[i] else self.dormant_color)
+            color = (self.current_color if self.phrase_clear[i] else color)
             libtcod.console_set_default_foreground(self.con, color)
             libtcod.console_put_char(self.con, x, y, 
                                             char, libtcod.BKGND_NONE)
