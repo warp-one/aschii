@@ -68,15 +68,18 @@ class Player(Listener, orders.Orders, Unit):
         self.idle_time = 0
         
     def change_min_sight(self, delta_s, set=False):
-        self.schimb = True
         if set:
             self.min_sight = delta_s
         else:
             self.min_sight += delta_s
         if self.min_sight < self.sight_floor:
             self.min_sight = self.sight_floor
+        if self.min_sight > self.max_sight:
+            self.min_sight = self.max_sight
         if self.sight_radius < self.min_sight:
             self.sight_radius = self.min_sight
+        self.schimb = True
+            
 
     def set_arrows(self):
         NSEW = {(0, 4): libtcod.CHAR_ARROW_N, 
@@ -88,8 +91,8 @@ class Player(Listener, orders.Orders, Unit):
             self.add_child(newD, offset=offset)
             self.add_arrow(newD)
             
-        self.legs = Legs(self, self.game)
-        self.add_child(self.legs, offset=(0, 0))
+#        self.legs = Legs(self, self.game)
+#        self.add_child(self.legs, offset=(0, 0))
         
     def add_arrow(self, arrow):
         self.arrows[arrow.phrase] = arrow
@@ -219,11 +222,11 @@ class Player(Listener, orders.Orders, Unit):
             if not c.static:
                 c.update()
                 
-        self.darken_timer += 1
         if self.last_position == self.get_location():
             self.idle_time += 1
         else:
             self.change_sight_radius(-1)
+            self.darken_timer += 1
 
         self.lighten_while_standing()
         self.darken_always()
@@ -247,8 +250,9 @@ class Player(Listener, orders.Orders, Unit):
             self.darken_timer = 0
             
     def lighten_while_standing(self):
-        if self.idle_time > 40 and self.sight_radius < self.max_sight:
+        if self.idle_time > 100 and self.sight_radius < self.max_sight:
             self.change_sight_radius(3)
+            self.darken_timer = 0
 
     def on_notify(self, entity, event):
         pass

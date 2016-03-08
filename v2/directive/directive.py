@@ -114,6 +114,7 @@ class Directive(Attachment, Tile):
                         self.complete()
                     return True
                 else:
+                    
                     return False
                 
     def reset(self):

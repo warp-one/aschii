@@ -1,3 +1,4 @@
+from random import randint, choice
 
 import libtcodpy as libtcod
 
@@ -35,7 +36,7 @@ class TileMap(Listener, object):
         self.render_area = (0, 0, 0, 0, "default")
         self.last_render = []
         
-        self.mutated_waves = []
+        self.mutated_text = []
         
     def load_doodad(self, x, y, doodad):
         for t in doodad.get_tile_data():
@@ -233,27 +234,53 @@ class TileMap(Listener, object):
                         tile.color_queue = colors
                     if chars:
                         tile.char_queue = chars
-        
+                        
     def schimb(self, tiles=None):
-        self.schimber.x, self.schimber.y = self.game.player.x + 2, self.game.player.y + 2
-        self.schimber.visible = True
+        self.schimber.change_text(choice(['light', 'lantern', 'glow', 'luminescence']))
     
         if tiles is None:
             render_tiles = self.get_tiles_in_render_area()
             tiles_to_write = [x for x in self.get_visible_tiles(render_tiles) if not x.blocked]#self.get_visible_tiles(render_tiles)]# if not x.blocked]
         else:
             tiles_to_write = tiles
-        if len(self.mutated_waves) < len(tiles_to_write):
-            self.mutated_waves = self._schimb(self.nightland)
+            
+        num_tiles = len(tiles_to_write)
+        
+        if len(self.mutated_text) < num_tiles:
+            self.mutated_text = self._schimb(self.nightland)
+            
+        word_len = len(self.schimber.phrase)
+        word_xy = (0, 0)
+        word_pos = num_tiles
+        
+        num_spaces = self.mutated_text.count(' ', 0, num_tiles)
+        chosen_space = randint(0, num_spaces - 1)
+        current_space = 0
+    
         for i, t in enumerate(tiles_to_write):
-            t.current_char = self.mutated_waves[i]
-        self.mutated_waves = self.mutated_waves[len(tiles_to_write):]
-#            elif t.blocked:
-#                t.current_char = race[rletter]
-#                while t.current_char == ' ':
-#                    rletter += 1
-#                    t.current_char = race[rletter]
-#            rletter += 1        
+            if word_pos < num_tiles:
+                letter = self.mutated_text[i - word_len - 1]
+            else:
+                letter = self.mutated_text[i]
+            if letter == ' ':
+                if current_space == chosen_space:
+                    if libtcod.map_is_in_fov(self.libtcod_map, t.x + word_len, t.y):
+                        word_xy = t.x + 1, t.y
+                        word_pos = i
+                    else:
+                        pass
+                current_space += 1
+                
+            t.current_char = letter
+
+        if not word_xy == (0, 0):
+            self.schimber.x, self.schimber.y = word_xy
+            self.schimber.visible = True
+        else:
+            self.schimber.x, self.schimber.y = 0, 0
+            self.schimber.visible = False
+
+        self.mutated_text = self.mutated_text[len(tiles_to_write):]
                     
     def on_notify(self, entity, event):
         if event == "player move":

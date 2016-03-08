@@ -104,7 +104,25 @@ class Lightener(Directive):
         self.reset()
         self.visible = False
         
+    def tick_phrase(self, l):
+        print self.phrase
+        super(Lightener, self).tick_phrase(l)
         
+    def _draw(self):
+        Ploc = self.game.player.get_location()
+        Sloc = self.anchor.get_location()
+        in_range = tools.get_distance(Ploc, Sloc) < self.range
+        self.dormant_color = (libtcod.darkest_grey * .5 if not randint(0, 20) else libtcod.darkest_grey)
+        to_draw = self.phrase
+        for i, char in enumerate(to_draw):
+            x, y = self.x + i, self.y
+            x, y = self.game.camera.to_camera_coordinates(x, y)
+            color = (self.current_color if self.phrase_clear[i] else self.dormant_color)
+            libtcod.console_set_default_foreground(self.con, color)
+            libtcod.console_put_char(self.con, x, y, 
+                                            char, libtcod.BKGND_NONE)
+
+                                            
 class Ban(Directive):
     def complete(self):
         super(Ban, self).complete()
