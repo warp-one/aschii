@@ -103,6 +103,7 @@ class LevelZero(Level):
             t.add_link(u)
             
             schimber = Lightener(self.player, self, text="light", static=True, offset=(0, 0))
+            schimber.visible = False
             self.player.add_child(schimber)
             self.the_map.schimber = schimber
             

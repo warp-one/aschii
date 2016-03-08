@@ -110,15 +110,15 @@ class Player(Listener, orders.Orders, Unit):
         is_space = (key.vk == libtcod.KEY_SPACE)
         if is_char or is_arrow or is_space:
             self.action_manager.handle_letter(key)
-        if is_space:
-            print self.get_location(), self.game.camera.to_camera_coordinates(*self.get_location())
      
         if key.vk == libtcod.KEY_ENTER and key.lalt:
             libtcod.console_set_fullscreen(not libtcod.console_is_fullscreen())
         elif key.vk == libtcod.KEY_ESCAPE:
             return True  #exit game
         elif key.vk == libtcod.KEY_CONTROL:
-            if self.inventory.pick_up_item(self.game.the_map.get_item(*self.get_location())):
+            if self.inventory.pick_up_item(
+                    self.game.the_map.get_item(*self.get_location())
+                                           ):
                 pass
             else:
                 self.inventory.toggle_item()
@@ -231,7 +231,7 @@ class Player(Listener, orders.Orders, Unit):
         self.lighten_while_standing()
         self.darken_always()
         libtcod.map_compute_fov(self.game.the_map.libtcod_map,
-                    self.x, self.y, self.sight_radius, algo=libtcod.FOV_DIAMOND)
+                self.x, self.y, self.sight_radius, algo=libtcod.FOV_DIAMOND)
                 
 
     def darken_while_standing(self):

@@ -104,10 +104,6 @@ class Lightener(Directive):
         self.reset()
         self.visible = False
         
-    def tick_phrase(self, l):
-        print self.phrase
-        super(Lightener, self).tick_phrase(l)
-        
     def _draw(self):
         Ploc = self.game.player.get_location()
         Sloc = self.anchor.get_location()
@@ -121,6 +117,9 @@ class Lightener(Directive):
             libtcod.console_set_default_foreground(self.con, color)
             libtcod.console_put_char(self.con, x, y, 
                                             char, libtcod.BKGND_NONE)
+
+    def update(self):
+        pass
 
                                             
 class Ban(Directive):

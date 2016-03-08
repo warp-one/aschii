@@ -42,7 +42,7 @@ class Game(object):
     def __init__(self, w, h):
         self.width, self.height = w, h
 
-        libtcod.console_set_custom_font('16x16mod.png',#'terminal8x8_gs_ro.png', 
+        libtcod.console_set_custom_font('16x16mod.png', 
                 libtcod.FONT_TYPE_GREYSCALE | libtcod.FONT_LAYOUT_ASCII_INROW,
                 )
         libtcod.console_init_root(self.width, self.height, 
@@ -56,7 +56,8 @@ class Game(object):
             libtcod.console_set_default_foreground(0, libtcod.white)
             self.current_level.update_all()
             self.current_level.render_all()
-            libtcod.console_blit(self.current_level.foreground, 0, 0, self.width, self.height, 0, 0, 0)
+            libtcod.console_blit(self.current_level.foreground, 0, 0, 
+                                 self.width, self.height, 0, 0, 0)
             libtcod.console_flush()
             self.current_level.clear_all()
             exit = self.current_level.player.handle_keys()

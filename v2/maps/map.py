@@ -17,13 +17,15 @@ class TileMap(Listener, object):
         self.game = game
         drawing = drawings.cave
         self.width, self.height = drawing.w, drawing.h
-        self.tilemap = [[drawings.make_tile(drawing, x, y, self.con, self.game)
-                            for y in xrange(self.height)]
-                            for x in xrange(self.width)]
+        self.tilemap = [[
+                    drawings.make_tile(drawing, x, y, self.con, self.game)
+                    for y in xrange(self.height)]
+                    for x in xrange(self.width)]
                             
         self.libtcod_map = libtcod.map_new(self.width, self.height)
         for t in self.get_tiles():
-            libtcod.map_set_properties(self.libtcod_map, t.x, t.y, t.transparent, not t.blocked)
+            libtcod.map_set_properties(self.libtcod_map, t.x, t.y, 
+                                       t.transparent, not t.blocked)
            
         self.light_sources = []
            
@@ -47,7 +49,8 @@ class TileMap(Listener, object):
                 blocked = False
             self.change_tile(x + c, y + r, blocked)
         for t in self.get_tiles():
-            libtcod.map_set_properties(self.libtcod_map, t.x, t.y, not t.blocked, not t.blocked)
+            libtcod.map_set_properties(self.libtcod_map, t.x, t.y, 
+                                       not t.blocked, not t.blocked)
 
     def change_tile(self, x, y, attr):
         in_square = self.tilemap[x][y].next
@@ -122,12 +125,13 @@ class TileMap(Listener, object):
         PXmax = player.x + player.sight_radius + 1
         PYmin = player.y - player.sight_radius - 1
         PYmax = player.y + player.sight_radius + 1
-        minX, minY = min([PXmin] + (Xmins if Xmins else [])), min([PYmin] + (Ymins if Ymins else []))
-        maxX, maxY = max([PXmax] + (Xmaxs if Xmaxs else [])), max([PYmax] + (Ymaxs if Ymaxs else []))
+        minX = min([PXmin] + (Xmins if Xmins else [])) 
+        minY = min([PYmin] + (Ymins if Ymins else []))
+        maxX = max([PXmax] + (Xmaxs if Xmaxs else [])) 
+        maxY = max([PYmax] + (Ymaxs if Ymaxs else []))
         w = maxX - minX
         h = maxY - minY
         self.render_area = minX, minY, w, h, "default"
-#        return self.get_round_area(player.get_location(), player.sight_radius)
         return self.get_area(minX, minY, w, h, anchor="default")
 
     def get_tiles_in_clear_area(self):
@@ -144,6 +148,9 @@ class TileMap(Listener, object):
         for t in tiles:
             if t.is_visible():
                 yield t
+
+    def get_all_tiles(self):
+        return self.get_tiles_by_layer(self.get_tiles())
 
     def get_tiles_by_layer(self, tiles):
         while tiles:
@@ -199,7 +206,7 @@ class TileMap(Listener, object):
         return False
         
     def _schimb(self, novel):
-        print "schimband..." # needs the a din a. looking into declaring text encodings
+        print "schimband..." # needs the uh din ah.
         num_cells = self.width * self.height
         prose = novel.generate_markov_text(size=num_cells/3)
         while not prose:
@@ -214,7 +221,8 @@ class TileMap(Listener, object):
         text = text.replace("Percival", "PPPPPPPP")
         return text
 
-    def apply_tile_effect(self, frame_data, mode="add", anchor=(0, 0), set_effect=None):
+    def apply_tile_effect(self, frame_data, mode="add", 
+                          anchor=(0, 0), set_effect=None):
         # frame_data is a dict:
         # {(x, y):[(color, char), ...], (x, y): ...}
         for xy, effect in frame_data.iteritems():
@@ -236,11 +244,17 @@ class TileMap(Listener, object):
                         tile.char_queue = chars
                         
     def schimb(self, tiles=None):
-        self.schimber.change_text(choice(['light', 'lantern', 'glow', 'luminescence']))
+        # you call this EVERY FRAME OF MOVEMENT!!
+        # so, uh, maybe work on it a bit. to do: 
+        # separate out into its own method the checks
+        # for being seen and unblocked. the "floor check"
+        light_word = choice(['light', 'lantern', 'glow', 'luminescence'])
+        self.schimber.change_text(light_word)
     
         if tiles is None:
             render_tiles = self.get_tiles_in_render_area()
-            tiles_to_write = [x for x in self.get_visible_tiles(render_tiles) if not x.blocked]#self.get_visible_tiles(render_tiles)]# if not x.blocked]
+            visible_environment = self.get_visible_tiles(render_tiles)
+            tiles_to_write = [x for x in visible_environment if not x.blocked]
         else:
             tiles_to_write = tiles
             
@@ -264,7 +278,15 @@ class TileMap(Listener, object):
                 letter = self.mutated_text[i]
             if letter == ' ':
                 if current_space == chosen_space:
-                    if libtcod.map_is_in_fov(self.libtcod_map, t.x + word_len, t.y):
+                    room = True
+                    for wx in range(word_len):
+                        x, y = t.x + wx, t.y
+                        seen = libtcod.map_is_in_fov(self.libtcod_map, x, y)
+                        unblocked = not self.get_tile(x, y).blocked
+                        if seen and unblocked :
+                            room = False
+                            break
+                    if room:
                         word_xy = t.x + 1, t.y
                         word_pos = i
                     else:
@@ -284,7 +306,8 @@ class TileMap(Listener, object):
                     
     def on_notify(self, entity, event):
         if event == "player move":
-            fade = [libtcod.Color(a, a, a) for a in xrange(255, libtcod.darkest_grey.r, -10)]
+            fade = [libtcod.Color(a, a, a) 
+                    for a in xrange(255, libtcod.darkest_grey.r, -10)]
             if entity.left_foot:
                 foot_displacement = entity.left_foot_displacement
             else:

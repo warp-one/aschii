@@ -17,7 +17,8 @@ class Directive(Attachment, Tile):
     char = 'X'
     range = 9
 
-    def __init__(self, anchor, game, static=False, text="Destroy", offset=(0, 0), new_fader=None):
+    def __init__(self, anchor, game, 
+                 static=False, text="Destroy", offset=(0, 0), new_fader=None):
         self.anchor = anchor
         self.offsetX = offset[0]
         self.offsetY = offset[1]
@@ -27,7 +28,8 @@ class Directive(Attachment, Tile):
         self.dormant_color = libtcod.red
         self.game = game
         self.con = game.foreground
-        self.x, self.y = self.anchor.x + self.offsetX, self.anchor.y + self.offsetY
+        self.x = self.anchor.x + self.offsetX 
+        self.y = self.anchor.y + self.offsetY
         self.active = False
 
         self.change_text(text)
@@ -78,7 +80,8 @@ class Directive(Attachment, Tile):
             if (x, y) == self.anchor.get_location():
                 continue
             x, y = self.game.camera.to_camera_coordinates(x, y)
-            color = (self.current_color if self.phrase_clear[i] else self.dormant_color)
+            color = (self.current_color if self.phrase_clear[i] 
+                                        else self.dormant_color)
             libtcod.console_set_default_foreground(self.con, color)
             libtcod.console_put_char(self.con, x, y, 
                                             char, libtcod.BKGND_NONE)
