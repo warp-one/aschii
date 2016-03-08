@@ -1,5 +1,7 @@
 import libtcodpy as libtcod
 
+import tools
+
 
 class Tile(object):
 
@@ -71,6 +73,9 @@ class Tile(object):
             color = self.next_color
         else:
             color = self.current_color
+
+        if tools.get_distance(self.get_location(), self.game.player.get_location()) > self.game.player.min_sight:
+            color *= .5
 
         # awkward that there are two effects systems here, but maybe the 
         # checks are low cost enough that I don't have to worry about it?

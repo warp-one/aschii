@@ -104,6 +104,9 @@ class Lightener(Directive):
         self.reset()
         self.visible = False
         
+    def is_visible(self):
+        return self.visible
+
     def _draw(self):
         Ploc = self.game.player.get_location()
         Sloc = self.anchor.get_location()
