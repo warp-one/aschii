@@ -282,8 +282,8 @@ class TileMap(Listener, object):
                     for wx in range(word_len):
                         x, y = t.x + wx, t.y
                         seen = libtcod.map_is_in_fov(self.libtcod_map, x, y)
-                        unblocked = not self.get_tile(x, y).blocked
-                        if seen and unblocked :
+                        blocked = self.get_tile(x, y).blocked
+                        if not seen or blocked:
                             room = False
                             break
                     if room:
