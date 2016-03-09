@@ -59,7 +59,7 @@ class Lamp(Item):
         
     def turn_off(self):
         if super(Lamp, self).turn_off():
-            self.owner.change_sight_radius(-self.Lradius)
+            self.owner.change_sight_radius(-100)
         self.on = False
         
     def do(self):
@@ -68,6 +68,10 @@ class Lamp(Item):
         else:
             self.turn_on()
         self.game.the_map.schimb()
+        
+    def put_away(self):
+        super(Lamp, self).put_away()
+        self.turn_off()
     
 
 class Idol(Item):

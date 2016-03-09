@@ -73,6 +73,12 @@ class Inventory(object):
         self.display.cycle_display(self.current_item)
         self.display.x = settings.SCREEN_WIDTH - (len(self.display.text) + 2 + len(self.item_toggle.phrase))
         self.item_toggle.x = self.display.x + len(self.display.text) + 2
+        
+    def get_item(self, item_name):
+        for item in self.inventory:
+            if item.name == item_name:
+                return item
+        return None
 
     def toggle_item(self):
         if self.current_item:

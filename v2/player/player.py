@@ -4,7 +4,8 @@ import libtcodpy as libtcod
 
 import orders, settings
 from actions import ActionManager
-from directive import Directive, PlayerArrow, Legs, PlayerWASD
+from directive import Directive, PlayerArrow, Legs, PlayerWASD, ItemToggle
+from items import Lamp
 from items import Inventory
 from observer import Listener
 from tile import Unit
@@ -225,10 +226,16 @@ class Player(Listener, orders.Orders, Unit):
         if self.last_position == self.get_location():
             self.idle_time += 1
         else:
-            self.change_sight_radius(-1)
+            equipped_item = self.inventory.current_item
+            if isinstance(equipped_item, Lamp):
+                if equipped_item.on:
+                    for d in self.children: # INEFFICIENT?!
+                        if isinstance(d, ItemToggle):
+                            d.complete()
+            self.change_sight_radius(-3)
             self.darken_timer += 1
 
-        self.lighten_while_standing()
+#        self.lighten_while_standing()
         self.darken_always()
         libtcod.map_compute_fov(self.game.the_map.libtcod_map,
                 self.x, self.y, self.sight_radius, algo=libtcod.FOV_DIAMOND)
