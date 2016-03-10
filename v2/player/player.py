@@ -55,8 +55,7 @@ class Player(Listener, orders.Orders, Unit):
     def is_visible(self):
         return True
 
-    def change_sight_radius(self, delta_s, set=False):
-        self.schimb = True
+    def change_sight_radius(self, delta_s, set=False, noschimb=False):
         if set:
             self.sight_radius = delta_s
         else:
@@ -65,10 +64,12 @@ class Player(Listener, orders.Orders, Unit):
             self.sight_radius = self.max_sight
         elif self.sight_radius < self.min_sight:
             self.sight_radius = self.min_sight
-            
+        if not noschimb:
+            self.schimb = True
         self.idle_time = 0
         
     def change_min_sight(self, delta_s, set=False):
+        old_min = self.min_sight
         if set:
             self.min_sight = delta_s
         else:
@@ -79,8 +80,10 @@ class Player(Listener, orders.Orders, Unit):
             self.min_sight = self.max_sight
         if self.sight_radius < self.min_sight:
             self.sight_radius = self.min_sight
+        new_min = self.min_sight
+        delta_min = old_min - new_min
+        self.change_sight_radius(delta_min, noschimb=True)
         self.schimb = True
-            
 
     def set_arrows(self):
         NSEW = {(0, 4): libtcod.CHAR_ARROW_N, 
@@ -99,11 +102,10 @@ class Player(Listener, orders.Orders, Unit):
         self.arrows[arrow.phrase] = arrow
 
     def handle_keys(self):
-        self.last_position = self.get_location()
+        self.last_position = self.location
         for a in self.arrows.values():
             if a:
                 a.pressed = False
-        dx, dy = 0, 0
         key = libtcod.console_check_for_keypress()  #real-time
         
         is_char = (key.vk == libtcod.KEY_CHAR)
@@ -118,7 +120,7 @@ class Player(Listener, orders.Orders, Unit):
             return True  #exit game
         elif key.vk == libtcod.KEY_CONTROL:
             if self.inventory.pick_up_item(
-                    self.game.the_map.get_item(*self.get_location())
+                    self.game.the_map.get_item(*self.location)
                                            ):
                 pass
             else:
@@ -214,7 +216,7 @@ class Player(Listener, orders.Orders, Unit):
         self.act()
         if self.step_timer < self.len_step:
             self.step_timer += 1
-        if self.moved and self.get_location() == self.last_position:
+        if self.moved and self.location == self.last_position:
             self.moved = False
             if self.step_timer > 5:
                 self.take_step()
@@ -223,7 +225,7 @@ class Player(Listener, orders.Orders, Unit):
             if not c.static:
                 c.update()
                 
-        if self.last_position == self.get_location():
+        if self.last_position == self.location:
             self.idle_time += 1
         else:
             equipped_item = self.inventory.current_item
@@ -233,17 +235,14 @@ class Player(Listener, orders.Orders, Unit):
                         if isinstance(d, ItemToggle):
                             d.complete()
             self.change_sight_radius(-3)
-            self.darken_timer += 1
 
-#        self.lighten_while_standing()
         self.darken_always()
         libtcod.map_compute_fov(self.game.the_map.libtcod_map,
                 self.x, self.y, self.sight_radius, algo=libtcod.FOV_DIAMOND)
                 
-
     def darken_while_standing(self):
         dark_time = 40
-        if self.last_position != self.get_location():
+        if self.last_position != self.location:
             if self.sight_radius < self.max_sight:
                 self.change_sight_radius(3)
             else:
@@ -252,7 +251,11 @@ class Player(Listener, orders.Orders, Unit):
             self.change_sight_radius(-3)
             
     def darken_always(self):
-        if self.darken_timer > 60:
+        if self.last_position == self.location:
+            self.darken_timer += 1
+        else:
+            self.darken_timer += 4
+        if self.darken_timer > 240:
             self.change_min_sight(-1)
             self.darken_timer = 0
             

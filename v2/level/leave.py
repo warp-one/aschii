@@ -42,11 +42,11 @@ class LeaveTheCaves(Level):
             t.add_link(u)
 
         self.flashlight = Flashlight(False, 20, 20, 'I', libtcod.yellow, self.foreground, self)
-        x, y = self.flashlight.get_location()
+        x, y = self.flashlight.location()
         self.the_map.add(x, y, self.flashlight)
         
         self.gam = Gammon(False, 22, 20, 'd', libtcod.pink, self.foreground, self)
-        x, y = self.gam.get_location()
+        x, y = self.gam.location
         self.the_map.add(x, y, self.gam)
 
         

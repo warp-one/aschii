@@ -70,14 +70,14 @@ class Directive(Attachment, Tile):
             self._draw()
 
     def _draw(self):
-        Ploc = self.game.player.get_location()
-        Sloc = self.anchor.get_location()
+        Ploc = self.game.player.location
+        Sloc = self.anchor.location
         in_range = tools.get_distance(Ploc, Sloc) < self.range
         self.dormant_color = libtcod.red if in_range else libtcod.grey
         to_draw = self.phrase
         for i, char in enumerate(to_draw):
             x, y = self.x + i, self.y
-            if (x, y) == self.anchor.get_location():
+            if (x, y) == self.anchor.location:
                 continue
             x, y = self.game.camera.to_camera_coordinates(x, y)
             color = (self.current_color if self.phrase_clear[i] 

@@ -18,8 +18,8 @@ class DirectiveFade(Fader):
         iteration = self.fade_time - self.fade_step
         if self.fade_step < 0:
             return False
-        Ploc = directive.game.player.get_location()
-        Sloc = directive.anchor.get_location()
+        Ploc = directive.game.player.location
+        Sloc = directive.anchor.location
         in_range = tools.get_distance(Ploc, Sloc) < directive.range
         directive.dormant_color = libtcod.red if in_range else libtcod.grey
         to_draw = directive.phrase
@@ -45,8 +45,8 @@ class DirectiveLineFade(Fader):
         iteration = self.fade_time - self.fade_step
         if self.fade_step < 0:
             return False
-        Ploc = directive.game.player.get_location()
-        Sloc = directive.anchor.get_location()
+        Ploc = directive.game.player.location
+        Sloc = directive.anchor.location
         in_range = tools.get_distance(Ploc, Sloc) < directive.range
         directive.dormant_color = libtcod.red if in_range else libtcod.grey
         to_draw = directive.phrase

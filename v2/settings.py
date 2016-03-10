@@ -1,6 +1,6 @@
 _DEBUG = False
 
-#actual size of the window
+# actual size of the window
 SCREEN_WIDTH = 80
 SCREEN_HEIGHT = 45
 

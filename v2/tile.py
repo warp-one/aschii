@@ -37,7 +37,8 @@ class Tile(object):
         self.x += dx
         self.y += dy
         
-    def get_location(self):
+    @property
+    def location(self):
         return self.x, self.y
 
     def place(self, x, y):
@@ -74,7 +75,7 @@ class Tile(object):
         else:
             color = self.current_color
 
-        if tools.get_distance(self.get_location(), self.game.player.get_location()) > self.game.player.min_sight:
+        if tools.get_distance(self.location, self.game.player.location) > self.game.player.min_sight:
             color *= .5
 
         # awkward that there are two effects systems here, but maybe the 
@@ -83,12 +84,11 @@ class Tile(object):
         if self.phrase:
             for i, char in enumerate(self.phrase):
                 x, y = self.game.camera.to_camera_coordinates(self.x + i, self.y)
-#                if not self.game.the_map.run_collision(x, y):
                 libtcod.console_set_default_foreground(self.con, color)
                 libtcod.console_put_char(self.con, x, y, 
                                                 char, libtcod.BKGND_NONE)
         else:
-            x, y = self.game.camera.to_camera_coordinates(*self.get_location())
+            x, y = self.game.camera.to_camera_coordinates(*self.location)
             
             libtcod.console_set_default_foreground(self.con, color)
             libtcod.console_put_char(self.con, x, y, 
@@ -103,7 +103,7 @@ class Tile(object):
                 libtcod.console_put_char(self.con, x, y, 
                                                 ' ', libtcod.BKGND_NONE)
         else:
-            x, y = self.game.camera.to_camera_coordinates(*self.get_location())
+            x, y = self.game.camera.to_camera_coordinates(*self.location)
             libtcod.console_put_char(self.con, x, y, 
                                             ' ', libtcod.BKGND_NONE)
 
@@ -121,8 +121,8 @@ class Tile(object):
                 self.update_queue.remove(completed_action)
 
         # DRAWING EFFECTS
-        if self.effects and not self.game.the_map.run_collision(*self.get_location()):
-            self.next_color, self.next_char = self.effects[-1].get_char(*self.get_location())
+        if self.effects and not self.game.the_map.run_collision(*self.location):
+            self.next_color, self.next_char = self.effects[-1].get_char(*self.location)
         else:
             self.next_color, self.next_char = None, None
 

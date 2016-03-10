@@ -50,7 +50,7 @@ class Inventory(object):
             print "No item in hand!"
         
     def switch_item(self):
-        #TODO: make a legible sequence of functions rather than this unholiness
+        # TODO: make a legible sequence of functions rather than this unholiness
         previous_item = self.current_item
         if not self.current_item:
             if self.inventory:
@@ -164,7 +164,7 @@ class Item(EnvironmentTile):
         
     def put_down(self):
         self.toggle_visible()
-        self.x, self.y = self.owner.get_location()
+        self.x, self.y = self.owner.location
         self.owner = None
         self.game.the_map.add(self.x, self.y, self)
         self.turn_off()

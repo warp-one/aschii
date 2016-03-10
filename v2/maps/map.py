@@ -33,7 +33,9 @@ class TileMap(Listener, object):
             self.waves = mg.Markov(f)
         with open('nightland.txt', 'r') as f:
             self.nightland = mg.Markov(f)
-            
+        with open('goblin.txt', 'r') as f:
+            self.goblins = mg.Markov(f)
+
         self.obs = []
         self.render_area = (0, 0, 0, 0, "default")
         self.last_render = []
@@ -114,9 +116,9 @@ class TileMap(Listener, object):
     def get_tiles_in_render_area(self):
         player = self.game.player
         def x(light):
-            return light.get_location()[0]
+            return light.location[0]
         def y(light):
-            return light.get_location()[1]
+            return light.location[1]
         Xmins = [x(l) - l.Lradius for l in self.light_sources]
         Xmaxs = [x(l) + l.Lradius for l in self.light_sources]
         Ymins = [y(l) - l.Lradius for l in self.light_sources]
@@ -132,6 +134,11 @@ class TileMap(Listener, object):
         w = maxX - minX
         h = maxY - minY
         self.render_area = minX, minY, w, h, "default"
+        return self.get_area(player.x-player.max_sight, # this is cruder than
+                             player.y-player.max_sight, # the method below
+                             player.max_sight*2,        # but it performs
+                             player.max_sight*2,        # fine and solves
+                             anchor="default")          # update problems
         return self.get_area(minX, minY, w, h, anchor="default")
 
     def get_tiles_in_clear_area(self):
@@ -248,7 +255,7 @@ class TileMap(Listener, object):
         # so, uh, maybe work on it a bit. to do: 
         # separate out into its own method the checks
         # for being seen and unblocked. the "floor check"
-        light_word = choice(['light', 'lantern', 'glow', 'luminescence'])
+        light_word = choice(['bright', 'lantern', 'glow', 'flame'])
         self.schimber.change_text(light_word)
     
         if tiles is None:
@@ -259,18 +266,17 @@ class TileMap(Listener, object):
             tiles_to_write = tiles
             
         num_tiles = len(tiles_to_write)
-        
-        if len(self.mutated_text) < num_tiles:
-            self.mutated_text = self._schimb(self.nightland)
-            
         word_len = len(self.schimber.phrase)
         word_xy = (0, 0)
         word_pos = num_tiles
-        
+        current_space = 0
+
+        if len(self.mutated_text) < num_tiles:
+            self.mutated_text = self._schimb(self.waves)
+
         num_spaces = self.mutated_text.count(' ', 0, num_tiles)
         chosen_space = randint(0, num_spaces - 1)
-        current_space = 0
-    
+
         for i, t in enumerate(tiles_to_write):
             if word_pos < num_tiles:
                 letter = self.mutated_text[i - word_len - 1]
@@ -292,7 +298,7 @@ class TileMap(Listener, object):
                     else:
                         pass
                 current_space += 1
-                
+
             t.current_char = letter
 
         if not word_xy == (0, 0):

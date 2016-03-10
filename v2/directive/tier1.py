@@ -108,15 +108,15 @@ class Lightener(Directive):
         return self.visible
 
     def _draw(self):
-        Ploc = self.game.player.get_location()
-        Sloc = self.anchor.get_location()
+        Ploc = self.game.player.location
+        Sloc = self.anchor.location
         in_range = tools.get_distance(Ploc, Sloc) < self.range
         self.dormant_color = (libtcod.darkest_grey * .5 if not randint(0, 20) else libtcod.darkest_grey)
         to_draw = self.phrase
         for i, char in enumerate(to_draw):
 
             x, y = self.x + i, self.y
-            if tools.get_distance((x, y), self.game.player.get_location()) > self.game.player.min_sight:
+            if tools.get_distance((x, y), self.game.player.location) > self.game.player.min_sight:
                 color = self.dormant_color * .5
             else:
                 color = self.dormant_color
@@ -208,8 +208,8 @@ class WordMatch(Bow):
         self.completed = False
         
     def _draw(self):
-        Ploc = self.game.player.get_location()
-        Sloc = self.anchor.get_location()
+        Ploc = self.game.player.location
+        Sloc = self.anchor.location
         in_range = tools.get_distance(Ploc, Sloc) < self.range
         self.dormant_color = libtcod.red if in_range else libtcod.grey
         to_draw = self.phrase
@@ -217,10 +217,10 @@ class WordMatch(Bow):
         in_fov = libtcod.map_is_in_fov(self.game.the_map.libtcod_map, self.x, self.y)
         for i, char in enumerate(to_draw):
             x, y = Sloc[0] + i - x_minus, Sloc[1]
-            if (x, y) == self.anchor.get_location():
+            if (x, y) == self.anchor.location:
                 continue
             x, y = self.game.camera.to_camera_coordinates(x, y)
-            if (in_range or in_fov) and not (x, y) == self.anchor.get_location():
+            if (in_range or in_fov) and not (x, y) == self.anchor.location:
                 color = (self.current_color if self.phrase_clear[i] else self.dormant_color)
                 libtcod.console_set_default_foreground(self.con, color)
                 libtcod.console_put_char(self.con, x, y, 
@@ -321,13 +321,13 @@ class Waypoint(Directive):
     def complete(self):
 #        self.completed = True
         p = self.game.player
-        path = p.get_path(p.get_location(), self.anchor.get_location())
+        path = p.get_path(p.location, self.anchor.location)
         self.game.player.add_order(len(path) * .1, p.move_along_path)
         self.reset()
         
     def is_visible(self):
-        player_proximity = tools.get_distance(self.get_location(), 
-                                            self.game.player.get_location())
+        player_proximity = tools.get_distance(self.location,
+                                              self.game.player.location)
         return super(Waypoint, self).is_visible() and player_proximity > 7
         
         
@@ -438,7 +438,7 @@ class MovingStatue(Orders, ResetStatue):
         path_coords = [libtcod.path_get(walk_path, x) for x in range(path_steps)]
         self.set_path(path_coords)
         libtcod.path_delete(walk_path)
-        self.add_order(path_steps, self.move_along_path)
+        self.add_order(path_steps, self.move_along_path, None)
         
     def update(self):
         super(MovingStatue, self).update()

@@ -81,13 +81,13 @@ class Sprint(Power):
 
     def complete(self):
         p = self.game.player
-        player_location = p.get_location()
+        player_location = p.location
         path = []
         for s in range(self.sprint_distance):
             next_tile = (p.x + p.facing[0] * (s + 1), p.y + p.facing[1] * (s + 1))
             path.append(next_tile)
         path = p.set_path(path)
-        self.game.player.add_order(len(path), p.move_along_path)
+        self.game.player.add_order(len(path), p.move_along_path, None)
         self.reset()
         
         

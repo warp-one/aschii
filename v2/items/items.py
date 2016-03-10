@@ -11,17 +11,17 @@ class Flashlight(Item):
     Lradius = 5
     
         
-    def get_location(self):
+    def location(self):
         try:
             if self.owner:
-                x, y = self.owner.get_location()
+                x, y = self.owner.location
                 fx, fy = self.owner.facing
                 return x + fx*self.distance, y + fy*self.distance
             else:
-                return super(Flashlight, self).get_location()
+                return super(Flashlight, self).location
         except AttributeError:
-            return super(Flashlight, self).get_location()
-        
+            return super(Flashlight, self).location
+
     def turn_on(self):
         if super(Flashlight, self).turn_on():
             self.game.the_map.light_sources.append(self)
@@ -45,7 +45,7 @@ class Lamp(Item):
     on = False
     ontext = "light"
     offtext = "snuff"
-    Lradius = 3
+    Lradius = 6
     
     def __init__(self, *args):
         super(Lamp, self).__init__(*args)
@@ -54,7 +54,9 @@ class Lamp(Item):
 
     def turn_on(self):
         if super(Lamp, self).turn_on():
-            self.owner.change_sight_radius(self.Lradius)
+            action = self.owner.change_sight_radius
+            brightening = (3, action, [self.Lradius/3])
+            self.owner.add_order(*brightening)
         self.on = True
         
     def turn_off(self):
@@ -78,8 +80,8 @@ class Idol(Item):
 
     name = "Figurine"
     on = False
-    ontext = "venerate"
-    offtext = "smash"
+    ontext = "appeal"
+    offtext = "deface"
     
     def __init__(self, *args):
         super(Idol, self).__init__(*args)
@@ -140,7 +142,6 @@ class Gammon(Item):
     def turn_on(self):
         # not hungry any more
         self.on = True
-
 
     def turn_off(self):
         return

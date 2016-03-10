@@ -2,21 +2,25 @@ class Orders(object):
     def create_orders(self):
         self.orders = [] # (t, callable)
         self.current_action = None
+        self.current_params = []
         self.time_left = 0
         self.path = []
         
     def act(self):
         if self.current_action:
-            self.current_action()
+            if self.current_params:
+                self.current_action(*self.current_params)
+            else:
+                self.current_action()
             self.time_left -= 1
             if self.time_left <= 0:
                 self.end_action()
         else:
             if self.orders:
-                self.time_left, self.current_action = self.orders.pop(0)
+                self.time_left, self.current_action, self.current_params = self.orders.pop(0)
                 
-    def add_order(self, time, order):
-        self.orders.append((time, order))
+    def add_order(self, time, order, params):
+        self.orders.append((time, order, (params if params else [])))
         
     def move_along_path(self):
         try:

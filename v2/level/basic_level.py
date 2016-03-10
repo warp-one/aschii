@@ -76,7 +76,6 @@ class Level(object):
         for e in self.special_effects:
             e.update()
 
-
     def render_all(self):
         self.camera.move_camera(self.player.x, self.player.y)
         for t in self.next_render:

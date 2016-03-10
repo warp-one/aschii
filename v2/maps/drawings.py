@@ -117,4 +117,4 @@ lvl1 = MapDrawing("maps/lvl1.png")
 lvl2 = MapDrawing("maps/lvl2.png")
 cave = MapDrawing("maps/longcave.png")
 
-tv = SpecialEffect(GifReader("maps/trees-loop.gif").get_frame_data(), (50, 14))
+tv = SpecialEffect(GifReader("maps/trees-loop.gif").get_frame_data(), (40, 95))

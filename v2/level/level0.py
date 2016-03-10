@@ -145,25 +145,20 @@ class LevelZero(Level):
             v.add_link(w)
 
         self.figurine = Idol(False, 28, 28, 'i', libtcod.white, self.foreground, self)
-        x, y = self.figurine.get_location()
+        x, y = self.figurine.location
         self.the_map.add(x, y, self.figurine)
         
         self.lamp = Lamp(False, 24, 24, 'T', libtcod.yellow, self.foreground, self)
-        x, y = self.lamp.get_location()
+        x, y = self.lamp.location
         self.the_map.add(x, y, self.lamp)
         
         self.lute = Lute(False, 22, 20, 'Q', libtcod.light_sepia, self.foreground, self)
-        x, y = self.lute.get_location()
+        x, y = self.lute.location
         self.the_map.add(x, y, self.lute)
 
         self.player.add_child(ItemGrab(self.figurine, self, text="pick up", offset = (-2, 2)))
         self.player.add_child(ItemGrab(self.lute, self, text="pick up", offset = (-2, 2)))
         self.player.add_child(ItemGrab(self.lamp, self, text="pick up", offset = (-2, 2)))
-#        s = self.the_map.schimb()
-#        self.the_map.load_doodad(25, 25, m1)
-#        for b in Boulders:
-#            x, y = randint(0, 100), randint(0, 80)
-#            self.the_map.load_doodad(x, y, b)
 
         a = self.special_effects.append(drawings.tv)
         drawings.tv.begin(self.the_map)
