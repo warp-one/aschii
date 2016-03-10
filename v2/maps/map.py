@@ -275,7 +275,10 @@ class TileMap(Listener, object):
             self.mutated_text = self._schimb(self.waves)
 
         num_spaces = self.mutated_text.count(' ', 0, num_tiles)
-        chosen_space = randint(0, num_spaces - 1)
+        try:
+            chosen_space = randint(0, num_spaces - 1)
+        except ValueError:
+            chosen_space = 0
 
         for i, t in enumerate(tiles_to_write):
             if word_pos < num_tiles:

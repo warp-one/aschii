@@ -20,7 +20,7 @@ class Player(Listener, orders.Orders, Unit):
     sight_radius = 5 
     max_sight = 21 # high in early levels, low in late...
     min_sight = 6
-    sight_floor = 2
+    sight_floor = 1
     len_step = 3 # in frames
     char = ' '
     left_foot = False
@@ -69,7 +69,6 @@ class Player(Listener, orders.Orders, Unit):
         self.idle_time = 0
         
     def change_min_sight(self, delta_s, set=False):
-        old_min = self.min_sight
         if set:
             self.min_sight = delta_s
         else:
@@ -80,9 +79,6 @@ class Player(Listener, orders.Orders, Unit):
             self.min_sight = self.max_sight
         if self.sight_radius < self.min_sight:
             self.sight_radius = self.min_sight
-        new_min = self.min_sight
-        delta_min = old_min - new_min
-        self.change_sight_radius(delta_min, noschimb=True)
         self.schimb = True
 
     def set_arrows(self):
@@ -257,6 +253,7 @@ class Player(Listener, orders.Orders, Unit):
             self.darken_timer += 4
         if self.darken_timer > 240:
             self.change_min_sight(-1)
+            self.change_sight_radius(-1, noschimb=True)
             self.darken_timer = 0
             
     def lighten_while_standing(self):
