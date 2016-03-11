@@ -246,9 +246,9 @@ class TileMap(Listener, object):
                         tile.char_queue.extend(chars)
                 if mode == "replace":
                     if colors:
-                        tile.color_queue = colors
+                        tile.color_queue = list(colors)
                     if chars:
-                        tile.char_queue = chars
+                        tile.char_queue = list(chars)
                         
     def schimb(self, tiles=None):
         # you call this EVERY FRAME OF MOVEMENT!!

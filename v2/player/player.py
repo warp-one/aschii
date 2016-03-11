@@ -10,6 +10,42 @@ from items import Inventory
 from observer import Listener
 from tile import Unit
 
+class TextTrail(object):
+
+    def __init__(self, tile):
+        self.tile = tile
+        self.tilemap = tile.game.the_map
+        self.queue = []
+        self.current_message = None
+        self.current_letter = 0
+
+    def add_message(self, message):
+        self.queue.append(message)
+
+    def clear_queue(self):
+        self.queue = []
+
+    def begin_message(self):
+        if self.current_message:
+            return "A message is already being written."
+        else:
+            self.current_message = self.queue.pop(0)
+
+    def end_message(self):
+        self.current_message = None
+        self.current_letter = 0
+
+    def write_letter(self):
+        if self.current_message:
+            letter = self.current_message[self.current_letter]
+            fade = [libtcod.Color(a, a, a) 
+                    for a in xrange(255, libtcod.darkest_grey.r, -10)]
+
+            self.tilemap.apply_tile_effect({self.tile.last_position: [(color, letter) for color in fade]}, mode="replace")
+            self.current_letter += 1
+            if self.current_letter >= len(self.current_message):
+                self.end_message()
+            
 
 class Player(Listener, orders.Orders, Unit):
 
@@ -51,6 +87,8 @@ class Player(Listener, orders.Orders, Unit):
         self.idle_time = self.idle_start
         self.moved = False
         self.schimb = False
+
+        self.trail = TextTrail(self)
         
     def is_visible(self):
         return True
@@ -231,6 +269,8 @@ class Player(Listener, orders.Orders, Unit):
                         if isinstance(d, ItemToggle):
                             d.complete()
             self.change_sight_radius(-3)
+            self.trail.write_letter()
+
 
         self.darken_always()
         libtcod.map_compute_fov(self.game.the_map.libtcod_map,
@@ -255,6 +295,8 @@ class Player(Listener, orders.Orders, Unit):
             self.change_min_sight(-1)
             self.change_sight_radius(-1, noschimb=True)
             self.darken_timer = 0
+            self.trail.add_message("DARKER...")
+            self.trail.begin_message()
             
     def lighten_while_standing(self):
         if self.idle_time > 100 and self.sight_radius < self.max_sight:
