@@ -52,6 +52,12 @@ class Lamp(Item):
 
         self.image = libtcod.image_load('comics/candle.png')
 
+    def pick_up(self, owner):
+        super(Lamp, self).pick_up(owner)
+        self.owner.trail.add_message("This candelabra can plug in anywhere, but if you move, the cord may come out of the socket...")
+        self.owner.trail.begin_message()
+
+
     def turn_on(self):
         if super(Lamp, self).turn_on():
             action = self.owner.change_sight_radius

@@ -1,4 +1,4 @@
-from random import shuffle
+from random import shuffle, randint
 
 import libtcodpy as libtcod
 
@@ -18,6 +18,7 @@ class TextTrail(object):
         self.queue = []
         self.current_message = None
         self.current_letter = 0
+        self.letter_offset = (0, 0)
 
     def add_message(self, message):
         self.queue.append(message)
@@ -30,6 +31,7 @@ class TextTrail(object):
             return "A message is already being written."
         else:
             self.current_message = self.queue.pop(0)
+            self.current_offest = (randint(0, 2), randint(0, 2))
 
     def end_message(self):
         self.current_message = None
@@ -37,11 +39,17 @@ class TextTrail(object):
 
     def write_letter(self):
         if self.current_message:
+            ox, oy = self.tile.last_position
+            x, y = ox + self.letter_offset[0], oy + self.letter_offset[1]
+            while not self.tilemap.can_schimb(x, y):
+                if x != ox: x += (ox - x)/abs(ox - x)
+                elif y != oy: y += (oy - y)/abs(oy - y)
+                else: break
             letter = self.current_message[self.current_letter]
             fade = [libtcod.Color(a, a, a) 
                     for a in xrange(255, libtcod.darkest_grey.r, -10)]
 
-            self.tilemap.apply_tile_effect({self.tile.last_position: [(color, letter) for color in fade]}, mode="replace")
+            self.tilemap.apply_tile_effect({(x, y):[(color, letter) for color in fade]}, mode="replace")
             self.current_letter += 1
             if self.current_letter >= len(self.current_message):
                 self.end_message()
@@ -295,7 +303,7 @@ class Player(Listener, orders.Orders, Unit):
             self.change_min_sight(-1)
             self.change_sight_radius(-1, noschimb=True)
             self.darken_timer = 0
-            self.trail.add_message("DARKER...")
+            self.trail.add_message("darker...")
             self.trail.begin_message()
             
     def lighten_while_standing(self):

@@ -68,6 +68,9 @@ class TileMap(Listener, object):
         except IndexError:
             print x, y
             return False
+
+    def can_schimb(self, x, y):
+        return not self.get_tile(x, y).blocked
             
     def get_area(self, x, y, w, h, anchor="center"):
         if anchor == "center":
