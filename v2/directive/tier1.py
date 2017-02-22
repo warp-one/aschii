@@ -1,4 +1,5 @@
 from random import choice, randint
+from collections import deque
 
 import libtcodpy as libtcod
 
@@ -91,16 +92,26 @@ class Next(Directive):
         
 
 class Lightener(Directive):
+    #should only appear in fixed places, and each disappear after you use it once
+    
+    script = deque([("light", "Find the light."),
+                    ("lantern", "Light me a lantern."),
+                    ("illumination", "A mysterious illumination...")]
+                   )
 
     def __init__(self, *args, **kwargs):
         super(Lightener, self).__init__(*args, **kwargs)
         self.color = libtcod.blue
         self.dormant_color = libtcod.light_grey
         self.current_color = self.color
+        self.coords = []
 
     def complete(self):
         self.game.player.change_min_sight(2)
         self.game.player.darken_timer = 0
+        new_keyword, new_sentence = self.script[0]
+        self.script.rotate(1)
+        self.change_text(new_keyword, sentence = new_sentence)
         self.reset()
         self.visible = False
         
@@ -112,19 +123,31 @@ class Lightener(Directive):
         Sloc = self.anchor.location
         in_range = tools.get_distance(Ploc, Sloc) < self.range
         self.dormant_color = (libtcod.darkest_grey * .5 if not randint(0, 20) else libtcod.darkest_grey)
-        to_draw = self.phrase
+        to_draw = self.sentence 
+        keyword_position = to_draw.find(self.phrase)
+        keyword_end = keyword_position + len(self.phrase)
         for i, char in enumerate(to_draw):
-
-            x, y = self.x + i, self.y
+            x, y = self.coords[i]
             if tools.get_distance((x, y), self.game.player.location) > self.game.player.min_sight:
                 color = self.dormant_color * .5
             else:
                 color = self.dormant_color
             x, y = self.game.camera.to_camera_coordinates(x, y)
-            color = (self.current_color if self.phrase_clear[i] else color)
+            
+            keyword_color_index = i - keyword_position
+            
+#            print keyword_color_index, self.phrase   ??????????????
+            if keyword_color_index < 0 or keyword_color_index > len(self.phrase) - 1:
+                pass
+            else:
+                color = (self.current_color 
+                            if self.phrase_clear[keyword_color_index] 
+                            else color)
+                
             libtcod.console_set_default_foreground(self.con, color)
             libtcod.console_put_char(self.con, x, y, 
                                             char, libtcod.BKGND_NONE)
+                                            
 
     def update(self):
         pass

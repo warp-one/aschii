@@ -299,7 +299,7 @@ class Player(Listener, orders.Orders, Unit):
             self.darken_timer += 1
         else:
             self.darken_timer += 4
-        if self.darken_timer > 240:
+        if self.darken_timer > 480:
             self.change_min_sight(-1)
             self.change_sight_radius(-1, noschimb=True)
             self.darken_timer = 0

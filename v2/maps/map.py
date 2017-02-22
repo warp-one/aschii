@@ -118,6 +118,11 @@ class TileMap(Listener, object):
                 
     def get_tiles_in_render_area(self):
         player = self.game.player
+        return self.get_area(player.x-player.max_sight, # this is cruder than
+                             player.y-player.max_sight, # the method below
+                             player.max_sight*2,        # but it performs
+                             player.max_sight*2,        # fine and solves
+                             anchor="default")          # update problems
         def x(light):
             return light.location[0]
         def y(light):
@@ -137,11 +142,6 @@ class TileMap(Listener, object):
         w = maxX - minX
         h = maxY - minY
         self.render_area = minX, minY, w, h, "default"
-        return self.get_area(player.x-player.max_sight, # this is cruder than
-                             player.y-player.max_sight, # the method below
-                             player.max_sight*2,        # but it performs
-                             player.max_sight*2,        # fine and solves
-                             anchor="default")          # update problems
         return self.get_area(minX, minY, w, h, anchor="default")
 
     def get_tiles_in_clear_area(self):
@@ -258,8 +258,6 @@ class TileMap(Listener, object):
         # so, uh, maybe work on it a bit. to do: 
         # separate out into its own method the checks
         # for being seen and unblocked. the "floor check"
-        light_word = choice(['bright', 'lantern', 'glow', 'flame'])
-        self.schimber.change_text(light_word)
     
         if tiles is None:
             render_tiles = self.get_tiles_in_render_area()
@@ -269,10 +267,11 @@ class TileMap(Listener, object):
             tiles_to_write = tiles
             
         num_tiles = len(tiles_to_write)
-        word_len = len(self.schimber.phrase)
+        word_len = len(self.schimber.sentence)
         word_xy = (0, 0)
         word_pos = num_tiles
-        current_space = 0
+        self.schimber.coords = []
+        room = False
 
         if len(self.mutated_text) < num_tiles:
             self.mutated_text = self._schimb(self.waves)
@@ -284,36 +283,31 @@ class TileMap(Listener, object):
             chosen_space = 0
 
         for i, t in enumerate(tiles_to_write):
+            if room:
+                if len(self.schimber.coords) < word_len:
+                    self.schimber.coords.append((t.x, t.y))
+                    
             if word_pos < num_tiles:
                 letter = self.mutated_text[i - word_len - 1]
             else:
                 letter = self.mutated_text[i]
-            if letter == ' ':
-                if current_space == chosen_space:
-                    room = True
-                    for wx in range(word_len):
-                        x, y = t.x + wx, t.y
-                        seen = libtcod.map_is_in_fov(self.libtcod_map, x, y)
-                        blocked = self.get_tile(x, y).blocked
-                        if not seen or blocked:
-                            room = False
-                            break
-                    if room:
-                        word_xy = t.x + 1, t.y
-                        word_pos = i
-                    else:
-                        pass
-                current_space += 1
+            if letter == '.':
+                room = True
+                if room:
+                    word_xy = t.x + 1, t.y
+                    word_pos = i
+                else:
+                    pass
 
             t.current_char = letter
 
-        if not word_xy == (0, 0):
+        if not word_xy == (0, 0) and word_pos + word_len < num_tiles:
             self.schimber.x, self.schimber.y = word_xy
             self.schimber.visible = True
         else:
             self.schimber.x, self.schimber.y = 0, 0
             self.schimber.visible = False
-
+            
         self.mutated_text = self.mutated_text[len(tiles_to_write):]
                     
     def on_notify(self, entity, event):

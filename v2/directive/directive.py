@@ -18,7 +18,7 @@ class Directive(Attachment, Tile):
     range = 9
 
     def __init__(self, anchor, game, 
-                 static=False, text="Destroy", offset=(0, 0), new_fader=None):
+                 static=False, text="Destroy", sentence="Destroy me!", offset=(0, 0), new_fader=None):
         self.anchor = anchor
         self.offsetX = offset[0]
         self.offsetY = offset[1]
@@ -33,6 +33,7 @@ class Directive(Attachment, Tile):
         self.active = False
 
         self.change_text(text)
+        self.sentence = sentence # currently only used by Lightener
         self.pressed = False
 
         self.visible = False
@@ -47,8 +48,11 @@ class Directive(Attachment, Tile):
         else:
             self.active = True
             
-    def change_text(self, text):
+    def change_text(self, text, sentence=None):
+        if not sentence:
+            sentence = text
         self.clear()
+        self.sentence = sentence
         self.phrase = text
         self.phrase_clear = [False] * len(self.phrase) 
         self.phrase_index = 0
@@ -60,7 +64,7 @@ class Directive(Attachment, Tile):
         return av
        
     def draw(self):
-        if self.completed: # should only pass if there's a fader
+        if self.completed: # should only be around to pass if there's a fader
             if self.fader:
                 if self.fader.apply_draw_step_for_erase(self):
                     return
