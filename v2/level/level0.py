@@ -92,15 +92,15 @@ class LevelZero(Level):
 #            self.player.add_child(Waypoint(s, self, text="approach", 
 #                                            static=True, offset=(-1,-1)))
                                             
-            t = LinkedStatue({}, 15, 31, ' ', libtcod.brass, self.foreground, self)
-            self.the_map.add(t.x, t.y, t)
-            self.player.add_child(Bow(t, self, text="brighter", static=True, offset=(-1,-1)))
+#            t = LinkedStatue({}, 15, 31, ' ', libtcod.brass, self.foreground, self)
+#            self.the_map.add(t.x, t.y, t)
+#            self.player.add_child(Bow(t, self, text="brighter", static=True, offset=(-1,-1)))
 
-            u = LinkedStatue({}, 24, 32, ' ', libtcod.brass, self.foreground, self)
-            self.the_map.add(u.x, u.y, u)
-            self.player.add_child(Bow(u, self, text="fleeter", static=True, offset=(-1,-1), new_fader=DirectiveLineFade))
-            u.add_link(t)
-            t.add_link(u)
+#            u = LinkedStatue({}, 24, 32, ' ', libtcod.brass, self.foreground, self)
+#            self.the_map.add(u.x, u.y, u)
+#            self.player.add_child(Bow(u, self, text="fleeter", static=True, offset=(-1,-1), new_fader=DirectiveLineFade))
+#            u.add_link(t)
+#            t.add_link(u)
             
             schimber = Lightener(self.player, self, text="light", sentence="Find the light", static=True, offset=(0, 0))
             schimber.visible = False
@@ -130,19 +130,19 @@ class LevelZero(Level):
             self.statues.append(rp)
             self.the_map.add(rp.x, rp.y, rp)
             
-            v = LinkedStatue({}, 56, 40, 'L', libtcod.brass, self.foreground, self)
-            self.the_map.add(v.x, v.y, v)
-            v_ = WordMatch(["holy", "look", "angle", "stalagmite"], 
-                                    v, self, static=True, offset=(-1,-1))
-            self.player.add_child(v_)
+#            v = LinkedStatue({}, 56, 40, 'L', libtcod.brass, self.foreground, self)
+#            self.the_map.add(v.x, v.y, v)
+#            v_ = WordMatch(["holy", "look", "angle", "stalagmite"], 
+#                                    v, self, static=True, offset=(-1,-1))
+#            self.player.add_child(v_)
 
-            w = LinkedStatue({}, 67, 40, 'T', libtcod.brass, self.foreground, self)
-            self.the_map.add(w.x, w.y, w)
-            w_ = WordMatch(["bite", "tap", "set", "frighten"], 
-                                    w, self, static=True, offset=(-1,-1))
-            self.player.add_child(w_)
-            w.add_link(v)
-            v.add_link(w)
+#            w = LinkedStatue({}, 67, 40, 'T', libtcod.brass, self.foreground, self)
+#            self.the_map.add(w.x, w.y, w)
+#            w_ = WordMatch(["bite", "tap", "set", "frighten"], 
+#                                    w, self, static=True, offset=(-1,-1))
+#            self.player.add_child(w_)
+#            w.add_link(v)
+#            v.add_link(w)
 
         self.figurine = Idol(False, 28, 28, 'i', libtcod.white, self.foreground, self)
         x, y = self.figurine.location
@@ -152,13 +152,13 @@ class LevelZero(Level):
         x, y = self.lamp.location
         self.the_map.add(x, y, self.lamp)
         
-        self.lute = Lute(False, 22, 20, 'Q', libtcod.light_sepia, self.foreground, self)
-        x, y = self.lute.location
-        self.the_map.add(x, y, self.lute)
+#        self.lute = Lute(False, 22, 20, 'Q', libtcod.light_sepia, self.foreground, self)
+#        x, y = self.lute.location
+#        self.the_map.add(x, y, self.lute)
 
         self.player.add_child(ItemGrab(self.figurine, self, text="pick up", offset = (-2, 2)))
-        self.player.add_child(ItemGrab(self.lute, self, text="pick up", offset = (-2, 2)))
+#        self.player.add_child(ItemGrab(self.lute, self, text="pick up", offset = (-2, 2)))
         self.player.add_child(ItemGrab(self.lamp, self, text="pick up", offset = (-2, 2)))
 
-#        a = self.special_effects.append(drawings.tv)
-#        drawings.tv.begin(self.the_map)
+        a = self.special_effects.append(drawings.tv)
+        drawings.tv.begin(self.the_map)

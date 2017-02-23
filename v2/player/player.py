@@ -31,7 +31,7 @@ class TextTrail(object):
             return "A message is already being written."
         else:
             self.current_message = self.queue.pop(0)
-            self.current_offest = (randint(0, 2), randint(0, 2))
+            self.current_offset = (randint(0, 2), randint(0, 2))
 
     def end_message(self):
         self.current_message = None
@@ -62,8 +62,8 @@ class Player(Listener, orders.Orders, Unit):
     offsets = [(-2, -2), (-2, 2), (2, 3), (2, -3), 
                (-2, -2), (-2, 2), (2, 3), (2, -3)]
     sight_radius = 5 
-    max_sight = 21 # high in early levels, low in late...
-    min_sight = 6
+    max_sight = 31 # high in early levels, low in late...
+    min_sight = 21
     sight_floor = 1
     len_step = 3 # in frames
     char = ' '

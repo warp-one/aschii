@@ -10,7 +10,7 @@ from tile import EnvironmentTile
 import tile, settings
 
 ## this is a game made by William Schuller. w r schuller at gmail dot com
-# Copyright me, 2015.
+# Copyright me, 2015-2017.
 #
 # "the position of each individual letter on the page is subject to rules"
 # bowing puzzles
@@ -42,7 +42,7 @@ class Game(object):
     def __init__(self, w, h):
         self.width, self.height = w, h
 
-        libtcod.console_set_custom_font('16x16mod.png', 
+        libtcod.console_set_custom_font('terminal8x8_gs_ro.png',#'16x16mod.png', 
                 libtcod.FONT_TYPE_GREYSCALE | libtcod.FONT_LAYOUT_ASCII_INROW,
                 )
         libtcod.console_init_root(self.width, self.height, 

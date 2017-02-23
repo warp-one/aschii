@@ -94,9 +94,12 @@ class Next(Directive):
 class Lightener(Directive):
     #should only appear in fixed places, and each disappear after you use it once
     
-    script = deque([("light", "Find the light."),
-                    ("lantern", "Light me a lantern."),
-                    ("illumination", "A mysterious illumination...")]
+    script = deque([("light", "I quiver and hang in a loop of light."),
+                    ("lantern", "Like a lantern down a dark lane."),
+                    ("glow", "A mysterious glow against a stand of yew trees."),
+                    ("candle", "To lXXXt a candle is to cast a shadow..."),
+                    ("luminous", "You are not yourself luminous!")
+                    ]
                    )
     nodes = [(x, x) for x in range(10, 60, 10)]
 
@@ -108,6 +111,7 @@ class Lightener(Directive):
         self.coords = []
         self.active_node = None
         self.rotate_text()
+        self.appear_timer = 0
         
     def rotate_text(self):
         new_keyword, new_sentence = self.script[0]
@@ -132,6 +136,8 @@ class Lightener(Directive):
             if tools.get_distance(self.anchor.location, n
                                     ) < self.anchor.sight_radius:
                 if self.visible:
+                    if self.active_node is None:
+                        self.appear_timer = 10
                     self.active_node = n
                 break
             else:
@@ -144,12 +150,17 @@ class Lightener(Directive):
         super(Lightener, self).draw()
 
     def _draw(self):
+        colorful_choice = libtcod.Color(*choice(colors.fire_colorset))
         self.dormant_color = (libtcod.darkest_grey * .5 
                                 if not randint(0, 20) 
                                 else libtcod.darkest_grey)
-        self.phrase_color = (libtcod.Color(*choice(colors.fire_colorset)) 
+        self.phrase_color = (colorful_choice 
                                 if not randint(0, 15) 
                                 else self.dormant_color)
+        if self.appear_timer > 0:
+            self.phrase_color = colorful_choice * (self.appear_timer/10.)
+            self.appear_timer -= 1
+            
         to_draw = self.sentence 
         keyword_position = to_draw.find(self.phrase)
         for i, char in enumerate(to_draw):

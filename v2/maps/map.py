@@ -325,5 +325,5 @@ class TileMap(Listener, object):
                 foot_displacement = entity.left_foot_displacement
             x = entity.x + (entity.facing[1]*foot_displacement)
             y = entity.y + (entity.facing[0]*foot_displacement)
-            self.apply_tile_effect({(x, y): [(color, '.') for color in fade]})
+            self.apply_tile_effect({(x, y): [(color, ' ') for color in fade]})
 

@@ -123,6 +123,8 @@ class Tile(object):
         # DRAWING EFFECTS
         if self.effects and not self.game.the_map.run_collision(*self.location):
             self.next_color, self.next_char = self.effects[-1].get_char(*self.location)
+            if self.next_char == ' ':
+                self.next_char = None
         else:
             self.next_color, self.next_char = None, None
 
@@ -135,6 +137,8 @@ class Tile(object):
             self.next_char = self.char_queue.pop(0)
             if self.effects_mode == "hold":
                 self.char_queue.append(self.next_char)
+            if self.next_char == ' ':
+                self.next_char = None
                 
         #
         
