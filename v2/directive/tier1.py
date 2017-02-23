@@ -3,7 +3,7 @@ from collections import deque
 
 import libtcodpy as libtcod
 
-import tools, settings
+import tools, settings, colors
 from directive import Directive, DirectiveLink
 from tile import Unit, Tile
 from orders import Orders
@@ -98,34 +98,60 @@ class Lightener(Directive):
                     ("lantern", "Light me a lantern."),
                     ("illumination", "A mysterious illumination...")]
                    )
+    nodes = [(x, x) for x in range(10, 60, 10)]
 
     def __init__(self, *args, **kwargs):
         super(Lightener, self).__init__(*args, **kwargs)
-        self.color = libtcod.blue
+        self.color = libtcod.black
         self.dormant_color = libtcod.light_grey
         self.current_color = self.color
         self.coords = []
+        self.active_node = None
+        self.rotate_text()
+        
+    def rotate_text(self):
+        new_keyword, new_sentence = self.script[0]
+        self.script.rotate(1)
+        self.change_text(new_keyword, sentence = new_sentence)
 
     def complete(self):
         self.game.player.change_min_sight(2)
         self.game.player.darken_timer = 0
-        new_keyword, new_sentence = self.script[0]
-        self.script.rotate(1)
-        self.change_text(new_keyword, sentence = new_sentence)
+        self.rotate_text()
         self.reset()
         self.visible = False
         
+        self.nodes.remove(self.active_node)
+        self.active_node = None
+        
     def is_visible(self):
         return self.visible
+        
+    def draw(self):
+        for n in self.nodes:
+            if tools.get_distance(self.anchor.location, n
+                                    ) < self.anchor.sight_radius:
+                if self.visible:
+                    self.active_node = n
+                break
+            else:
+                self.visible = False
+                self.active_node = None
+        else:
+            if not self.nodes:
+                self.visible = False
+                self.active_node = None
+        super(Lightener, self).draw()
 
     def _draw(self):
-        Ploc = self.game.player.location
-        Sloc = self.anchor.location
-        in_range = tools.get_distance(Ploc, Sloc) < self.range
-        self.dormant_color = (libtcod.darkest_grey * .5 if not randint(0, 20) else libtcod.darkest_grey)
+        self.dormant_color = (libtcod.darkest_grey * .5 
+                                if not randint(0, 20) 
+                                else libtcod.darkest_grey)
+        self.phrase_color = (libtcod.Color(*choice(colors.fire_colorset)) 
+                                if not randint(0, 15) 
+                                else self.dormant_color)
         to_draw = self.sentence 
         keyword_position = to_draw.find(self.phrase)
-        keyword_end = keyword_position + len(self.phrase)
         for i, char in enumerate(to_draw):
             x, y = self.coords[i]
             if tools.get_distance((x, y), self.game.player.location) > self.game.player.min_sight:
@@ -136,13 +162,12 @@ class Lightener(Directive):
             
             keyword_color_index = i - keyword_position
             
-#            print keyword_color_index, self.phrase   ??????????????
             if keyword_color_index < 0 or keyword_color_index > len(self.phrase) - 1:
                 pass
             else:
                 color = (self.current_color 
                             if self.phrase_clear[keyword_color_index] 
-                            else color)
+                            else self.phrase_color)
                 
             libtcod.console_set_default_foreground(self.con, color)
             libtcod.console_put_char(self.con, x, y, 

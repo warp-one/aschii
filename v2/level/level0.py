@@ -84,10 +84,10 @@ class LevelZero(Level):
             self.statues.append(s)
             self.the_map.add(s.x, s.y, s)
             
-            s = MovingStatue(0, 50, reveal_script0, 56, 49 + _, 'R', libtcod.grey, self.foreground, self)
-            s.loop = False
-            self.statues.append(s)
-            self.the_map.add(s.x, s.y, s)
+#            s = MovingStatue(0, 50, reveal_script0, 56, 49 + _, 'R', libtcod.grey, self.foreground, self)
+#            s.loop = False
+#            self.statues.append(s)
+#            self.the_map.add(s.x, s.y, s)
 #            self.player.add_child(Next(s, self, text="bow", static=True, offset = (2, 2)))
 #            self.player.add_child(Waypoint(s, self, text="approach", 
 #                                            static=True, offset=(-1,-1)))
@@ -160,5 +160,5 @@ class LevelZero(Level):
         self.player.add_child(ItemGrab(self.lute, self, text="pick up", offset = (-2, 2)))
         self.player.add_child(ItemGrab(self.lamp, self, text="pick up", offset = (-2, 2)))
 
-        a = self.special_effects.append(drawings.tv)
-        drawings.tv.begin(self.the_map)
+#        a = self.special_effects.append(drawings.tv)
+#        drawings.tv.begin(self.the_map)

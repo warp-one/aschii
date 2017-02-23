@@ -253,6 +253,8 @@ class TileMap(Listener, object):
                     if chars:
                         tile.char_queue = list(chars)
                         
+    
+                        
     def schimb(self, tiles=None):
         # you call this EVERY FRAME OF MOVEMENT!!
         # so, uh, maybe work on it a bit. to do: 
@@ -268,11 +270,11 @@ class TileMap(Listener, object):
             
         num_tiles = len(tiles_to_write)
         word_len = len(self.schimber.sentence)
-        word_xy = (0, 0)
+#        word_xy = (0, 0)
         word_pos = num_tiles
         self.schimber.coords = []
         room = False
-
+        
         if len(self.mutated_text) < num_tiles:
             self.mutated_text = self._schimb(self.waves)
 
@@ -291,21 +293,19 @@ class TileMap(Listener, object):
                 letter = self.mutated_text[i - word_len - 1]
             else:
                 letter = self.mutated_text[i]
-            if letter == '.':
-                room = True
-                if room:
-                    word_xy = t.x + 1, t.y
+            if letter == '.' and not room:
+                if i + word_len < num_tiles:
+                    room = True
+#                    word_xy = t.x + 1, t.y
                     word_pos = i
                 else:
                     pass
 
             t.current_char = letter
 
-        if not word_xy == (0, 0) and word_pos + word_len < num_tiles:
-            self.schimber.x, self.schimber.y = word_xy
+        if room and self.schimber.coords:
             self.schimber.visible = True
         else:
-            self.schimber.x, self.schimber.y = 0, 0
             self.schimber.visible = False
             
         self.mutated_text = self.mutated_text[len(tiles_to_write):]
