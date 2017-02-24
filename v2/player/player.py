@@ -283,22 +283,17 @@ class Player(Listener, orders.Orders, Unit):
         self.darken_always()
         libtcod.map_compute_fov(self.game.the_map.libtcod_map,
                 self.x, self.y, self.sight_radius, algo=libtcod.FOV_DIAMOND)
-                
-    def darken_while_standing(self):
-        dark_time = 40
-        if self.last_position != self.location:
-            if self.sight_radius < self.max_sight:
-                self.change_sight_radius(3)
-            else:
-                self.idle_time = self.idle_start
-        if self.idle_time >= dark_time:
-            self.change_sight_radius(-3)
-            
+                            
     def darken_always(self):
         if self.last_position == self.location:
             self.darken_timer += 1
         else:
             self.darken_timer += 4
+        candle = self.inventory.get_item("Candelabra")
+        if candle:
+            if candle.on:
+                return
+
         if self.darken_timer > 480:
             self.change_min_sight(-1)
             self.change_sight_radius(-1, noschimb=True)
@@ -306,11 +301,6 @@ class Player(Listener, orders.Orders, Unit):
             self.trail.add_message("darker...")
             self.trail.begin_message()
             
-    def lighten_while_standing(self):
-        if self.idle_time > 100 and self.sight_radius < self.max_sight:
-            self.change_sight_radius(3)
-            self.darken_timer = 0
-
     def on_notify(self, entity, event):
         pass
 

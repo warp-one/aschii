@@ -390,6 +390,22 @@ class Waypoint(Directive):
         return super(Waypoint, self).is_visible() and player_proximity > 7
         
         
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
 
 class SpeakingObject(Unit):
 
@@ -460,7 +476,7 @@ class Statue(SpeakingObject):
         self.blocked = True
         
         
-class LStatue(Statue):
+class LStatue(Statue): #??????
     def clear(self):
         super(LStatue, self).clear()
         
@@ -542,3 +558,20 @@ class LinkedStatue(Statue):
                 return False
         return True
         
+        
+class BridgeBuilder(Statue):
+    def do(self):
+        square_size = 15
+        Xs = []
+        for _ in range(square_size):
+            for x in range(square_size):
+                Xs.append(self.x - x)
+        Ys = []
+        for y in range(square_size):
+            for _ in range(square_size):
+                Ys.append(self.y + y)
+        for i, x in enumerate(Xs):
+            Xs[i] = (Xs[i], Ys[i])
+            
+        for xy in Xs:
+            self.game.the_map.change_tile(xy[0], xy[1], False, schimb=True)

@@ -15,7 +15,7 @@ import settings
 # TODO: Add in a class to define other kinds of tiles and objects'
 # placement on a level-by-level basis
 
-def make_tile(map_drawing, x, y, con, game):
+def make_tile(map_drawing, x, y, con, game, blocked=None):
     tile = map_drawing.get_tile(x, y)
     tile_rgb = tile[0], tile[1], tile[2]
     floor = map_drawing.get_tile(x, y, layer="floor")
@@ -23,11 +23,11 @@ def make_tile(map_drawing, x, y, con, game):
     if tile_rgb == (221, 32, 117):
         return BottomlessPit(
             True,
-            x, y, ' ', libtcod.black, con, game
-                                     )
-    blocked = (False if tile_rgb == (0, 0, 0) else True)
+            x, y, ' ', libtcod.black, con, game)
+    if blocked is None:                                 
+        blocked = (False if tile_rgb == (0, 0, 0) else True)
     color = (libtcod.Color(*floor_rgb)
-                            if tile_rgb == (0, 0, 0) 
+                            if not blocked 
                             else libtcod.Color(*tile_rgb))
     return EnvironmentTile(
             blocked,
@@ -98,7 +98,7 @@ class GifReader(object):
 
     def create_data(self, img):
         for p in list(img.getdata()):
-            yield (libtcod.Color(*p), ' ')#libtcod.CHAR_BLOCK2) #
+            yield (libtcod.Color(*p), '<')#libtcod.CHAR_BLOCK2) #
     
     def add_frame(self, img_data):
         self.frames.append([x for x in img_data])

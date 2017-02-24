@@ -15,10 +15,10 @@ class TileMap(Listener, object):
     def __init__(self, w, h, con, game):
         self.con = con
         self.game = game
-        drawing = drawings.cave
-        self.width, self.height = drawing.w, drawing.h
+        self.drawing = drawings.cave
+        self.width, self.height = self.drawing.w, self.drawing.h
         self.tilemap = [[
-                    drawings.make_tile(drawing, x, y, self.con, self.game)
+                    drawings.make_tile(self.drawing, x, y, self.con, self.game)
                     for y in xrange(self.height)]
                     for x in xrange(self.width)]
                             
@@ -54,13 +54,15 @@ class TileMap(Listener, object):
             libtcod.map_set_properties(self.libtcod_map, t.x, t.y, 
                                        not t.blocked, not t.blocked)
 
-    def change_tile(self, x, y, attr):
+    def change_tile(self, x, y, blocked, schimb=False):
         in_square = self.tilemap[x][y].next
-        self.tilemap[x][y] = EnvironmentTile(
-                attr, 
-                x, y, ' ', libtcod.darkest_grey, self.con, self.game
-                                         )
-        self.tilemap[x][y].next = in_square                                 
+        new_tile = drawings.make_tile(self.drawing, x, y, self.con, self.game, blocked)
+        self.tilemap[x][y] = new_tile
+        self.tilemap[x][y].next = in_square
+        libtcod.map_set_properties(self.libtcod_map, x, y, 
+                                   new_tile.transparent, not new_tile.blocked)
+        if schimb:
+            self.game.player.schimb = True
         
     def get_tile(self, x, y):
         try:
@@ -118,31 +120,11 @@ class TileMap(Listener, object):
                 
     def get_tiles_in_render_area(self):
         player = self.game.player
-        return self.get_area(player.x-player.max_sight, # this is cruder than
-                             player.y-player.max_sight, # the method below
+        return self.get_area(player.x-player.max_sight, 
+                             player.y-player.max_sight, 
                              player.max_sight*2,        # but it performs
                              player.max_sight*2,        # fine and solves
                              anchor="default")          # update problems
-        def x(light):
-            return light.location[0]
-        def y(light):
-            return light.location[1]
-        Xmins = [x(l) - l.Lradius for l in self.light_sources]
-        Xmaxs = [x(l) + l.Lradius for l in self.light_sources]
-        Ymins = [y(l) - l.Lradius for l in self.light_sources]
-        Ymaxs = [y(l) + l.Lradius for l in self.light_sources]
-        PXmin = player.x - player.sight_radius - 1
-        PXmax = player.x + player.sight_radius + 1
-        PYmin = player.y - player.sight_radius - 1
-        PYmax = player.y + player.sight_radius + 1
-        minX = min([PXmin] + (Xmins if Xmins else [])) 
-        minY = min([PYmin] + (Ymins if Ymins else []))
-        maxX = max([PXmax] + (Xmaxs if Xmaxs else [])) 
-        maxY = max([PYmax] + (Ymaxs if Ymaxs else []))
-        w = maxX - minX
-        h = maxY - minY
-        self.render_area = minX, minY, w, h, "default"
-        return self.get_area(minX, minY, w, h, anchor="default")
 
     def get_tiles_in_clear_area(self):
         x, y, w, h, anchor = self.render_area
@@ -325,5 +307,5 @@ class TileMap(Listener, object):
                 foot_displacement = entity.left_foot_displacement
             x = entity.x + (entity.facing[1]*foot_displacement)
             y = entity.y + (entity.facing[0]*foot_displacement)
-            self.apply_tile_effect({(x, y): [(color, ' ') for color in fade]})
+            self.apply_tile_effect({(x, y): [(color, '.') for color in fade]})
 

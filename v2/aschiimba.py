@@ -31,7 +31,7 @@ import tile, settings
 # walking reduces it
 # piecing narrative together
 # tracking sensical story vs. generated nonsense
-# typing light words in the backgroudn
+# typing light words in the background
 # stopping to look for what you need in the floor
 # collectibles in background, generally
 

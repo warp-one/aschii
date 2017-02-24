@@ -37,6 +37,9 @@ class Tile(object):
         self.x += dx
         self.y += dy
         
+    def do(self):
+        print "I act."
+        
     @property
     def location(self):
         return self.x, self.y
@@ -123,7 +126,7 @@ class Tile(object):
         # DRAWING EFFECTS
         if self.effects and not self.game.the_map.run_collision(*self.location):
             self.next_color, self.next_char = self.effects[-1].get_char(*self.location)
-            if self.next_char == ' ':
+            if self.next_char == '<':
                 self.next_char = None
         else:
             self.next_color, self.next_char = None, None

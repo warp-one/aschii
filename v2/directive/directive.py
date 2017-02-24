@@ -18,7 +18,11 @@ class Directive(Attachment, Tile):
     range = 9
 
     def __init__(self, anchor, game, 
-                 static=False, text="Destroy", sentence="Destroy me!", offset=(0, 0), new_fader=None):
+                 static=False, 
+                 text="Destroy", sentence="Destroy me!", 
+                 offset=(0, 0), 
+                 new_fader=None, 
+                 on_completion_callable=None):
         self.anchor = anchor
         self.offsetX = offset[0]
         self.offsetY = offset[1]
@@ -31,6 +35,8 @@ class Directive(Attachment, Tile):
         self.x = self.anchor.x + self.offsetX 
         self.y = self.anchor.y + self.offsetY
         self.active = False
+        
+        self.on_completion_callable = on_completion_callable
 
         self.change_text(text)
         self.sentence = sentence # currently only used by Lightener
@@ -92,12 +98,14 @@ class Directive(Attachment, Tile):
                                                     
     def complete(self):
         self.completed = True
+        if self.on_completion_callable:
+            self.on_completion_callable()
         if self.fader:
             self.clear()
             return
         else:
             self.game.player.remove_child(self)
-        
+            
     def clear(self):
         try:
             for i in xrange(len(self.phrase)):

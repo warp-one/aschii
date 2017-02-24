@@ -83,7 +83,7 @@ class Inventory(object):
     def toggle_item(self):
         if self.current_item:
             self.current_item.do()
-
+            
 
 class InventoryDisplay(object):
 

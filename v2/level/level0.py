@@ -79,10 +79,10 @@ class LevelZero(Level):
         
         self.statues = []
         for _ in range(1):
-            s = Statue(statue_script2, 19, 27 + _, ' ', libtcod.green, self.foreground, self)
-            s.loop = False
-            self.statues.append(s)
-            self.the_map.add(s.x, s.y, s)
+            #s = Statue(statue_script2, 19, 27 + _, ' ', libtcod.green, self.foreground, self)
+            #s.loop = False
+            #self.statues.append(s)
+            #self.the_map.add(s.x, s.y, s)
             
 #            s = MovingStatue(0, 50, reveal_script0, 56, 49 + _, 'R', libtcod.grey, self.foreground, self)
 #            s.loop = False
@@ -106,6 +106,11 @@ class LevelZero(Level):
             schimber.visible = False
             self.player.add_child(schimber)
             self.the_map.schimber = schimber
+            
+            bridge = BridgeBuilder(None, 20, 20, "!", libtcod.red, self.foreground, self)
+            bridge_toggle = Directive(bridge, self, text="crank", sentence="turn the crank", static=False, offset=(1, 1), on_completion_callable=bridge.do)
+            self.the_map.add(bridge.x, bridge.y, bridge)
+            self.player.add_child(bridge_toggle)
             
             for info in gates_data:
                 # something different should happen based on which order you complete them
