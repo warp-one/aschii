@@ -75,6 +75,8 @@ class Directive(Attachment, Tile):
                 if self.fader.apply_draw_step_for_erase(self):
                     return
                 else:
+                    if self.on_completion_callable:
+                        self.on_completion_callable()
                     self.game.player.remove_child(self)
         elif self.is_visible():
             self._draw()
@@ -98,8 +100,6 @@ class Directive(Attachment, Tile):
                                                     
     def complete(self):
         self.completed = True
-        if self.on_completion_callable:
-            self.on_completion_callable()
         if self.fader:
             self.clear()
             return

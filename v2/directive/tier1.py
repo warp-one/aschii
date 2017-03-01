@@ -102,6 +102,8 @@ class Lightener(Directive):
                     ]
                    )
     nodes = [(x, x) for x in range(10, 60, 10)]
+    appear_flicker_duration = 15
+    next = False # drawn like an environment tile
 
     def __init__(self, *args, **kwargs):
         super(Lightener, self).__init__(*args, **kwargs)
@@ -130,41 +132,46 @@ class Lightener(Directive):
         
     def is_visible(self):
         return self.visible
-        
-    def draw(self):
+
+    def player_in_range(self):
         for n in self.nodes:
             if tools.get_distance(self.anchor.location, n
-                                    ) < self.anchor.sight_radius:
-                if self.visible:
-                    if self.active_node is None:
-                        self.appear_timer = 10
-                    self.active_node = n
-                break
-            else:
-                self.visible = False
-                self.active_node = None
+                             ) < self.anchor.sight_radius:
+                return n
+        return None
+        
+    def draw(self):
+        nearest_node = self.player_in_range()
+        if nearest_node:
+            if self.visible:
+                if self.active_node is None:
+                    self.appear_timer = self.appear_flicker_duration
+                self.active_node = nearest_node
         else:
-            if not self.nodes:
-                self.visible = False
-                self.active_node = None
+            self.visible = False
+            self.active_node = None
         super(Lightener, self).draw()
 
     def _draw(self):
         colorful_choice = libtcod.Color(*choice(colors.fire_colorset))
-        self.dormant_color = (libtcod.darkest_grey * .5 
-                                if not randint(0, 20) 
-                                else libtcod.darkest_grey)
-        self.phrase_color = (colorful_choice 
-                                if not randint(0, 15) 
-                                else self.dormant_color)
         if self.appear_timer > 0:
-            self.phrase_color = colorful_choice * (self.appear_timer/10.)
+            if self.appear_timer % 2:
+                self.phrase_color = colorful_choice * (self.appear_timer/10.)
             self.appear_timer -= 1
             
         to_draw = self.sentence 
         keyword_position = to_draw.find(self.phrase)
+        sentence_flash = not randint(0, 20)
+        phrase_flash = not randint(0, 15)
         for i, char in enumerate(to_draw):
-            x, y = self.coords[i]
+            x, y = self.coords[i][0]
+            floor_color = self.coords[i][1]
+            self.dormant_color = (floor_color * .5
+                                    if sentence_flash
+                                    else floor_color)
+            self.phrase_color = (colorful_choice
+                                    if phrase_flash
+                                    else self.dormant_color)
             if tools.get_distance((x, y), self.game.player.location) > self.game.player.min_sight:
                 color = self.dormant_color * .5
             else:
@@ -475,11 +482,7 @@ class Statue(SpeakingObject):
         super(Statue, self).__init__(*args, **kwargs)
         self.blocked = True
         
-        
-class LStatue(Statue): #??????
-    def clear(self):
-        super(LStatue, self).clear()
-        
+
 class ResetStatue(Statue):
 
     def __init__(self, repeat_max, repeat_time, *args, **kwargs):
@@ -496,7 +499,8 @@ class ResetStatue(Statue):
                 self.script["start"] = (self.script["newchoices"], self.script["start"][1])
             if not self.keywords:
                 self.update_queue.append((self.repeat_time, self.say_line, ["start"]))
-                
+
+
 class MovingStatue(Orders, ResetStatue):
 
     def __init__(self, *args, **kwargs):
@@ -518,10 +522,8 @@ class MovingStatue(Orders, ResetStatue):
     def update(self):
         super(MovingStatue, self).update()
         self.act()
-            
-class AnnoyStatue(ResetStatue):
-    pass
-        
+
+
 class RealPerson(Statue): # inherits from statue (!)
 
 

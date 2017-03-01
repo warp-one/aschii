@@ -145,12 +145,16 @@ class TileMap(Listener, object):
         return self.get_tiles_by_layer(self.get_tiles())
 
     def get_tiles_by_layer(self, tiles):
+        schimber_yield = False
         while tiles:
             next_layer = []
             for t in tiles:
                 if t.next:
                     next_layer.append(t.next)
                 yield t
+            if not schimber_yield:
+                yield self.schimber
+                schimber_yield = True
             tiles = next_layer
 
     def get_NSEW(self, x, y):
@@ -234,9 +238,7 @@ class TileMap(Listener, object):
                         tile.color_queue = list(colors)
                     if chars:
                         tile.char_queue = list(chars)
-                        
-    
-                        
+
     def schimb(self, tiles=None):
         # you call this EVERY FRAME OF MOVEMENT!!
         # so, uh, maybe work on it a bit. to do: 
@@ -252,15 +254,14 @@ class TileMap(Listener, object):
             
         num_tiles = len(tiles_to_write)
         word_len = len(self.schimber.sentence)
-#        word_xy = (0, 0)
         word_pos = num_tiles
         self.schimber.coords = []
-        room = False
+        room = 0
         
         if len(self.mutated_text) < num_tiles:
             self.mutated_text = self._schimb(self.waves)
 
-        num_spaces = self.mutated_text.count(' ', 0, num_tiles)
+        num_spaces = self.mutated_text.count('.', 0, num_tiles)
         try:
             chosen_space = randint(0, num_spaces - 1)
         except ValueError:
@@ -268,17 +269,22 @@ class TileMap(Listener, object):
 
         for i, t in enumerate(tiles_to_write):
             if room:
-                if len(self.schimber.coords) < word_len:
-                    self.schimber.coords.append((t.x, t.y))
-                    
+                if room > 1:
+                    if len(self.schimber.coords) < word_len:
+                        self.schimber.coords.append( ((t.x, t.y), t.current_color) )
+                room += 1
+
             if word_pos < num_tiles:
-                letter = self.mutated_text[i - word_len - 1]
+                if i <= word_pos + word_len:
+                    letter = ' '
+                else:
+                    letter = self.mutated_text[i - word_len - 1]
             else:
                 letter = self.mutated_text[i]
-            if letter == '.' and not room:
+            if letter == '.' and not room and self.schimber.player_in_range():
+
                 if i + word_len < num_tiles:
-                    room = True
-#                    word_xy = t.x + 1, t.y
+                    room = 1
                     word_pos = i
                 else:
                     pass

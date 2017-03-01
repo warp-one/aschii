@@ -117,7 +117,7 @@ class LevelZero(Level):
                 # "please I didn't do it"
                 # "please do it"
                 # "it didn't"
-                g = LStatue({}, info[0][0], info[0][1], 'X', libtcod.yellow, self.foreground, self)
+                g = Statue({}, info[0][0], info[0][1], 'X', libtcod.yellow, self.foreground, self)
                 self.statues.append(g)
                 self.the_map.add(g.x, g.y, g)
                 self.player.add_child(Ban(g, self, text=info[1], static=True, offset=(-2, 2)))

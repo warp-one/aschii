@@ -4,7 +4,7 @@ import libtcodpy as libtcod
 
 import orders, settings
 from actions import ActionManager
-from directive import Directive, PlayerArrow, Legs, PlayerWASD, ItemToggle
+from directive import Directive, PlayerArrow, PlayerWASD, ItemToggle, Lightener
 from items import Lamp
 from items import Inventory
 from observer import Listener
@@ -62,8 +62,8 @@ class Player(Listener, orders.Orders, Unit):
     offsets = [(-2, -2), (-2, 2), (2, 3), (2, -3), 
                (-2, -2), (-2, 2), (2, 3), (2, -3)]
     sight_radius = 5 
-    max_sight = 31 # high in early levels, low in late...
-    min_sight = 21
+    max_sight = 21 # high in early levels, low in late...
+    min_sight = 9
     sight_floor = 1
     len_step = 3 # in frames
     char = ' '
@@ -249,6 +249,14 @@ class Player(Listener, orders.Orders, Unit):
                         if not self.game.the_map.run_collision(tile[0], self.y):
                             self.move(tile[0] - x, 0)
                             break
+
+    def draw(self):
+        if self.is_visible():
+            self._draw()
+            for c in self.children:
+                if not isinstance(c, Lightener):
+                    c.draw()
+
 
     def _draw(self): # THE UNDERSCORE IS IMPORTANT; KEEP IT
                      # OR OTHERWISE ALL THE ACTIONS DISAPPEAR
