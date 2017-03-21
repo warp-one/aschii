@@ -5,6 +5,7 @@ import libtcodpy as libtcod
 from items import Flashlight
 from tile import EnvironmentTile, BottomlessPit
 from observer import Listener
+from scribe import TheScribe
 import markovgen as mg
 import tools
 
@@ -41,6 +42,9 @@ class TileMap(Listener, object):
         self.last_render = []
         
         self.mutated_text = []
+        
+        self.scribe = TheScribe()
+        self.scribe.add_directive
         
     def load_doodad(self, x, y, doodad):
         for t in doodad.get_tile_data():
@@ -252,6 +256,10 @@ class TileMap(Listener, object):
         else:
             tiles_to_write = tiles
             
+        # NEW WAY    
+        return self.scribe.write_floor(tiles_to_write)
+        # NEW WAY
+            
         num_tiles = len(tiles_to_write)
         word_len = len(self.schimber.sentence)
         word_pos = num_tiles
@@ -283,7 +291,7 @@ class TileMap(Listener, object):
                 letter = self.mutated_text[i]
             if letter == '.' and not room and self.schimber.player_in_range():
 
-                if i + word_len < num_tiles:
+                if i + word_len + 1 < num_tiles:  # that '1' is because we write the sentence one space over
                     room = 1
                     word_pos = i
                 else:

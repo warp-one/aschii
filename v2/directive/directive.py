@@ -15,39 +15,37 @@ class Attachment(object):
 class Directive(Attachment, Tile):
 
     char = 'X'
-    range = 9
 
     def __init__(self, anchor, game, 
                  static=False, 
                  text="Destroy", sentence="Destroy me!", 
                  offset=(0, 0), 
                  new_fader=None, 
-                 on_completion_callable=None):
+                 on_completion_callable=None,
+                 range = 9):
         self.anchor = anchor
+        self.game = game
+        self.static = static
+        self.sentence = sentence  # currently only used by Lightener
         self.offsetX = offset[0]
         self.offsetY = offset[1]
-        self.static = static
-        self.color = libtcod.green
-        self.current_color = self.color
-        self.dormant_color = libtcod.red
-        self.game = game
-        self.con = game.foreground
-        self.x = self.anchor.x + self.offsetX 
-        self.y = self.anchor.y + self.offsetY
-        self.active = False
-        
+        if new_fader: self.fader = new_fader(self.game.camera)
+        else: self.fader = faders.DirectiveFade(self.game.camera)
         self.on_completion_callable = on_completion_callable
+        self.range = range
 
+        self.con = game.foreground
+        self.x = self.anchor.x + self.offsetX
+        self.y = self.anchor.y + self.offsetY
         self.change_text(text)
-        self.sentence = sentence # currently only used by Lightener
-        self.pressed = False
 
+        self.color = libtcod.green
+        self.dormant_color = libtcod.red
+        self.current_color = self.color
+        self.active = False
+        self.pressed = False
         self.visible = False
-        if new_fader:
-            self.fader = new_fader(self.game.camera)
-        else:
-            self.fader = faders.DirectiveFade(self.game.camera)
-        
+
     def toggle_active(self):
         if self.active:
             self.active = False

@@ -41,3 +41,13 @@ def generate_Z2(limit=None, origin=(0, 0)):
             yield origin_correction((p[0], -p[1]))
         if p[0] and p[1]:
             yield origin_correction((-p[0], -p[1]))
+
+def get_tiles_by_row_snake(w, h, start="top left"):
+    indexes = range(w*h)
+    if start == "top left":
+        for i, j in enumerate(indexes):
+            if (j/w)%2:
+                indexes[i] = ((j/w+1)*w - j%w) - 1
+    else:
+        pass
+    return indexes

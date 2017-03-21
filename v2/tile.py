@@ -140,7 +140,7 @@ class Tile(object):
             self.next_char = self.char_queue.pop(0)
             if self.effects_mode == "hold":
                 self.char_queue.append(self.next_char)
-            if self.next_char == ' ':
+            if self.next_char == '<':
                 self.next_char = None
                 
         #

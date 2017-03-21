@@ -106,9 +106,11 @@ class LevelZero(Level):
             schimber.visible = False
             self.player.add_child(schimber)
             self.the_map.schimber = schimber
+            self.the_map.scribe.add_directive(schimber)
             
             bridge = BridgeBuilder(None, 20, 20, "!", libtcod.red, self.foreground, self)
-            bridge_toggle = Directive(bridge, self, text="crank", sentence="turn the crank", static=False, offset=(1, 1), on_completion_callable=bridge.do)
+            bridge_toggle = Directive(bridge, self, text="crank", sentence="turn the crank",
+                                      static=False, offset=(1, 1), on_completion_callable=bridge.do, range=3)
             self.the_map.add(bridge.x, bridge.y, bridge)
             self.player.add_child(bridge_toggle)
             
