@@ -30,21 +30,11 @@ class TileMap(Listener, object):
            
         self.light_sources = []
            
-        with open('waves.txt', 'r') as f:
-            self.waves = mg.Markov(f)
-        with open('nightland.txt', 'r') as f:
-            self.nightland = mg.Markov(f)
-        with open('goblin.txt', 'r') as f:
-            self.goblins = mg.Markov(f)
-
         self.obs = []
         self.render_area = (0, 0, 0, 0, "default")
         self.last_render = []
         
-        self.mutated_text = []
-        
         self.scribe = TheScribe()
-        self.scribe.add_directive
         
     def load_doodad(self, x, y, doodad):
         for t in doodad.get_tile_data():
@@ -244,68 +234,15 @@ class TileMap(Listener, object):
                         tile.char_queue = list(chars)
 
     def schimb(self, tiles=None):
-        # you call this EVERY FRAME OF MOVEMENT!!
-        # so, uh, maybe work on it a bit. to do: 
-        # separate out into its own method the checks
-        # for being seen and unblocked. the "floor check"
-    
-        if tiles is None:
+        if tiles is None: # the more often called
             render_tiles = self.get_tiles_in_render_area()
             visible_environment = self.get_visible_tiles(render_tiles)
             tiles_to_write = [x for x in visible_environment if not x.blocked]
         else:
             tiles_to_write = tiles
             
-        # NEW WAY    
         return self.scribe.write_floor(tiles_to_write)
-        # NEW WAY
-            
-        num_tiles = len(tiles_to_write)
-        word_len = len(self.schimber.sentence)
-        word_pos = num_tiles
-        self.schimber.coords = []
-        room = 0
-        
-        if len(self.mutated_text) < num_tiles:
-            self.mutated_text = self._schimb(self.waves)
 
-        num_spaces = self.mutated_text.count('.', 0, num_tiles)
-        try:
-            chosen_space = randint(0, num_spaces - 1)
-        except ValueError:
-            chosen_space = 0
-
-        for i, t in enumerate(tiles_to_write):
-            if room:
-                if room > 1:
-                    if len(self.schimber.coords) < word_len:
-                        self.schimber.coords.append( ((t.x, t.y), t.current_color) )
-                room += 1
-
-            if word_pos < num_tiles:
-                if i <= word_pos + word_len:
-                    letter = ' '
-                else:
-                    letter = self.mutated_text[i - word_len - 1]
-            else:
-                letter = self.mutated_text[i]
-            if letter == '.' and not room and self.schimber.player_in_range():
-
-                if i + word_len + 1 < num_tiles:  # that '1' is because we write the sentence one space over
-                    room = 1
-                    word_pos = i
-                else:
-                    pass
-
-            t.current_char = letter
-
-        if room and self.schimber.coords:
-            self.schimber.visible = True
-        else:
-            self.schimber.visible = False
-            
-        self.mutated_text = self.mutated_text[len(tiles_to_write):]
-                    
     def on_notify(self, entity, event):
         if event == "player move":
             fade = [libtcod.Color(a, a, a) 

@@ -16,9 +16,10 @@ class FloorDirective(Directive):
     nodes = [(5, 5)]
 
     def __init__(self, *args, **kwargs):
+        self.coords = []
         super(FloorDirective, self).__init__(*args, **kwargs)
         
-        
+        self._draw_on_floor = True
         self.priority = 0
         self.mandatory = True
         self.id = None
@@ -29,6 +30,23 @@ class FloorDirective(Directive):
                              ) < self.anchor.sight_radius:
                 return n
         return None
+
+    def clear(self): # only needed if not draw_on_floor?
+        for c in self.coords:
+            x, y = c[0]
+            libtcod.console_put_char(self.con, x, y, 
+                                        ' ', libtcod.BKGND_NONE)
+        
+    @property
+    def draw_on_floor(self):
+        return self._draw_on_floor
+        
+    @draw_on_floor.setter
+    def draw_on_floor(self, tf):
+        if not tf:
+            self.clear()
+        self._draw_on_floor = tf
+        
         
 class Lightener(FloorDirective):
     #should only appear in fixed places, and each disappear after you use it once
@@ -48,7 +66,6 @@ class Lightener(FloorDirective):
         self.color = libtcod.black
         self.dormant_color = libtcod.light_grey
         self.current_color = self.color
-        self.coords = []
         self.active_node = None
         self.rotate_text()
         self.appear_timer = 0
@@ -114,7 +131,11 @@ class Lightener(FloorDirective):
                 color = self.dormant_color * .5
             else:
                 color = self.dormant_color
-            x, y = self.game.camera.to_camera_coordinates(x, y)
+                
+            if self.draw_on_floor:
+                x, y = self.game.camera.to_camera_coordinates(x, y)
+            else:
+                print x, y, "AGAWERGERG"
 
             keyword_color_index = i - keyword_position
 
@@ -128,7 +149,6 @@ class Lightener(FloorDirective):
             libtcod.console_set_default_foreground(self.con, color)
             libtcod.console_put_char(self.con, x, y,
                                             char, libtcod.BKGND_NONE)
-
-
+                                            
     def update(self):
         pass
