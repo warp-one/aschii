@@ -37,6 +37,22 @@ class TheScribe(object):
             self.directives[directive.id] = self.inactive_directives.pop(directive.id)
         except KeyError:
             print "Not an inactive directive!"
+            
+    def organize_directives_for_writing(self):
+        mandatory_directives = []
+        optional_directives = []
+        
+        for d in self.directives.itervalues():
+            if d.mandatory and d.player_in_range():
+                mandatory_directives.append(d)
+                d.coords = []
+            else:
+                optional_directives.append(d)
+                
+        shuffle(mandatory_directives)
+        optional_directives.sort(key=lambda x: x.priority)
+        
+        return mandatory_directives, optional_directives
         
     def write_floor(self, tiles_to_write):
         # this most likely continues to be the most time-intensive
@@ -47,25 +63,13 @@ class TheScribe(object):
         num_tiles = len(tiles_to_write)
         num_directive_letters = 0
         
-        mandatory_directives = []
-        optional_directives = []
+        mandatory_directives, optional_directives = self.organize_directives_for_writing()
         current_directive = None
         end_of_current_sentence = 0
         len_directives_written = 0
         
         if len(self.mutated_text) < num_tiles:
             self.mutated_text = self.create_ocean_text(self.waves)
-            
-        
-        for d in self.directives.itervalues():
-            if d.mandatory and d.player_in_range():
-                mandatory_directives.append(d)
-                d.coords = []
-            else:
-                optional_directives.append(d)
-        
-        shuffle(mandatory_directives)
-        optional_directives.sort(key=lambda x: x.priority)
         
         for i, t in enumerate(tiles_to_write):
             current_place_in_text = i - len_directives_written
@@ -101,7 +105,7 @@ class TheScribe(object):
         self.mutated_text = self.mutated_text[len(tiles_to_write):]
             
     def create_ocean_text(self, novel):
-        print "schimband..." # needs the uh din ah.
+        print "schimband..."
         num_cells = 10000
         prose = novel.generate_markov_text(size=num_cells/3)
         while not prose:

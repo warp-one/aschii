@@ -236,8 +236,9 @@ class TileMap(Listener, object):
     def schimb(self, tiles=None):
         if tiles is None: # the more often called
             render_tiles = self.get_tiles_in_render_area()
-            visible_environment = self.get_visible_tiles(render_tiles)
-            tiles_to_write = [x for x in visible_environment if not x.blocked]
+#            visible_environment = self.get_visible_tiles(render_tiles)
+#            tiles_to_write = [x for x in visible_environment if not x.blocked]
+            tiles_to_write = [x for x in render_tiles if not x.blocked]
         else:
             tiles_to_write = tiles
             

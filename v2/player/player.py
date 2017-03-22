@@ -62,8 +62,8 @@ class Player(Listener, orders.Orders, Unit):
     offsets = [(-2, -2), (-2, 2), (2, 3), (2, -3), 
                (-2, -2), (-2, 2), (2, 3), (2, -3)]
     sight_radius = 5 
-    max_sight = 21 # high in early levels, low in late...
-    min_sight = 9
+    max_sight = 41 # high in early levels, low in late...
+    min_sight = 31
     sight_floor = 1
     len_step = 3 # in frames
     char = ' '
