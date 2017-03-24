@@ -44,6 +44,11 @@ class TheScribe(object):
         
         for d in self.directives.itervalues():
             if d.mandatory and d.player_in_range():
+                # the worry here is that some node locations might
+                # not be available, or map well, to where the scribe
+                # activates, leading to "missing" or dead directives.
+                # it also duplicates functionality with enabling and
+                # disabling them.
                 mandatory_directives.append(d)
                 d.coords = []
             else:
@@ -82,13 +87,16 @@ class TheScribe(object):
                 end_of_sentence = False
             if not current_directive and mandatory_directives and end_of_sentence:
                 end_of_current_sentence = i + len(mandatory_directives[0].sentence)
+                current_directive = mandatory_directives.pop(0)
                 if end_of_current_sentence > num_tiles:
                     pass
                 else:
-                    current_directive = mandatory_directives.pop(0)
-                    current_directive.draw_on_floor = True
-                    current_directive.visible = True
-                    len_directives_written += 1
+                    if current_directive is "empty":
+                        pass
+                    else:
+                        current_directive.draw_on_floor = True
+                        current_directive.visible = True
+                        len_directives_written += 1
             if current_directive and i >= end_of_current_sentence:
                 current_directive = None
             if current_directive:
