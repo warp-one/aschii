@@ -2,7 +2,7 @@ from random import shuffle, randint
 
 import libtcodpy as libtcod
 
-import orders, settings
+import orders, settings, tools
 from actions import ActionManager
 from directive import Directive, PlayerArrow, PlayerWASD, ItemToggle, Lightener
 from items import Lamp
@@ -55,6 +55,22 @@ class TextTrail(object):
                 self.end_message()
             
 
+class Darkness(object):
+    def __init__(self, darkness_style="constant"):
+        self.style = darkness_style
+        
+    def on_notify(self, entity, event):
+        if self.style == "constant":
+            if event == "player darken":
+                entity.schimb = "constant"
+            elif event == "player change direction":
+                entity.schimb = "constant"
+        if self.style == "distance-based":
+            if event == "darkness leash broken":
+                entity.schimb = "distance-based"
+            if event == "lightener complete":
+                entity.schimb = self.style
+
 class Player(Listener, orders.Orders, Unit):
 
     arrow_keys = [libtcod.KEY_UP, libtcod.KEY_DOWN,
@@ -62,8 +78,8 @@ class Player(Listener, orders.Orders, Unit):
     offsets = [(-2, -2), (-2, 2), (2, 3), (2, -3), 
                (-2, -2), (-2, 2), (2, 3), (2, -3)]
     sight_radius = 5 
-    max_sight = 41 # high in early levels, low in late...
-    min_sight = 31
+    max_sight = 31 # high in early levels, low in late...
+    min_sight = 13
     sight_floor = 1
     len_step = 3 # in frames
     char = ' '
@@ -94,9 +110,14 @@ class Player(Listener, orders.Orders, Unit):
         self.last_position = self.x, self.y
         self.idle_time = self.idle_start
         self.moved = False
-        self.schimb = False
 
         self.trail = TextTrail(self)
+        
+        darkness_style = "distance-based"
+        self.schimb = darkness_style
+        darkness = Darkness(darkness_style=darkness_style)
+        self.add_observer(darkness)
+        self.darkness_location = self.x, self.y
         
     def is_visible(self):
         return True
@@ -111,7 +132,7 @@ class Player(Listener, orders.Orders, Unit):
         elif self.sight_radius < self.min_sight:
             self.sight_radius = self.min_sight
         if not noschimb:
-            self.schimb = True
+            self.notify(self, "player darken")
         self.idle_time = 0
         
     def change_min_sight(self, delta_s, set=False):
@@ -125,7 +146,7 @@ class Player(Listener, orders.Orders, Unit):
             self.min_sight = self.max_sight
         if self.sight_radius < self.min_sight:
             self.sight_radius = self.min_sight
-        self.schimb = True
+        self.notify(self, "player darken")
 
     def set_arrows(self):
         NSEW = {(0, 4): libtcod.CHAR_ARROW_N, 
@@ -214,7 +235,7 @@ class Player(Listener, orders.Orders, Unit):
         
     def change_direction(self, direction):
         x, y = direction
-        self.schimb = True
+        self.notify(self, "player change direction")
         if self.facing == direction:
             return False
         else:
@@ -287,7 +308,9 @@ class Player(Listener, orders.Orders, Unit):
             self.change_sight_radius(-3)
             self.trail.write_letter()
 
-
+        if tools.get_distance(self.location, self.darkness_location) > 20:
+            self.darkness_location = self.location
+            self.notify(self, "darkness leash broken")
         self.darken_always()
         libtcod.map_compute_fov(self.game.the_map.libtcod_map,
                 self.x, self.y, self.sight_radius, algo=libtcod.FOV_DIAMOND)

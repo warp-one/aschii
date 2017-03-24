@@ -76,6 +76,7 @@ class Lightener(FloorDirective):
         self.change_text(new_keyword, sentence = new_sentence)
 
     def complete(self):
+        self.game.player.notify(self.game.player, "lightener complete")
         self.game.player.change_min_sight(2)
         self.game.player.darken_timer = 0
         self.rotate_text()
@@ -88,20 +89,26 @@ class Lightener(FloorDirective):
     def is_visible(self):
         return self.visible
 
-    def player_in_range(self):
+    def player_in_range(self): 
+        # called, confusingly, by the scribe so that it gets
+        # puts it in play only when it will actually be drawn.
+        # or, rather, it's always drawn whenever it's put into
+        # play
         for n in self.nodes:
             if tools.get_distance(self.anchor.location, n
                              ) < self.anchor.sight_radius:
-                return n
-        return None
+                self.nearest_node = n
+                break
+        else:
+            self.nearest_node = None
+        return self.nearest_node
 
     def draw(self):
-        nearest_node = self.player_in_range()
-        if nearest_node:
+        if self.nearest_node:
             if self.visible:
                 if self.active_node is None:
                     self.appear_timer = self.appear_flicker_duration
-                self.active_node = nearest_node
+                self.active_node = self.nearest_node
         else:
             self.visible = False
             self.active_node = None
@@ -114,12 +121,13 @@ class Lightener(FloorDirective):
                 self.phrase_color = colorful_choice * (self.appear_timer/10.)
             self.appear_timer -= 1
 
-        to_draw = self.sentence
-        keyword_position = to_draw.find(self.phrase)
+        keyword_position = self.sentence.find(self.phrase)
         sentence_flash = not randint(0, 20)
         phrase_flash = not randint(0, 15)
-        for i, char in enumerate(to_draw):
+        for i, char in enumerate(self.sentence):
             x, y = self.coords[i][0]
+            if not self.game.the_map.get_tile(x, y).visible:
+                continue
             floor_color = self.coords[i][1]
             self.dormant_color = (floor_color * .5
                                     if sentence_flash
@@ -149,6 +157,11 @@ class Lightener(FloorDirective):
             libtcod.console_set_default_foreground(self.con, color)
             libtcod.console_put_char(self.con, x, y,
                                             char, libtcod.BKGND_NONE)
+                                            
+    def tick_phrase(self, letter):
+        # add conditional about visibility of self.phrase to make
+        # this only useable when you can actually see the word
+        super(Lightener, self).tick_phrase(letter)
                                             
     def update(self):
         pass

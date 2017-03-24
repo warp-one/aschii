@@ -69,8 +69,8 @@ class Level(object):
             t.update()
 
         if self.player.schimb:
-            self.the_map.schimb()
-            self.player.schimb = False
+            self.the_map.schimb(self.player.schimb)
+        self.player.schimb = None
         for i in self.hud:
             i.update()
         for e in self.special_effects:

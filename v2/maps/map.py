@@ -88,7 +88,11 @@ class TileMap(Listener, object):
                 yield self.tilemap[x][y]
 
     def get_round_area(self, origin, radius):
-        for p in tools.generate_Z2(radius, origin):
+        round_points = tools.generate_Z2(radius, origin)
+        rp = list(round_points)
+        rp = sorted(rp, key=lambda p: [p[1], p[0]])
+        
+        for p in rp:#tools.generate_Z2(radius, origin):
             try:
                 yield self.tilemap[p[0]][p[1]]
             except IndexError:
@@ -112,13 +116,16 @@ class TileMap(Listener, object):
             for x in xrange(self.width):
                 yield self.tilemap[x][y]
                 
-    def get_tiles_in_render_area(self):
+    def get_tiles_in_render_area(self, area_shape="circle"):
         player = self.game.player
-        return self.get_area(player.x-player.max_sight, 
-                             player.y-player.max_sight, 
-                             player.max_sight*2,        # but it performs
-                             player.max_sight*2,        # fine and solves
-                             anchor="default")          # update problems
+        if area_shape == "square":
+            return self.get_area(player.x-player.max_sight, 
+                                 player.y-player.max_sight, 
+                                 player.max_sight*2,        # but it performs
+                                 player.max_sight*2,        # fine and solves
+                                 anchor="default")          # update problems
+        elif area_shape == "circle":
+            return self.get_round_area(player.location, player.max_sight)
 
     def get_tiles_in_clear_area(self):
         x, y, w, h, anchor = self.render_area
@@ -233,10 +240,11 @@ class TileMap(Listener, object):
                     if chars:
                         tile.char_queue = list(chars)
 
-    def schimb(self, tiles=None):
+    def schimb(self, schimb_style, tiles=None):
         if tiles is None: # the more often called
             render_tiles = self.get_tiles_in_render_area()
-#            visible_environment = self.get_visible_tiles(render_tiles)
+            if schimb_style == "constant":
+                render_tiles = self.get_visible_tiles(render_tiles)
 #            tiles_to_write = [x for x in visible_environment if not x.blocked]
             tiles_to_write = [x for x in render_tiles if not x.blocked]
         else:
