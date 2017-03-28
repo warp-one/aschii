@@ -82,6 +82,7 @@ class TheScribe(object):
         current_directive = None
         end_of_current_sentence = 0
         len_directives_written = 0
+        just_finished_one = False
         
         
         for i, t in enumerate(tiles_to_write):
@@ -95,7 +96,8 @@ class TheScribe(object):
                 end_of_sentence = True
             else:
                 end_of_sentence = False
-            if not current_directive and directives_to_write and end_of_sentence:
+            if not current_directive and not just_finished_one and (
+                                directives_to_write and end_of_sentence):
                 current_directive = directives_to_write.pop(0)
                 if current_directive is None:
                     continue
@@ -107,8 +109,10 @@ class TheScribe(object):
                 else:
                     current_directive.visible = False
                     current_directive = None
-            if current_directive and i > end_of_current_sentence:
+            just_finished_one = False
+            if current_directive and i >= end_of_current_sentence:
                 current_directive = None
+                just_finished_one = True
             if current_directive:
                 current_directive.coords.append( ((t.x, t.y), t.current_color) )
                 len_directives_written += 1

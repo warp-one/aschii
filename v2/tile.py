@@ -1,3 +1,5 @@
+from random import randint
+
 import libtcodpy as libtcod
 
 import tools
@@ -10,11 +12,11 @@ class Tile(object):
 
     def __init__(self, x, y, char, color, con, game, phrase=None):
         self.x, self.y = x, y
-        self.char = char
+        self._char = char
         self.phrase = phrase
-        self.current_char = char
-        self.color = color
-        self.current_color = color
+        self.current_char = self.char
+        self._color = color
+        self.current_color = self.color
         self.color_queue = []
         self.char_queue = []
         self.con = con
@@ -39,6 +41,24 @@ class Tile(object):
         
     def do(self):
         print "I act."
+        
+    @property
+    def char(self):
+        return self._char
+        
+    @char.setter
+    def char(self, c):
+        self._char = c
+        self.current_char = c
+        
+    @property
+    def color(self):
+        return self._color
+        
+    @color.setter
+    def color(self, c):
+        self._color = c
+        self.current_color = c
         
     @property
     def location(self):
@@ -170,15 +190,16 @@ class EnvironmentTile(Tile):
         super(EnvironmentTile, self).__init__(*args)
         self.blocked = blocked
         if self.blocked:
-            self.char = '#'
             self.transparent = False
 
 
 class BottomlessPit(EnvironmentTile):
     def __init__(self, *args):
         super(BottomlessPit, self).__init__(*args)
+        self.blocked = True
         self.transparent = True
-        self.char = ' '
+        self.char = (' ' if randint(0, 7) else '.')
+        self.color = libtcod.darkest_grey
     
             
 class Unit(Tile):   # has collision

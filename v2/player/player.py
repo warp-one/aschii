@@ -91,7 +91,7 @@ class Player(Listener, orders.Orders, Unit):
                (-2, -2), (-2, 2), (2, 3), (2, -3)]
     sight_radius = 5 
     max_sight = settings.PLAYER_MAX_SIGHT # high in early levels, low in late...
-    min_sight = 13
+    min_sight = max_sight/2
     sight_floor = 1
     len_step = 3 # in frames
     char = ' '

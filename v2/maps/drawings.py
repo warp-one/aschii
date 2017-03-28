@@ -4,29 +4,40 @@ from random import choice
 
 
 from tile import EnvironmentTile, BottomlessPit
+from tileset import Tileset
 from primeRGB import sieve
 import settings
 
 # MAKING A MAP:
 # One image has black pixels for floor, (221, 32, 117) for pits, and
-# everything else for walls.
+# everything else for walls. Or you can define it yourself, now.
 # A second image is referenced for floor color only.
 #
 # TODO: Add in a class to define other kinds of tiles and objects'
 # placement on a level-by-level basis
 
-def make_tile(map_drawing, x, y, con, game, blocked=None, color_style="bars"):
+test_level_tileset = Tileset({
+                        (221, 32, 117):BottomlessPit
+                        })
+
+
+def make_tile(map_drawing, 
+              x, y, 
+              con, 
+              game, 
+              blocked=None, 
+              color_style="bars", 
+              tileset=test_level_tileset):
+              
     tile = map_drawing.get_tile(x, y)
     tile_rgb = tile[0], tile[1], tile[2]
+    
     if color_style == "bars":
         floor = map_drawing.get_tile( abs((x - x%5) - y%5), y, layer="floor")
     else:
-        floor = map_drawing.get_tile( abs((x - x%5)), y)
+        floor = map_drawing.get_tile(x, y, layer="floor")
     floor_rgb = floor[0], floor[1], floor[2]
-    if tile_rgb == (221, 32, 117):
-        return BottomlessPit(
-            True,
-            x, y, ' ', libtcod.black, con, game)
+    
     if blocked is None:                                 
         blocked = (False if tile_rgb == (0, 0, 0) else True)
     color = (libtcod.Color(*floor_rgb)
@@ -36,10 +47,8 @@ def make_tile(map_drawing, x, y, con, game, blocked=None, color_style="bars"):
         char = choice(['@', '%', '#'])
     else:
         char = ' '
-    return EnvironmentTile(
-            blocked,
-            x, y, char, color, con, game
-                                     )
+    tile_class = tileset.get_tile_from_RGB(tile_rgb)
+    return tile_class(blocked, x, y, char, color, con, game)
 
 class MapDrawing(object):
 
