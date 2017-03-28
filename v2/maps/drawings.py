@@ -17,12 +17,11 @@ import settings
 
 def make_tile(map_drawing, x, y, con, game, blocked=None, color_style="bars"):
     tile = map_drawing.get_tile(x, y)
+    tile_rgb = tile[0], tile[1], tile[2]
     if color_style == "bars":
-        pt = map_drawing.get_tile( abs((x - x%5)), y)
-        tile_rgb = pt[0], pt[1], pt[2] 
+        floor = map_drawing.get_tile( abs((x - x%5) - y%5), y, layer="floor")
     else:
-        tile_rgb = tile[0], tile[1], tile[2]
-    floor = map_drawing.get_tile(x, y, layer="floor")
+        floor = map_drawing.get_tile( abs((x - x%5)), y)
     floor_rgb = floor[0], floor[1], floor[2]
     if tile_rgb == (221, 32, 117):
         return BottomlessPit(
