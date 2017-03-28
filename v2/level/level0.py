@@ -72,8 +72,8 @@ class LevelZero(Level):
 
     def __init__(self, *args):
         super(LevelZero, self).__init__(*args)
-        self.player.add_power(Power(self.player, self, static=True, offset=(0, 30+len(self.player.children))))
-        self.player.add_power(Sprint(self.player, self, text="sprint", static=True, offset=(0, 30+len(self.player.children))))
+#        self.player.add_power(Power(self.player, self, static=True, offset=(0, 30+len(self.player.children))))
+#        self.player.add_power(Sprint(self.player, self, text="sprint", static=True, offset=(0, 30+len(self.player.children))))
         self.player.add_observer(self.the_map)
         self.player.place(*self.start_location)
         
@@ -105,37 +105,48 @@ class LevelZero(Level):
             schimber = Lightener(self.player, self, text="light", sentence="Find the light", static=True, offset=(0, 0))
             schimber.visible = False
             self.player.add_child(schimber)
-            self.the_map.schimber = schimber
+            self.the_map.schimbers.append(schimber)
             self.the_map.scribe.add_directive(schimber)
             
-            bridge = BridgeBuilder(None, 20, 20, "!", libtcod.red, self.foreground, self)
-            bridge_toggle = Directive(bridge, self, text="crank", sentence="turn the crank",
-                                      static=False, offset=(1, 1), on_completion_callable=bridge.do, range=3)
-            self.the_map.add(bridge.x, bridge.y, bridge)
-            self.player.add_child(bridge_toggle)
+            schimber1 = Schimber(self.player, self, text="light", sentence="Find the light", static=True, offset=(0, 0))
+            schimber1.visible = False
+            self.player.add_child(schimber1)
+            self.the_map.schimbers.append(schimber1)
+            self.the_map.scribe.add_directive(schimber1)
             
-            for info in gates_data:
+            schimber2 = Storyteller(self.player, self, text="light", sentence="Find the light", static=True, offset=(0, 0))
+            schimber2.visible = False
+            self.player.add_child(schimber2)
+            self.the_map.schimbers.append(schimber2)
+            self.the_map.scribe.add_directive(schimber2)
+#            bridge = BridgeBuilder(None, 20, 20, "!", libtcod.red, self.foreground, self)
+#            bridge_toggle = Directive(bridge, self, text="crank", sentence="turn the crank",
+#                                      static=False, offset=(1, 1), on_completion_callable=bridge.do, range=3)
+#            self.the_map.add(bridge.x, bridge.y, bridge)
+#            self.player.add_child(bridge_toggle)
+            
+#            for info in gates_data:
                 # something different should happen based on which order you complete them
                 # "please I didn't do it"
                 # "please do it"
                 # "it didn't"
-                g = Statue({}, info[0][0], info[0][1], 'X', libtcod.yellow, self.foreground, self)
-                self.statues.append(g)
-                self.the_map.add(g.x, g.y, g)
-                self.player.add_child(Ban(g, self, text=info[1], static=True, offset=(-2, 2)))
+#                g = Statue({}, info[0][0], info[0][1], 'X', libtcod.yellow, self.foreground, self)
+#                self.statues.append(g)
+#                self.the_map.add(g.x, g.y, g)
+#                self.player.add_child(Ban(g, self, text=info[1], static=True, offset=(-2, 2)))
                 
-            s = ResetStatue(2, 30, reveal_script1, 8, 1, ' ', libtcod.light_red, self.foreground, self)
-            s.loop = False
-            self.statues.append(s)
-            self.the_map.add(s.x, s.y, s)
+#            s = ResetStatue(2, 30, reveal_script1, 8, 1, ' ', libtcod.light_red, self.foreground, self)
+#            s.loop = False
+#            self.statues.append(s)
+#            self.the_map.add(s.x, s.y, s)
 #            self.player.add_child(Next(s, self, text="bow", static=True, offset = (2, 2)))
             #self.player.add_child(Waypoint(s, self, text="approach", 
 #                                            static=True, offset=(-1,-1)))
                                             
-            rp = RealPerson(None, 11, 40, ' ', libtcod.light_blue, self.foreground, self)
-            rp.loop = True
-            self.statues.append(rp)
-            self.the_map.add(rp.x, rp.y, rp)
+#            rp = RealPerson(None, 11, 40, ' ', libtcod.light_blue, self.foreground, self)
+#            rp.loop = True
+#            self.statues.append(rp)
+#            self.the_map.add(rp.x, rp.y, rp)
             
 #            v = LinkedStatue({}, 56, 40, 'L', libtcod.brass, self.foreground, self)
 #            self.the_map.add(v.x, v.y, v)
@@ -151,9 +162,9 @@ class LevelZero(Level):
 #            w.add_link(v)
 #            v.add_link(w)
 
-        self.figurine = Idol(False, 28, 28, 'i', libtcod.white, self.foreground, self)
-        x, y = self.figurine.location
-        self.the_map.add(x, y, self.figurine)
+#        self.figurine = Idol(False, 28, 28, 'i', libtcod.white, self.foreground, self)
+#        x, y = self.figurine.location
+#        self.the_map.add(x, y, self.figurine)
         
         self.lamp = Lamp(False, 24, 24, 'T', libtcod.yellow, self.foreground, self)
         x, y = self.lamp.location
@@ -163,7 +174,7 @@ class LevelZero(Level):
 #        x, y = self.lute.location
 #        self.the_map.add(x, y, self.lute)
 
-        self.player.add_child(ItemGrab(self.figurine, self, text="pick up", offset = (-2, 2)))
+#        self.player.add_child(ItemGrab(self.figurine, self, text="pick up", offset = (-2, 2)))
 #        self.player.add_child(ItemGrab(self.lute, self, text="pick up", offset = (-2, 2)))
         self.player.add_child(ItemGrab(self.lamp, self, text="pick up", offset = (-2, 2)))
 

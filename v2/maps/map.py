@@ -9,7 +9,7 @@ from scribe import TheScribe
 import markovgen as mg
 import tools
 
-import drawings
+import drawings, settings
 
 
 class TileMap(Listener, object):
@@ -35,6 +35,7 @@ class TileMap(Listener, object):
         self.last_render = []
         
         self.scribe = TheScribe()
+        self.schimbers = []
         
     def load_doodad(self, x, y, doodad):
         for t in doodad.get_tile_data():
@@ -125,7 +126,8 @@ class TileMap(Listener, object):
                                  player.max_sight*2,        # fine and solves
                                  anchor="default")          # update problems
         elif area_shape == "circle":
-            return self.get_round_area(player.location, player.max_sight)
+            render_radius = settings.RENDER_RADIUS_CIRCLE
+            return self.get_round_area(player.location, render_radius)
 
     def get_tiles_in_clear_area(self):
         x, y, w, h, anchor = self.render_area
@@ -154,7 +156,8 @@ class TileMap(Listener, object):
                     next_layer.append(t.next)
                 yield t
             if not schimber_yield:
-                yield self.schimber
+                for s in self.schimbers:
+                    yield s
                 schimber_yield = True
             tiles = next_layer
 
@@ -245,7 +248,6 @@ class TileMap(Listener, object):
             render_tiles = self.get_tiles_in_render_area()
             if schimb_style == "constant":
                 render_tiles = self.get_visible_tiles(render_tiles)
-#            tiles_to_write = [x for x in visible_environment if not x.blocked]
             tiles_to_write = [x for x in render_tiles if not x.blocked]
         else:
             tiles_to_write = tiles
@@ -267,5 +269,7 @@ class TileMap(Listener, object):
                 foot_displacement = entity.left_foot_displacement
             x = entity.x + (entity.facing[1]*foot_displacement)
             y = entity.y + (entity.facing[0]*foot_displacement)
-            self.apply_tile_effect({(x, y): [(color, '.') for color in fade]})
+            self.apply_tile_effect({(x, y): [(color, '<') for color in fade]})
 
+        if event == 'player requests schimb':
+            self.schimb(entity)

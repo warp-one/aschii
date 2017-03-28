@@ -14,7 +14,9 @@ class FloorDirective(Directive):
                          ]
                         )
     nodes = [(5, 5)]
+    appear_flicker_duration = 15
 
+    
     def __init__(self, *args, **kwargs):
         self.coords = []
         super(FloorDirective, self).__init__(*args, **kwargs)
@@ -23,72 +25,14 @@ class FloorDirective(Directive):
         self.priority = 0
         self.mandatory = True
         self.id = None
-
-    def player_in_range(self):
-        for n in self.nodes:
-            if tools.get_distance(self.anchor.location, n
-                             ) < self.anchor.sight_radius:
-                return n
-        return None
-
-    def clear(self): # only needed if not draw_on_floor?
-        for c in self.coords:
-            x, y = c[0]
-            libtcod.console_put_char(self.con, x, y, 
-                                        ' ', libtcod.BKGND_NONE)
-        
-    @property
-    def draw_on_floor(self):
-        return self._draw_on_floor
-        
-    @draw_on_floor.setter
-    def draw_on_floor(self, tf):
-        if not tf:
-            self.clear()
-        self._draw_on_floor = tf
-        
-        
-class Lightener(FloorDirective):
-    #should only appear in fixed places, and each disappear after you use it once
-
-    script = deque([("light", "I quiver and hang in a loop of light."),
-                    ("lantern", "Like a lantern down a dark lane."),
-                    ("glow", "A mysterious glow against a stand of yew trees."),
-                    ("candle", "To lXXXt a candle is to cast a shadow..."),
-                    ("luminous", "You are not yourself luminous!")
-                    ]
-                   )
-    nodes = [(x, x) for x in range(10, 60, 10)]
-    appear_flicker_duration = 15
-
-    def __init__(self, *args, **kwargs):
-        super(Lightener, self).__init__(*args, **kwargs)
-        self.color = libtcod.black
-        self.dormant_color = libtcod.light_grey
-        self.current_color = self.color
-        self.active_node = None
-        self.rotate_text()
-        self.appear_timer = 0
+        self.num_rotations = 0
 
     def rotate_text(self):
         new_keyword, new_sentence = self.script[0]
-        self.script.rotate(1)
+        self.script.rotate(-1)
+        self.num_rotations += 1
         self.change_text(new_keyword, sentence = new_sentence)
-
-    def complete(self):
-        self.game.player.notify(self.game.player, "lightener complete")
-        self.game.player.change_min_sight(2)
-        self.game.player.darken_timer = 0
-        self.rotate_text()
-        self.reset()
-        self.visible = False
-
-        self.nodes.remove(self.active_node)
-        self.active_node = None
-
-    def is_visible(self):
-        return self.visible
-
+        
     def player_in_range(self): 
         # called, confusingly, by the scribe so that it gets
         # puts it in play only when it will actually be drawn.
@@ -112,10 +56,10 @@ class Lightener(FloorDirective):
         else:
             self.visible = False
             self.active_node = None
-        super(Lightener, self).draw()
+        super(FloorDirective, self).draw()
 
     def _draw(self):
-        colorful_choice = libtcod.Color(*choice(colors.fire_colorset))
+        colorful_choice = libtcod.Color(*self.flicker_color)
         if self.appear_timer > 0:
             if self.appear_timer % 2:
                 self.phrase_color = colorful_choice * (self.appear_timer/10.)
@@ -128,6 +72,7 @@ class Lightener(FloorDirective):
             x, y = self.coords[i][0]
             if not self.game.the_map.get_tile(x, y).visible:
                 continue
+            
             floor_color = self.coords[i][1]
             self.dormant_color = (floor_color * .5
                                     if sentence_flash
@@ -158,10 +103,125 @@ class Lightener(FloorDirective):
             libtcod.console_put_char(self.con, x, y,
                                             char, libtcod.BKGND_NONE)
                                             
+    def clear(self): # only needed if not draw_on_floor?
+        for c in self.coords:
+            x, y = c[0]
+            libtcod.console_put_char(self.con, x, y, 
+                                        ' ', libtcod.BKGND_NONE)
+        
     def tick_phrase(self, letter):
         # add conditional about visibility of self.phrase to make
         # this only useable when you can actually see the word
-        super(Lightener, self).tick_phrase(letter)
-                                            
-    def update(self):
-        pass
+        super(FloorDirective, self).tick_phrase(letter)
+        
+    def is_visible(self):
+        return self.visible
+        
+    @property
+    def draw_on_floor(self):
+        return self._draw_on_floor
+        
+    @draw_on_floor.setter
+    def draw_on_floor(self, tf):
+        if not tf:
+            self.clear()
+        self._draw_on_floor = tf
+        
+    def complete(self):
+        self.anchor.notify(self.game.player, "directive requests schimb")
+        self.rotate_text()
+        self.reset()
+        self.visible = False
+
+        self.nodes.remove(self.active_node)
+        self.active_node = None
+        
+        
+class Lightener(FloorDirective):
+    #should only appear in fixed places, and each disappear after you use it once
+
+    script = deque([("light", "I quiver and hang in a loop of light."),
+                    ("lantern", "Like a lantern down a dark lane."),
+                    ("glow", "A mysterious glow against a stand of yew trees."),
+                    ("candle", "To lXXXt a candle is to cast a shadow..."),
+                    ("luminous", "You are not yourself luminous!")
+                    ]
+                   )
+    nodes = [(x, x) for x in range(10, 60, 10)]
+
+    def __init__(self, *args, **kwargs):
+        super(Lightener, self).__init__(*args, **kwargs)
+        self.color = libtcod.black
+        self.dormant_color = libtcod.light_grey
+        self.current_color = self.color
+        self.active_node = None
+        self.rotate_text()
+        self.appear_timer = 0
+        
+    @property
+    def flicker_color(self):
+        return choice(colors.fire_colorset)
+
+    def complete(self):
+        super(Lightener, self).complete()
+        self.game.player.change_min_sight(2)
+        self.game.player.darken_timer = 0
+
+        
+class Schimber(FloorDirective):
+
+    script = deque([("ants", "This line is being eaten by ants."),
+                    ("point", "Could you point your headlamp over there?"),
+                    ("your", "Watch your foot!"),
+                    ("way", "Is this the right way?"),
+                    ("forward", "I think forward is the only possibility.")
+                    ]
+                   )
+    nodes = [(x/2, x) for x in range(10, 110, 20)]
+    
+    def __init__(self, *args, **kwargs):
+        super(Schimber, self).__init__(*args, **kwargs)
+        
+        self.color = libtcod.black
+        self.dormant_color = libtcod.light_grey
+        self.current_color = self.color
+        self.active_node = None
+        self.rotate_text()
+        self.appear_timer = 0
+        
+    @property
+    def flicker_color(self):
+        return choice(colors.random_colorset)
+        
+     
+class Storyteller(FloorDirective):
+       
+    script = deque([("moths", "Do you ever think about moths?"),
+                    ("wings", "The quiet flap of their wings?"),
+                    ("eyes",  "An enormous pair of dark eyes."),
+                    ]
+                   )
+    nodes = [(x, x) for x in range(10, 110, 30)]
+    
+    def __init__(self, *args, **kwargs):
+        super(Storyteller, self).__init__(*args, **kwargs)
+        
+        self.color = libtcod.black
+        self.dormant_color = libtcod.light_grey
+        self.current_color = self.color
+        self.active_node = None
+        self.rotate_text()
+        self.appear_timer = 0
+        self.max_rotations = len(self.script)
+        
+    @property
+    def flicker_color(self):
+        return choice(colors.random_colorset)
+
+    def complete(self):
+        if self.num_rotations >= self.max_rotations:
+            super(Storyteller, self).complete()
+        else:
+            self.rotate_text()
+            self.reset()
+        

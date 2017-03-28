@@ -62,14 +62,26 @@ class Darkness(object):
     def on_notify(self, entity, event):
         if self.style == "constant":
             if event == "player darken":
-                entity.schimb = "constant"
+                entity.schimb = self.style
             elif event == "player change direction":
-                entity.schimb = "constant"
+                entity.schimb = self.style
         if self.style == "distance-based":
             if event == "darkness leash broken":
-                entity.schimb = "distance-based"
+                entity.schimb = self.style
             if event == "lightener complete":
                 entity.schimb = self.style
+        if event == "directive requests schimb":
+            entity.schimb = True
+                
+    def check_leash(self, player):
+        if self.style != "distance-based":
+            return
+        leash_length = tools.get_distance(player.location, player.darkness_location)
+        max_leash = settings.RENDER_RADIUS_CIRCLE - player.sight_radius
+        if leash_length > max_leash:
+            player.darkness_location = player.location
+            player.schimb = self.style
+
 
 class Player(Listener, orders.Orders, Unit):
 
@@ -78,7 +90,7 @@ class Player(Listener, orders.Orders, Unit):
     offsets = [(-2, -2), (-2, 2), (2, 3), (2, -3), 
                (-2, -2), (-2, 2), (2, 3), (2, -3)]
     sight_radius = 5 
-    max_sight = 31 # high in early levels, low in late...
+    max_sight = settings.PLAYER_MAX_SIGHT # high in early levels, low in late...
     min_sight = 13
     sight_floor = 1
     len_step = 3 # in frames
@@ -115,8 +127,9 @@ class Player(Listener, orders.Orders, Unit):
         
         darkness_style = "distance-based"
         self.schimb = darkness_style
-        darkness = Darkness(darkness_style=darkness_style)
-        self.add_observer(darkness)
+        self.schimb_hold = False
+        self.darkness = Darkness(darkness_style=darkness_style)
+        self.add_observer(self.darkness)
         self.darkness_location = self.x, self.y
         
     def is_visible(self):
@@ -133,6 +146,10 @@ class Player(Listener, orders.Orders, Unit):
             self.sight_radius = self.min_sight
         if not noschimb:
             self.notify(self, "player darken")
+        if self.sight_radius < self.sight_floor + 3:
+            self.darkness.style = "constant"
+        else:
+            self.darkness.style = "distance-based"
         self.idle_time = 0
         
     def change_min_sight(self, delta_s, set=False):
@@ -282,6 +299,11 @@ class Player(Listener, orders.Orders, Unit):
     def _draw(self): # THE UNDERSCORE IS IMPORTANT; KEEP IT
                      # OR OTHERWISE ALL THE ACTIONS DISAPPEAR
         return
+        
+    def clear(self):
+        super(Player, self).clear()
+        for c in self.children:
+            c.clear()
 
     def update(self):
         self.act()
@@ -307,14 +329,23 @@ class Player(Listener, orders.Orders, Unit):
                             d.complete()
             self.change_sight_radius(-3)
             self.trail.write_letter()
+            
+        self.darkness.check_leash(self)
 
-        if tools.get_distance(self.location, self.darkness_location) > 20:
-            self.darkness_location = self.location
-            self.notify(self, "darkness leash broken")
         self.darken_always()
         libtcod.map_compute_fov(self.game.the_map.libtcod_map,
                 self.x, self.y, self.sight_radius, algo=libtcod.FOV_DIAMOND)
-                            
+                
+        self.check_schimb()
+                
+    def check_schimb(self):
+        if self.schimb_hold is True:
+            return
+            
+        if self.schimb:
+            self.notify(self.schimb, 'player requests schimb')
+        self.schimb = None
+
     def darken_always(self):
         if self.last_position == self.location:
             self.darken_timer += 1
@@ -332,9 +363,6 @@ class Player(Listener, orders.Orders, Unit):
             self.trail.add_message("darker...")
             self.trail.begin_message()
             
-    def on_notify(self, entity, event):
-        pass
-
     def take_step(self):
         self.notify(self, 'player move')
         if self.left_foot:

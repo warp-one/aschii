@@ -38,26 +38,34 @@ class TheScribe(object):
         except KeyError:
             print "Not an inactive directive!"
             
-    def organize_directives_for_writing(self):
+    def organize_directives_for_writing(self, num_tiles):
         mandatory_directives = []
         optional_directives = []
+        directives_to_write = []
+        empty_places = self.mutated_text.count('. ', 0, num_tiles)
+        print empty_places, "empties"
         
         for d in self.directives.itervalues():
-            if d.mandatory and d.player_in_range():
+            d.coords = []
+            if d.player_in_range():
                 # the worry here is that some node locations might
                 # not be available, or map well, to where the scribe
                 # activates, leading to "missing" or dead directives.
                 # it also duplicates functionality with enabling and
                 # disabling them.
-                mandatory_directives.append(d)
-                d.coords = []
-            else:
-                optional_directives.append(d)
-                
-        shuffle(mandatory_directives)
+                if d.mandatory:
+                    mandatory_directives.append(d)
+                else:
+                    optional_directives.append(d)
+
         optional_directives.sort(key=lambda x: x.priority)
+        directives_to_write = (mandatory_directives + optional_directives)[:empty_places]
+        if len(directives_to_write) < empty_places:
+            directives_to_write += [None] * (empty_places - len(directives_to_write))
+                
+        shuffle(directives_to_write)
         
-        return mandatory_directives, optional_directives
+        return directives_to_write
         
     def write_floor(self, tiles_to_write):
         # this most likely continues to be the most time-intensive
@@ -66,49 +74,51 @@ class TheScribe(object):
         # (again). something to think about.
         
         num_tiles = len(tiles_to_write)
+        if len(self.mutated_text) < num_tiles:
+            self.mutated_text = self.create_ocean_text(self.waves)
         num_directive_letters = 0
         
-        mandatory_directives, optional_directives = self.organize_directives_for_writing()
+        directives_to_write = self.organize_directives_for_writing(num_tiles)
         current_directive = None
         end_of_current_sentence = 0
         len_directives_written = 0
         
-        if len(self.mutated_text) < num_tiles:
-            self.mutated_text = self.create_ocean_text(self.waves)
         
         for i, t in enumerate(tiles_to_write):
             current_place_in_text = i - len_directives_written
             current_letter = self.mutated_text[current_place_in_text]
             previous_letter = self.mutated_text[current_place_in_text - 1]
             previouser_letter = self.mutated_text[current_place_in_text - 2]
+            t.current_char = current_letter
+            
             if previous_letter == ' ' and previouser_letter == '.':
                 end_of_sentence = True
             else:
                 end_of_sentence = False
-            if not current_directive and mandatory_directives and end_of_sentence:
-                end_of_current_sentence = i + len(mandatory_directives[0].sentence)
-                current_directive = mandatory_directives.pop(0)
-                if end_of_current_sentence > num_tiles:
-                    pass
+            if not current_directive and directives_to_write and end_of_sentence:
+                current_directive = directives_to_write.pop(0)
+                if current_directive is None:
+                    continue
+                end_of_current_sentence = i + len(current_directive.sentence)
+                if end_of_current_sentence <= num_tiles:
+                    current_directive.draw_on_floor = True
+                    current_directive.visible = True
+                    len_directives_written += 1
                 else:
-                    if current_directive is "empty":
-                        pass
-                    else:
-                        current_directive.draw_on_floor = True
-                        current_directive.visible = True
-                        len_directives_written += 1
-            if current_directive and i >= end_of_current_sentence:
+                    current_directive.visible = False
+                    current_directive = None
+            if current_directive and i > end_of_current_sentence:
                 current_directive = None
             if current_directive:
                 current_directive.coords.append( ((t.x, t.y), t.current_color) )
                 len_directives_written += 1
-            t.current_char = current_letter
             
-        if mandatory_directives: # i.e., if /still/ mandatory_directives
-            for i, md in enumerate(mandatory_directives):
-                md.draw_on_floor = False
-                y = settings.SCREEN_HEIGHT - i - 1
-                md.coords = [((x, y), libtcod.white) for x in range(len(md.sentence) + 1)]
+        if directives_to_write: # i.e., if /still/ directives_to_write
+            for i, md in enumerate(directives_to_write):
+                if md is not None:
+                    md.draw_on_floor = False
+                    y = settings.SCREEN_HEIGHT - i - 1
+                    md.coords = [((x, y), libtcod.white) for x in range(len(md.sentence) + 1)]
             
         self.mutated_text = self.mutated_text[len(tiles_to_write):]
             

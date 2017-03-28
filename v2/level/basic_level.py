@@ -56,26 +56,18 @@ class Level(object):
         libtcod.console_set_default_background(self.background, libtcod.blue)
         self.consoles = [self.background, self.foreground]
 
-    def get_all_tiles(self):
-        map_tiles = self.the_map.get_tiles()
-        return self.the_map.get_tiles_by_layer(map_tiles)
-        
     def update_all(self):
-        self.player.update()
         self.next_render = [x for x in self.the_map.get_all_in_render_area()]
+        self.player.update()
         for t in self.next_render:
             if t is self.player:
                 continue
             t.update()
-
-        if self.player.schimb:
-            self.the_map.schimb(self.player.schimb)
-        self.player.schimb = None
         for i in self.hud:
             i.update()
         for e in self.special_effects:
             e.update()
-
+            
     def render_all(self):
         self.camera.move_camera(self.player.x, self.player.y)
         for t in self.next_render:
@@ -94,6 +86,4 @@ class Level(object):
         
         for a in self.player.action_manager.actions:
             a.clear()
-        for d in self.player.children:
-            d.clear()
 
