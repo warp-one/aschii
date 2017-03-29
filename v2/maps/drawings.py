@@ -120,8 +120,6 @@ class GifReader(object):
         self.frames.append([x for x in img_data])
 
 class SpecialEffect(object):
-
-   
     def __init__(self, frames, position):
         self.current_frame = 0
         self.frames = frames # a dict of coordinates with lists of color, char data
@@ -150,6 +148,6 @@ class SpecialEffect(object):
 lvl0 = MapDrawing("maps/lvl0.png")
 lvl1 = MapDrawing("maps/lvl1.png")
 lvl2 = MapDrawing("maps/lvl2.png")
-cave = MapDrawing("maps/longcave.png", floor_img="maps/longcavefloor.png")
+cave_drawing = MapDrawing("maps/longcave.png", floor_img="maps/longcavefloor.png")
 
 tv = SpecialEffect(GifReader("maps/stream-loop.gif").get_frame_data(), (40, 75))

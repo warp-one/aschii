@@ -10,9 +10,9 @@ class FloorDirective(Directive):
 
     next = False # !!!
     script = deque([("left", "Let's go left."),
-                         ("right", "No, I like right.")
-                         ]
-                        )
+                    ("right", "No, I like right.")
+                    ]
+                   )
     nodes = [(5, 5)]
     appear_flicker_duration = 15
 

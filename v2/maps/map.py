@@ -9,14 +9,14 @@ from scribe import TheScribe
 import markovgen as mg
 import tools
 
-import drawings, settings
+import settings, drawings
 
 
 class TileMap(Listener, object):
-    def __init__(self, w, h, con, game):
+    def __init__(self, w, h, map_drawing, con, game):
         self.con = con
         self.game = game
-        self.drawing = drawings.cave
+        self.drawing = map_drawing
         self.width, self.height = self.drawing.w, self.drawing.h
         self.tilemap = [[
                     drawings.make_tile(self.drawing, x, y, self.con, self.game)

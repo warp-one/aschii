@@ -84,8 +84,8 @@ class Directive(Attachment, Tile):
         to_draw = self.phrase
         for i, char in enumerate(to_draw):
             x, y = self.x + i, self.y
-            if (x, y) == self.anchor.location:
-                continue
+#            if (x, y) == self.anchor.location:
+#                continue
             x, y = self.game.camera.to_camera_coordinates(x, y)
             color = (self.current_color if self.phrase_clear[i] 
                                         else self.dormant_color)

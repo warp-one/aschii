@@ -74,8 +74,6 @@ class LevelZero(Level):
         super(LevelZero, self).__init__(*args)
 #        self.player.add_power(Power(self.player, self, static=True, offset=(0, 30+len(self.player.children))))
 #        self.player.add_power(Sprint(self.player, self, text="sprint", static=True, offset=(0, 30+len(self.player.children))))
-        self.player.add_observer(self.the_map)
-        self.player.place(*self.start_location)
         
         self.statues = []
         for _ in range(1):
