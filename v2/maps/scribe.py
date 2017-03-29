@@ -84,7 +84,6 @@ class TheScribe(object):
         len_directives_written = 0
         just_finished_one = False
         
-        
         for i, t in enumerate(tiles_to_write):
             current_place_in_text = i - len_directives_written
             current_letter = self.mutated_text[current_place_in_text]
@@ -102,7 +101,7 @@ class TheScribe(object):
                 if current_directive is None:
                     continue
                 end_of_current_sentence = i + len(current_directive.sentence)
-                if end_of_current_sentence <= num_tiles:
+                if end_of_current_sentence < num_tiles:
                     current_directive.draw_on_floor = True
                     current_directive.visible = True
                     len_directives_written += 1

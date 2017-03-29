@@ -2,7 +2,7 @@ from random import randint, choice
 
 import libtcodpy as libtcod
 
-from items import Flashlight
+from items import Item
 from tile import EnvironmentTile, BottomlessPit
 from observer import Listener
 from scribe import TheScribe
@@ -40,10 +40,6 @@ class TileMap(Listener, object):
     def load_doodad(self, x, y, doodad):
         for t in doodad.get_tile_data():
             blocked, c, r = t
-            if blocked:
-                blocked = True
-            else:
-                blocked = False
             self.change_tile(x + c, y + r, blocked)
         for t in self.get_tiles():
             libtcod.map_set_properties(self.libtcod_map, t.x, t.y, 
@@ -104,10 +100,8 @@ class TileMap(Listener, object):
             tile = self.tilemap[x][y]
             while tile.next:
                 tile = tile.next
-            while tile:
-                if isinstance(tile, Flashlight):
+                if isinstance(tile, Item):
                     return tile
-                tile = tile.prev
             return None
         except IndexError:
             return False

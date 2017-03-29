@@ -78,7 +78,7 @@ class Lamp(Item):
 
     name = "Candelabra"
     on = False
-    ontext = "light"
+    ontext = "plug in"
     offtext = "snuff"
     Lradius = 6
     

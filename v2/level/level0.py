@@ -117,11 +117,11 @@ class LevelZero(Level):
             self.player.add_child(schimber2)
             self.the_map.schimbers.append(schimber2)
             self.the_map.scribe.add_directive(schimber2)
-#            bridge = BridgeBuilder(None, 20, 20, "!", libtcod.red, self.foreground, self)
-#            bridge_toggle = Directive(bridge, self, text="crank", sentence="turn the crank",
-#                                      static=False, offset=(1, 1), on_completion_callable=bridge.do, range=3)
-#            self.the_map.add(bridge.x, bridge.y, bridge)
-#            self.player.add_child(bridge_toggle)
+            bridge = BridgeBuilder(None, 20, 20, "!", libtcod.red, self.foreground, self)
+            bridge_toggle = Directive(bridge, self, text="crank", sentence="turn the crank",
+                                      static=False, offset=(1, 1), on_completion_callable=bridge.do, range=3)
+            self.the_map.add(bridge.x, bridge.y, bridge)
+            self.player.add_child(bridge_toggle)
             
 #            for info in gates_data:
                 # something different should happen based on which order you complete them

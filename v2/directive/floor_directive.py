@@ -59,6 +59,9 @@ class FloorDirective(Directive):
         super(FloorDirective, self).draw()
 
     def _draw(self):
+        if len(self.coords) < len(self.sentence):
+            print self.sentence
+            raise Error
         colorful_choice = libtcod.Color(*self.flicker_color)
         if self.appear_timer > 0:
             if self.appear_timer % 2:
@@ -123,8 +126,8 @@ class FloorDirective(Directive):
         
     @draw_on_floor.setter
     def draw_on_floor(self, boolean):
-        if not boolean:
-            self.clear()
+#        if not boolean:
+#            self.clear()
         self._draw_on_floor = boolean
         
     def complete(self):
