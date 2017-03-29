@@ -1,44 +1,79 @@
 import libtcodpy as libtcod
 
-from inventory import Item
+from tile import EnvironmentTile
 
 
-class Flashlight(Item):
-    
-    name = "flashlight"
-    on = False
-    distance = 20
-    Lradius = 5
-    
+class Item(EnvironmentTile):
+
+    name = "Generic Item"
+    description = "an item"
+    ontext = "turn on"
+    offtext = "turn off"
+
+    def __init__(self, *args):
+        super(Item, self).__init__(*args)
+        self.on = False
+        self.owner = None
         
-    def location(self):
-        try:
-            if self.owner:
-                x, y = self.owner.location
-                fx, fy = self.owner.facing
-                return x + fx*self.distance, y + fy*self.distance
-            else:
-                return super(Flashlight, self).location
-        except AttributeError:
-            return super(Flashlight, self).location
+        self.image = libtcod.image_load('comics/cycl.png')
+
+    def pick_up(self, owner):
+        self.toggle_visible()
+        self.owner = owner
+        self.game.the_map.remove(self)
+        
+    def put_down(self):
+        self.toggle_visible()
+        self.x, self.y = self.owner.location
+        self.owner = None
+        self.game.the_map.add(self.x, self.y, self)
+        self.turn_off()
 
     def turn_on(self):
-        if super(Flashlight, self).turn_on():
-            self.game.the_map.light_sources.append(self)
-        self.on = True
+        if self.on:
+            return False
+        else:
+            self.on = True
+            return True
         
     def turn_off(self):
-        if super(Flashlight, self).turn_off():
-            self.game.the_map.light_sources.remove(self)
-        self.on = False
-        
-    def do(self):
+        if not self.on:
+            return False
+        else:
+            self.on = False
+            return True
+            
+    def toggle(self):
         if self.on:
             self.turn_off()
         else:
             self.turn_on()
 
+    def get_toggle_text(self):
+        if self.on:
+            return self.offtext
+        else:
+            return self.ontext
+        
+    def equip(self):
+        print "You equip your " + self.name
+        
+    def put_away(self):
+        print "You put away your " + self.name
+
+    def do(self):
+        print "Boink!"
+        
+    def _draw(self):
+        try:
+            if self.owner:
+                return
+            else:
+                return super(Item, self)._draw()
+        except AttributeError:
+            return super(Item, self)._draw()
             
+                        
 class Lamp(Item):
 
     name = "Candelabra"
@@ -75,7 +110,6 @@ class Lamp(Item):
             self.turn_off()
         else:
             self.turn_on()
-        self.game.the_map.schimb()
         
     def put_away(self):
         super(Lamp, self).put_away()

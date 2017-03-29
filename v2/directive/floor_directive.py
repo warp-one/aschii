@@ -137,6 +137,9 @@ class FloorDirective(Directive):
         self.nodes.remove(self.active_node)
         self.active_node = None
         
+    def update(self):
+        pass
+        
         
 class Lightener(FloorDirective):
     #should only appear in fixed places, and each disappear after you use it once

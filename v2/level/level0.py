@@ -100,19 +100,19 @@ class LevelZero(Level):
 #            u.add_link(t)
 #            t.add_link(u)
             
-            schimber = Lightener(self.player, self, text="light", sentence="Find the light", static=True, offset=(0, 0))
+            schimber = Lightener(self.player, self, text="light", sentence="Find the light", offset=(0, 0))
             schimber.visible = False
             self.player.add_child(schimber)
             self.the_map.schimbers.append(schimber)
             self.the_map.scribe.add_directive(schimber)
             
-            schimber1 = Schimber(self.player, self, text="light", sentence="Find the light", static=True, offset=(0, 0))
+            schimber1 = Schimber(self.player, self, text="light", sentence="Find the light", offset=(0, 0))
             schimber1.visible = False
             self.player.add_child(schimber1)
             self.the_map.schimbers.append(schimber1)
             self.the_map.scribe.add_directive(schimber1)
             
-            schimber2 = Storyteller(self.player, self, text="light", sentence="Find the light", static=True, offset=(0, 0))
+            schimber2 = Storyteller(self.player, self, text="light", sentence="Find the light", offset=(0, 0))
             schimber2.visible = False
             self.player.add_child(schimber2)
             self.the_map.schimbers.append(schimber2)

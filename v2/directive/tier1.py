@@ -483,6 +483,7 @@ class SCHIMB(Directive): # Deprecated, and non-functional
         self.revert_color()
             
         to_draw = zip(self.phrase, self.coordinates)
+        
     def draw(self):
         for i, letter in enumerate(to_draw):
             x, y = letter[1][0], letter[1][1]

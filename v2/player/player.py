@@ -284,8 +284,7 @@ class Player(Listener, orders.Orders, Unit):
                 self.take_step()
         super(Player, self).update()
         for c in self.children:
-            if not c.static:
-                c.update()
+            c.update()
                 
         if self.last_position == self.location:
             self.idle_time += 1

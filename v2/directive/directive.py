@@ -4,15 +4,7 @@ from tile import Tile
 import tools, faders
 
 
-class Attachment(object):
-    def update(self):
-        if not self.static:
-            newX = self.anchor.x + self.offsetX 
-            newY = self.anchor.y - self.offsetY
-            self.place(newX, newY)
-    
-        
-class Directive(Attachment, Tile):
+class Directive(Tile):
 
     char = 'X'
 
@@ -26,7 +18,7 @@ class Directive(Attachment, Tile):
         self.anchor = anchor
         self.game = game
         self.static = static
-        self.sentence = sentence  # currently only used by Lightener
+        self.sentence = sentence  # currently only used by FloorDirective
         self.offsetX = offset[0]
         self.offsetY = offset[1]
         if new_fader: self.fader = new_fader(self.game.camera)
@@ -35,16 +27,25 @@ class Directive(Attachment, Tile):
         self.range = range
 
         self.con = game.foreground
-        self.x = self.anchor.x + self.offsetX
-        self.y = self.anchor.y + self.offsetY
         self.change_text(text)
 
         self.color = libtcod.green
         self.dormant_color = libtcod.red
         self.current_color = self.color
         self.active = False
-        self.pressed = False
         self.visible = False
+        
+    @property
+    def location(self):
+        return self.anchor.x + self.offsetX, self.anchor.y + self.offsetY
+        
+    @property
+    def x(self):
+        return self.anchor.x + self.offsetX
+        
+    @property    
+    def y(self):
+        return self.anchor.y + self.offsetY
 
     def toggle_active(self):
         if self.active:
@@ -130,6 +131,9 @@ class Directive(Attachment, Tile):
         self.phrase_index = 0
         self.clear()
         self.completed = False
+        
+    def update(self):
+        pass
 
 
 class DirectiveLink(object):

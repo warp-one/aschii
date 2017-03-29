@@ -1,7 +1,6 @@
 import libtcodpy as libtcod
 
 import settings
-from tile import EnvironmentTile
 from directive import ItemGrab, ItemToggle
 
 
@@ -143,72 +142,3 @@ class InventoryDisplay(object):
                 self.status = "off"
 
 
-class Item(EnvironmentTile):
-
-    name = "Generic Item"
-    description = "an item"
-    ontext = "turn on"
-    offtext = "turn off"
-
-    def __init__(self, *args):
-        super(Item, self).__init__(*args)
-        self.on = False
-        self.owner = None
-        
-        self.image = libtcod.image_load('comics/cycl.png')
-
-    def pick_up(self, owner):
-        self.toggle_visible()
-        self.owner = owner
-        self.game.the_map.remove(self)
-        
-    def put_down(self):
-        self.toggle_visible()
-        self.x, self.y = self.owner.location
-        self.owner = None
-        self.game.the_map.add(self.x, self.y, self)
-        self.turn_off()
-
-    def turn_on(self):
-        if self.on:
-            return False
-        else:
-            self.on = True
-            return True
-        
-    def turn_off(self):
-        if not self.on:
-            return False
-        else:
-            self.on = False
-            return True
-            
-    def toggle(self):
-        if self.on:
-            self.turn_off()
-        else:
-            self.turn_on()
-
-    def get_toggle_text(self):
-        if self.on:
-            return self.offtext
-        else:
-            return self.ontext
-        
-    def equip(self):
-        print "You equip your " + self.name
-        
-    def put_away(self):
-        print "You put away your " + self.name
-
-    def do(self):
-        print "Boink!"
-        
-    def _draw(self):
-        try:
-            if self.owner:
-                return
-            else:
-                return super(Item, self)._draw()
-        except AttributeError:
-            return super(Item, self)._draw()
