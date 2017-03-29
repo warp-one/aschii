@@ -109,10 +109,10 @@ class FloorDirective(Directive):
             libtcod.console_put_char(self.con, x, y, 
                                         ' ', libtcod.BKGND_NONE)
         
-    def tick_phrase(self, letter):
+    def tick_phrase(self, letter): # IT'S GOTTA RETURN THE RESUUUUUULT
         # add conditional about visibility of self.phrase to make
         # this only useable when you can actually see the word
-        super(FloorDirective, self).tick_phrase(letter)
+        return super(FloorDirective, self).tick_phrase(letter)
         
     def is_visible(self):
         return self.visible
@@ -122,13 +122,14 @@ class FloorDirective(Directive):
         return self._draw_on_floor
         
     @draw_on_floor.setter
-    def draw_on_floor(self, tf):
-        if not tf:
+    def draw_on_floor(self, boolean):
+        if not boolean:
             self.clear()
-        self._draw_on_floor = tf
+        self._draw_on_floor = boolean
         
     def complete(self):
         self.anchor.notify(self.game.player, "directive requests schimb")
+        self.num_rotations = 0
         self.rotate_text()
         self.reset()
         self.visible = False

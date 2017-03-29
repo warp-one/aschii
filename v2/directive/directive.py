@@ -55,12 +55,9 @@ class Directive(Attachment, Tile):
     def change_text(self, text, sentence=None):
         if not sentence:
             sentence = text
-        self.clear()
         self.sentence = sentence
         self.phrase = text
-        self.phrase_clear = [False] * len(self.phrase) 
-        self.phrase_index = 0
-        self.completed = False
+        self.reset()
         
     def is_visible(self):
         dv = super(Directive, self).is_visible()
@@ -126,14 +123,13 @@ class Directive(Attachment, Tile):
                     if self.phrase_index >= len(self.phrase):
                         self.complete()
                     return True
-                else:
-                    
-                    return False
+        return False
                 
     def reset(self):
         self.phrase_clear = [False] * len(self.phrase)
         self.phrase_index = 0
         self.clear()
+        self.completed = False
 
 
 class DirectiveLink(object):

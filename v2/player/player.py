@@ -85,8 +85,6 @@ class Darkness(object):
 
 class Player(Listener, orders.Orders, Unit):
 
-    arrow_keys = [libtcod.KEY_UP, libtcod.KEY_DOWN,
-                  libtcod.KEY_RIGHT, libtcod.KEY_LEFT]
     offsets = [(-2, -2), (-2, 2), (2, 3), (2, -3), 
                (-2, -2), (-2, 2), (2, 3), (2, -3)]
     sight_radius = 5 
@@ -113,11 +111,6 @@ class Player(Listener, orders.Orders, Unit):
         
         self.create_orders()
         self.obs = []
-
-        self.arrows = {libtcod.CHAR_ARROW_N: None, libtcod.CHAR_ARROW_S: None,
-                       libtcod.CHAR_ARROW_E: None, libtcod.CHAR_ARROW_W: None}
-        self.set_arrows()
-        self.add_child(PlayerWASD(self, self.game))
         
         self.last_position = self.x, self.y
         self.idle_time = self.idle_start
@@ -165,33 +158,13 @@ class Player(Listener, orders.Orders, Unit):
             self.sight_radius = self.min_sight
         self.notify(self, "player darken")
 
-    def set_arrows(self):
-        NSEW = {(0, 4): libtcod.CHAR_ARROW_N, 
-                (0, -4): libtcod.CHAR_ARROW_S, 
-                (4, 0): libtcod.CHAR_ARROW_E, 
-                (-4, 0): libtcod.CHAR_ARROW_W} 
-        for offset, char in NSEW.iteritems():
-            newD = PlayerArrow(self, self.game, text=char)
-            self.add_child(newD, offset=offset)
-            self.add_arrow(newD)
-            
-#        self.legs = Legs(self, self.game)
-#        self.add_child(self.legs, offset=(0, 0))
-        
-    def add_arrow(self, arrow):
-        self.arrows[arrow.phrase] = arrow
-
     def handle_keys(self):
         self.last_position = self.location
-        for a in self.arrows.values():
-            if a:
-                a.pressed = False
         key = libtcod.console_check_for_keypress()  #real-time
         
         is_char = (key.vk == libtcod.KEY_CHAR)
-        is_arrow = (key.vk in self.arrow_keys)
         is_space = (key.vk == libtcod.KEY_SPACE)
-        if is_char or is_arrow or is_space:
+        if is_char or is_space:
             self.action_manager.handle_letter(key)
      
         if key.vk == libtcod.KEY_ENTER and key.lalt:
@@ -213,19 +186,15 @@ class Player(Listener, orders.Orders, Unit):
         if libtcod.console_is_key_pressed(libtcod.KEY_UP):
             self.change_direction((0, -1))
             self.move(0, -1)
-            self.arrows[libtcod.CHAR_ARROW_N].pressed = True
         elif libtcod.console_is_key_pressed(libtcod.KEY_DOWN):
             self.change_direction((0, 1))
             self.move(0, 1)
-            self.arrows[libtcod.CHAR_ARROW_S].pressed = True
         elif libtcod.console_is_key_pressed(libtcod.KEY_LEFT):
             self.change_direction((-1, 0))
             self.move(-1, 0)
-            self.arrows[libtcod.CHAR_ARROW_W].pressed = True
         elif libtcod.console_is_key_pressed(libtcod.KEY_RIGHT):
             self.change_direction((1, 0))
             self.move(1, 0)
-            self.arrows[libtcod.CHAR_ARROW_E].pressed = True
             
     def add_child(self, child, offset=None):
         super(Player, self).add_child(child, offset)

@@ -1,4 +1,4 @@
-from random import randint
+from random import randint, choice
 
 import libtcodpy as libtcod
 
@@ -199,7 +199,8 @@ class BottomlessPit(EnvironmentTile):
         self.blocked = True
         self.transparent = True
         self.char = (' ' if randint(0, 7) else '.')
-        self.color = libtcod.darkest_grey
+        self.color = choice([libtcod.darkest_grey, 
+                             libtcod.dark_grey])
     
             
 class Unit(Tile):   # has collision
