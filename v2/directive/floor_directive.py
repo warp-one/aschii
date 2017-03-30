@@ -60,8 +60,8 @@ class FloorDirective(Directive):
 
     def _draw(self):
         if len(self.coords) < len(self.sentence):
-            print self.sentence
-            raise Error
+            print self.sentence, len(self.coords), self.coords[-1]
+            raise Exception
         colorful_choice = libtcod.Color(*self.flicker_color)
         if self.appear_timer > 0:
             if self.appear_timer % 2:
@@ -83,7 +83,7 @@ class FloorDirective(Directive):
             self.phrase_color = (colorful_choice
                                     if phrase_flash
                                     else self.dormant_color)
-            if tools.get_distance((x, y), self.game.player.location) > self.game.player.min_sight:
+            if tools.get_distance((x, y), self.game.player.location) > self.game.player.base_sight:
                 color = self.dormant_color * .5
             else:
                 color = self.dormant_color
@@ -171,7 +171,7 @@ class Lightener(FloorDirective):
 
     def complete(self):
         super(Lightener, self).complete()
-        self.game.player.change_min_sight(2)
+        self.game.player.change_base_sight(2)
         self.game.player.darken_timer = 0
 
         

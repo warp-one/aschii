@@ -89,7 +89,7 @@ class Player(Listener, orders.Orders, Unit):
                (-2, -2), (-2, 2), (2, 3), (2, -3)]
     sight_radius = 5 
     max_sight = settings.PLAYER_MAX_SIGHT # high in early levels, low in late...
-    min_sight = max_sight/2
+    base_sight = max_sight/2
     sight_floor = 1
     len_step = 3 # in frames
     char = ' '
@@ -135,8 +135,8 @@ class Player(Listener, orders.Orders, Unit):
             self.sight_radius += delta_s
         if self.sight_radius > self.max_sight:
             self.sight_radius = self.max_sight
-        elif self.sight_radius < self.min_sight:
-            self.sight_radius = self.min_sight
+        elif self.sight_radius < self.base_sight:
+            self.sight_radius = self.base_sight
         if not noschimb:
             self.notify(self, "player darken")
         if self.sight_radius < self.sight_floor + 3:
@@ -145,17 +145,17 @@ class Player(Listener, orders.Orders, Unit):
             self.darkness.style = "distance-based"
         self.idle_time = 0
         
-    def change_min_sight(self, delta_s, set=False):
+    def change_base_sight(self, delta_s, set=False):
         if set:
-            self.min_sight = delta_s
+            self.base_sight = delta_s
         else:
-            self.min_sight += delta_s
-        if self.min_sight < self.sight_floor:
-            self.min_sight = self.sight_floor
-        if self.min_sight > self.max_sight:
-            self.min_sight = self.max_sight
-        if self.sight_radius < self.min_sight:
-            self.sight_radius = self.min_sight
+            self.base_sight += delta_s
+        if self.base_sight < self.sight_floor:
+            self.base_sight = self.sight_floor
+        if self.base_sight > self.max_sight:
+            self.base_sight = self.max_sight
+        if self.sight_radius < self.base_sight:
+            self.sight_radius = self.base_sight
         self.notify(self, "player darken")
 
     def handle_keys(self):
@@ -325,7 +325,7 @@ class Player(Listener, orders.Orders, Unit):
                 return
 
         if self.darken_timer > 480:
-            self.change_min_sight(-1)
+            self.change_base_sight(-1)
             self.change_sight_radius(-1, noschimb=True)
             self.darken_timer = 0
             self.trail.add_message("darker...")

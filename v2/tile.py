@@ -98,7 +98,7 @@ class Tile(object):
         else:
             color = self.current_color
 
-        if tools.get_distance(self.location, self.game.player.location) > self.game.player.min_sight:
+        if tools.get_distance(self.location, self.game.player.location) > self.game.player.base_sight:
             color *= .5
 
         # awkward that there are two effects systems here, but maybe the 
@@ -198,10 +198,18 @@ class BottomlessPit(EnvironmentTile):
         super(BottomlessPit, self).__init__(*args)
         self.blocked = True
         self.transparent = True
-        self.char = (' ' if randint(0, 7) else '.')
-        self.color = choice([libtcod.darkest_grey, 
-                             libtcod.dark_grey])
-    
+        self.char, self.color = self.choose_char_color()
+                             
+    @staticmethod
+    def choose_char_color():
+        c = randint(0, 10)
+        if c == 0:
+            return choice([libtcod.CHAR_NE, libtcod.CHAR_NW]), libtcod.darkest_grey
+        elif c == 1 or c == 2:
+            return '.', choice([libtcod.darkest_grey, libtcod.dark_grey])
+        else:
+            return ' ', libtcod.black
+            
             
 class Unit(Tile):   # has collision
     def move(self, dx, dy):

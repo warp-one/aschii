@@ -149,5 +149,5 @@ lvl0 = MapDrawing("maps/lvl0.png")
 lvl1 = MapDrawing("maps/lvl1.png")
 lvl2 = MapDrawing("maps/lvl2.png")
 cave_drawing = MapDrawing("maps/longcave.png", floor_img="maps/longcavefloor.png")
-
+bridge_drawing = MapDrawing("maps/0_level_bridge.png", floor_img="maps/0_level_bridge_floor.png")
 tv = SpecialEffect(GifReader("maps/stream-loop.gif").get_frame_data(), (40, 75))

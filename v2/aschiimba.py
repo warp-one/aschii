@@ -4,6 +4,7 @@ from random import randint
 
 import libtcodpy as libtcod
 
+from maps import cave_drawing, bridge_drawing
 from level import LevelZero
 from player import Player
 from tile import EnvironmentTile
@@ -42,14 +43,14 @@ class Game(object):
     def __init__(self, w, h):
         self.width, self.height = w, h
 
-        libtcod.console_set_custom_font('terminal8x8_gs_ro.png',#'16x16mod.png', #
+        libtcod.console_set_custom_font(settings.FONT_IMG,
                 libtcod.FONT_TYPE_GREYSCALE | libtcod.FONT_LAYOUT_ASCII_INROW,
                 )
         libtcod.console_init_root(self.width, self.height, 
                 'the caves', False)#, renderer=libtcod.RENDERER_GLSL)
         libtcod.sys_set_fps(settings.LIMIT_FPS)
 
-        self.current_level = LevelZero(self)
+        self.current_level = LevelZero(self, bridge_drawing)
             
     def execute(self):
         while not libtcod.console_is_window_closed():

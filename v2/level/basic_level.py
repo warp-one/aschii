@@ -1,7 +1,7 @@
 import libtcodpy as libtcod
 
 import settings
-from maps import TileMap, cave_drawing
+from maps import TileMap
 from player import Player
 
 
@@ -38,10 +38,10 @@ class Level(object):
     start_location = 5, 15
     hud = []
 
-    def __init__(self, game):
+    def __init__(self, game, map_drawing):
         self.game = game
         self.create_consoles()
-        self.the_map = TileMap(self.game.width, self.game.height, cave_drawing, self.foreground, self)
+        self.the_map = TileMap(self.game.width, self.game.height, map_drawing, self.foreground, self)
         self.tilemap = self.the_map.tilemap
         self.camera = Camera(self)
         self.player = Player(3, 3, ' ', libtcod.white, self.foreground, self)
