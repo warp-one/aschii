@@ -3,7 +3,7 @@ from PIL import Image
 from random import choice
 
 
-from tile import EnvironmentTile, BottomlessPit
+from tile import EnvironmentTile, BottomlessPit, PolishedFloor
 from tileset import Tileset
 from primeRGB import sieve
 import settings
@@ -17,7 +17,8 @@ import settings
 # placement on a level-by-level basis
 
 test_level_tileset = Tileset({
-                        (221, 32, 117):BottomlessPit
+                        (221, 32, 117):BottomlessPit,
+                        (0, 0, 255):PolishedFloor
                         })
 
 
@@ -26,7 +27,7 @@ def make_tile(map_drawing,
               con, 
               game, 
               blocked=None, 
-              color_style="bars", 
+              color_style=None, 
               tileset=test_level_tileset):
               
     tile = map_drawing.get_tile(x, y)
@@ -39,7 +40,7 @@ def make_tile(map_drawing,
     floor_rgb = floor[0], floor[1], floor[2]
     
     if blocked is None:                                 
-        blocked = (False if tile_rgb == (0, 0, 0) else True)
+        blocked = (False if tile_rgb in [(0, 0, 0), (0, 0, 255)] else True)
     color = (libtcod.Color(*floor_rgb)
                             if not blocked 
                             else libtcod.Color(*tile_rgb))

@@ -26,6 +26,7 @@ class FloorDirective(Directive):
         self.mandatory = True
         self.id = None
         self.num_rotations = 0
+        self.nearest_node = None
 
     def rotate_text(self):
         new_keyword, new_sentence = self.script[0]
@@ -59,9 +60,6 @@ class FloorDirective(Directive):
         super(FloorDirective, self).draw()
 
     def _draw(self):
-        if len(self.coords) < len(self.sentence):
-            print self.sentence, len(self.coords), self.coords[-1]
-            raise Exception
         colorful_choice = libtcod.Color(*self.flicker_color)
         if self.appear_timer > 0:
             if self.appear_timer % 2:

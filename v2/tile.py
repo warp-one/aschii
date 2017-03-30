@@ -186,9 +186,11 @@ class Tile(object):
 
 
 class EnvironmentTile(Tile):
+
     def __init__(self, blocked, *args):
         super(EnvironmentTile, self).__init__(*args)
         self.blocked = blocked
+        self.writable = True
         if self.blocked:
             self.transparent = False
 
@@ -210,6 +212,15 @@ class BottomlessPit(EnvironmentTile):
         else:
             return ' ', libtcod.black
             
+            
+class PolishedFloor(EnvironmentTile):
+    # for where no letters should be written
+    
+    def __init__(self, *args):
+        super(PolishedFloor, self).__init__(*args)
+        self.char = libtcod.CHAR_BLOCK1
+        self.writable = False
+
             
 class Unit(Tile):   # has collision
     def move(self, dx, dy):
