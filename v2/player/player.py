@@ -117,6 +117,8 @@ class Player(Listener, orders.Orders, Unit):
         self.moved = False
 
         self.trail = TextTrail(self)
+        self.components = {}
+#        self.add_component("trail", TextTrail(self))
         
         darkness_style = "distance-based"
         self.schimb = darkness_style
@@ -328,8 +330,8 @@ class Player(Listener, orders.Orders, Unit):
             self.change_base_sight(-1)
             self.change_sight_radius(-1, noschimb=True)
             self.darken_timer = 0
-            self.trail.add_message("darker...")
-            self.trail.begin_message()
+#            self.trail.add_message("darker...")
+#            self.trail.begin_message()
             
     def take_step(self):
         self.notify(self, 'player move')

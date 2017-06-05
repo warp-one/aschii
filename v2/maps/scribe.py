@@ -89,7 +89,7 @@ class TheScribe(object):
             current_letter = self.mutated_text[current_place_in_text]
             previous_letter = self.mutated_text[current_place_in_text - 1]
             previouser_letter = self.mutated_text[current_place_in_text - 2]
-            t.current_char = current_letter
+            t.current_char = '.'#current_letter
             
             if previous_letter == ' ' and previouser_letter == '.':
                 end_of_sentence = True

@@ -6,6 +6,7 @@ import tools, settings, colors
 from directive import Directive, DirectiveLink
 from tile import Unit, Tile
 from orders import Orders
+import maps.drawings as dr
 
 
 
@@ -312,6 +313,9 @@ class SpeakingObject(Unit):
         for n in self.nextwords:
             n.clear()
 
+           
+           
+            
 class Statue(SpeakingObject):
     def __init__(self, *args, **kwargs):
         super(Statue, self).__init__(*args, **kwargs)
@@ -400,6 +404,7 @@ class BridgeBuilder(Statue):
     def __init__(self, *args, **kwargs):
         super(BridgeBuilder, self).__init__(*args, **kwargs)
         self.delayed_doings = []
+        self.shiny = True
 
     def do(self):
         square_size = 15
@@ -417,20 +422,65 @@ class BridgeBuilder(Statue):
         for i, j in enumerate(tools.get_tiles_by_row_snake(square_size, square_size)):
             self.delayed_doings.append((i, Xs[j]))
 #            self.game.the_map.change_tile(xy[0], xy[1], False, schimb=True)
+        self.shiny = False
 
     def update(self):
         super(BridgeBuilder, self).update()
         to_remove = []
-        for i, tile in enumerate(self.delayed_doings):
-            tile = (tile[0] - 1, tile[1])
-            self.delayed_doings[i] = tile
-            if tile[0] < 1:
-                x, y = tile[1]
+        for i, (timer, coordinate) in enumerate(self.delayed_doings):
+            timer -= 1
+            self.delayed_doings[i] = (timer, coordinate)
+            if timer < 1:
+                x, y = coordinate
                 self.game.the_map.change_tile(x, y, False, schimb=True)
-                to_remove.append(tile)
+                to_remove.append((timer, coordinate))
         for tile in to_remove:
             self.delayed_doings.remove(tile)
             
+            
+class Television(Statue):
+    def __init__(self, *args, **kwargs):
+        super(Television, self).__init__(*args, **kwargs)
+        gifs = ("maps/trees-loop.gif", "maps/porn-loop.gif", "maps/sun-loop.gif")
+        self.channels = [dr.SpecialEffect(dr.GifReader(gif).get_frame_data(), (self.x, self.y))
+                            for gif in gifs]
+        self.current_channel = 0
+        self.start_channel()
+        
+    def start_channel(self):
+        c = self.channels[self.current_channel]
+        self.game.special_effects.append(c)
+        c.begin(self.game.the_map)
+        print c
+    
+    def stop_channel(self):
+        c = self.channels[self.current_channel]
+        self.game.special_effects.remove(c)
+        c.complete(self.game.the_map)
+        
+    def next_channel(self):
+        self.stop_channel()
+        self.current_channel += 1
+        if self.current_channel >= len(self.channels):
+            self.current_channel = 0
+        self.start_channel()
+        
+    def prev_channel(self):
+        self.stop_channel()
+        self.current_channel -= 1
+        if self.current_channel < 0:
+            self.current_channel = len(self.channels) - 1
+        self.start_channel()
+    
+        
+    def do(self):
+        self.change_channel()
+
+    def update(self):
+        super(Television, self).update()
+            
+    def _draw(self):
+        return
             
 ## TRASH BIN | | |
 ## (unused)  V V V

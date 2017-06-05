@@ -1,18 +1,13 @@
 from random import choice, randint
-from collections import deque
 
 import libtcodpy as libtcod
 
 import tools, colors
-from directive import Directive
+from directive import RotatingDirective
 
-class FloorDirective(Directive):
+class FloorDirective(RotatingDirective):
 
     next = False # !!!
-    script = deque([("left", "Let's go left."),
-                    ("right", "No, I like right.")
-                    ]
-                   )
     nodes = [(5, 5)]
     appear_flicker_duration = 15
 
@@ -25,13 +20,7 @@ class FloorDirective(Directive):
         self.priority = 0
         self.mandatory = True
         self.id = None
-        self.num_rotations = 0
 
-    def rotate_text(self):
-        new_keyword, new_sentence = self.script[0]
-        self.script.rotate(-1)
-        self.num_rotations += 1
-        self.change_text(new_keyword, sentence = new_sentence)
         
     def player_in_range(self): 
         # called, confusingly, by the scribe so that it gets
@@ -147,13 +136,6 @@ class FloorDirective(Directive):
 class Lightener(FloorDirective):
     #should only appear in fixed places, and each disappear after you use it once
 
-    script = deque([("light", "I quiver and hang in a loop of light."),
-                    ("lantern", "Like a lantern down a dark lane."),
-                    ("glow", "A mysterious glow against a stand of yew trees."),
-                    ("candle", "To lXXXt a candle is to cast a shadow..."),
-                    ("luminous", "You are not yourself luminous!")
-                    ]
-                   )
     nodes = [(x, x) for x in range(10, 60, 10)]
 
     def __init__(self, *args, **kwargs):
@@ -177,13 +159,6 @@ class Lightener(FloorDirective):
         
 class Schimber(FloorDirective):
 
-    script = deque([("ants", "This line is being eaten by ants."),
-                    ("point", "Could you point your headlamp over there?"),
-                    ("your", "Watch your foot!"),
-                    ("way", "Is this the right way?"),
-                    ("forward", "I think forward is the only possibility.")
-                    ]
-                   )
     nodes = [(x/2, x) for x in range(10, 110, 20)]
     
     def __init__(self, *args, **kwargs):
@@ -203,11 +178,6 @@ class Schimber(FloorDirective):
      
 class Storyteller(FloorDirective):
        
-    script = deque([("moths", "Do you ever think about moths?"),
-                    ("wings", "The quiet flap of their wings?"),
-                    ("eyes",  "An enormous pair of dark eyes."),
-                    ]
-                   )
     nodes = [(x, x) for x in range(10, 110, 30)]
     
     def __init__(self, *args, **kwargs):

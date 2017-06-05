@@ -29,7 +29,8 @@ class DirectiveFade(Fader):
 
         for i, char in enumerate(to_draw):
             rx, ry = randint(-1, 1), randint(-1, 1)
-            x, y = self.camera.to_camera_coordinates(directive.x + i + rx, directive.y + ry)
+            px = directive.phrase_position
+            x, y = self.camera.to_camera_coordinates(directive.x + i + rx + px, directive.y + ry)
             if True:#not self.game.the_map.run_collision(x, y): 
                     # dunno about the above, visuals-wise
                 libtcod.console_set_default_foreground(directive.con, color)

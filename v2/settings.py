@@ -1,7 +1,7 @@
 _DEBUG = False
 
 # actual size of the window
-SCREEN_WIDTH = 80
+SCREEN_WIDTH = 60
 SCREEN_HEIGHT = 45
 
 FONT_IMG = '16x16mod.png' # 'terminal8x8_gs_ro.png'

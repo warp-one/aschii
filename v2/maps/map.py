@@ -249,6 +249,7 @@ class TileMap(Listener, object):
         return self.scribe.write_floor(tiles_to_write)
 
     def on_notify(self, entity, event):
+    
         if event == "player move":
             fade = [libtcod.Color(a, a, a) 
                     for a in xrange(255, libtcod.darkest_grey.r, -10)]

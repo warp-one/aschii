@@ -36,8 +36,6 @@ import tile, settings
 # stopping to look for what you need in the floor
 # collectibles in background, generally
 
-# objects gleam in the darkness
-
 class Game(object):
 
     the_map = None

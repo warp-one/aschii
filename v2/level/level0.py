@@ -78,12 +78,11 @@ class LevelZero(Level):
 #        self.player.add_power(Sprint(self.player, self, text="sprint", static=True, offset=(0, 30+len(self.player.children))))
         
         self.statues = []
-        for _ in range(1):
-            #s = Statue(statue_script2, 19, 27 + _, ' ', libtcod.green, self.foreground, self)
-            #s.loop = False
-            #self.statues.append(s)
-            #self.the_map.add(s.x, s.y, s)
-            
+        #s = Statue(statue_script2, 19, 27 + _, ' ', libtcod.green, self.foreground, self)
+        #s.loop = False
+        #self.statues.append(s)
+        #self.the_map.add(s.x, s.y, s)
+        
 #            s = MovingStatue(0, 50, reveal_script0, 56, 49 + _, 'R', libtcod.grey, self.foreground, self)
 #            s.loop = False
 #            self.statues.append(s)
@@ -102,30 +101,63 @@ class LevelZero(Level):
 #            u.add_link(t)
 #            t.add_link(u)
             
-            schimber = Lightener(self.player, self, offset=(0, 0))
-            schimber.visible = False
-            schimber.nodes = self.lightener_nodes
-            self.player.add_child(schimber)
-            self.the_map.schimbers.append(schimber)
-            self.the_map.scribe.add_directive(schimber)
-            
-            schimber1 = Schimber(self.player, self, offset=(0, 0))
-            schimber1.visible = False
-            self.player.add_child(schimber1)
-            self.the_map.schimbers.append(schimber1)
-            self.the_map.scribe.add_directive(schimber1)
-            
-            schimber2 = Storyteller(self.player, self, offset=(0, 0))
-            schimber2.visible = False
-            self.player.add_child(schimber2)
-            self.the_map.schimbers.append(schimber2)
-            self.the_map.scribe.add_directive(schimber2)
-            bridge = BridgeBuilder(None, 20, 20, "!", libtcod.red, self.foreground, self)
-            bridge_toggle = Directive(bridge, self, text="crank", sentence="turn the crank",
-                                      static=False, offset=(1, 1), on_completion_callable=bridge.do, range=3)
-            self.the_map.add(bridge.x, bridge.y, bridge)
-            self.player.add_child(bridge_toggle)
-            
+        schimber = Lightener(lightener_script_0, self.player, self, offset=(0, 0))
+        schimber.visible = False
+        schimber.nodes = self.lightener_nodes
+        self.player.add_child(schimber)
+        self.the_map.schimbers.append(schimber)
+        self.the_map.scribe.add_directive(schimber)
+        
+        schimber1 = Schimber(schimber_script_0, self.player, self, offset=(0, 0))
+        schimber1.visible = False
+        self.player.add_child(schimber1)
+        self.the_map.schimbers.append(schimber1)
+        self.the_map.scribe.add_directive(schimber1)
+        
+        schimber2 = Storyteller(story_script_0, self.player, self, offset=(0, 0))
+        schimber2.visible = False
+        self.player.add_child(schimber2)
+        self.the_map.schimbers.append(schimber2)
+        self.the_map.scribe.add_directive(schimber2)
+        
+        bridge = BridgeBuilder(None, 
+                               20, 20, "!", libtcod.dark_green, 
+                               self.foreground, self)
+        bridge_toggle = Directive(bridge, self, 
+                                  text="crank", 
+                                  sentence="turn the crank",
+                                  static=False, 
+                                  offset=(-4, 4), 
+                                  on_completion_callable=bridge.do)
+        bridge_talker = RotatingDirective(bridge_script_0, bridge, self, 
+                                  static=False, 
+                                  offset=(1, 1), 
+                                  flair=RollingFlair(3, 0, 3, 0, 1), 
+                                  on_completion_callable=None)
+        self.the_map.add(bridge.x, bridge.y, bridge)
+        self.player.add_child(bridge_toggle)
+        self.player.add_child(bridge_talker)
+        
+        sign = Television(None, 35, 25, ">", libtcod.dark_blue, 
+                          self.foreground, self)
+        sign_border = RotatingDirective(sign_script_0, sign, self, 
+                                  text="?",
+                                  static=False, 
+                                  offset=(0, 0), 
+                                  flair=RectangleFlair(5, 14, 8, 0, 1), 
+                                  on_completion_callable=sign.next_channel, 
+                                  range=3)
+        sign_border.max_rotations = -1
+        self.the_map.add(sign.x, sign.y, sign)
+        self.player.add_child(sign_border)
+        
+        news = Directive(bridge, self, 
+                         text=news_script_0[0][0], 
+                         sentence=news_script_0[0][1],
+                         static = False, 
+                         offset = (4, -2), 
+                         width = 12)
+        self.player.add_child(news)
 #            for info in gates_data:
                 # something different should happen based on which order you complete them
                 # "please I didn't do it"
@@ -179,5 +211,3 @@ class LevelZero(Level):
 #        self.player.add_child(ItemGrab(self.lute, self, text="pick up", offset = (-2, 2)))
         self.player.add_child(ItemGrab(self.lamp, self, text="pick up", offset = (-2, 2)))
 
-        a = self.special_effects.append(drawings.tv)
-        drawings.tv.begin(self.the_map)

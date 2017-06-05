@@ -28,6 +28,8 @@ class Tile(object):
         self.children = []
         self.effects = []
         
+        self.shiny = False
+        
         self.visible = False
         self.transparent = True
         
@@ -101,9 +103,6 @@ class Tile(object):
         if tools.get_distance(self.location, self.game.player.location) > self.game.player.base_sight:
             color *= .5
 
-        # awkward that there are two effects systems here, but maybe the 
-        # checks are low cost enough that I don't have to worry about it?
-
         if self.phrase:
             for i, char in enumerate(self.phrase):
                 x, y = self.game.camera.to_camera_coordinates(self.x + i, self.y)
@@ -163,10 +162,22 @@ class Tile(object):
             if self.next_char == '<':
                 self.next_char = None
                 
+#        visual_effect = self.get_next_effect()
+#            if visual_effect:
+#                self.next_color = visual_effect[color]
         #
-        
+        if self.shiny:
+            self.tileshine()
         self.visible = libtcod.map_is_in_fov(self.game.the_map.libtcod_map, self.x, self.y)
 
+#    def get_next_effect(self):
+        
+    def tileshine(self):
+        if not randint(0, 5):
+            shine_color = self.current_color + libtcod.grey
+            self.color_queue.extend([shine_color])
+
+        
     def add_child(self, child, offset=None):
         self.children.append(child)
         if not offset:

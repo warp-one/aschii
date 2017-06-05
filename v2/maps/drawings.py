@@ -114,7 +114,7 @@ class GifReader(object):
 
     def create_data(self, img):
         for p in list(img.getdata()):
-            yield (libtcod.Color(*p), '<')#libtcod.CHAR_BLOCK2) #
+            yield (libtcod.Color(*p), libtcod.CHAR_BLOCK2) #'<')#
     
     def add_frame(self, img_data):
         self.frames.append([x for x in img_data])
@@ -143,11 +143,12 @@ class SpecialEffect(object):
 
     def complete(self, tilemap):
         for xy in self.frames.keys():
-            tilemap.get_tile(*xy).effects.remove(self)
+            x = xy[0] + self.position[0]
+            y = xy[1] + self.position[1]
+            tilemap.get_tile(x, y).effects.remove(self)
         
 lvl0 = MapDrawing("maps/lvl0.png")
 lvl1 = MapDrawing("maps/lvl1.png")
 lvl2 = MapDrawing("maps/lvl2.png")
 cave_drawing = MapDrawing("maps/longcave.png", floor_img="maps/longcavefloor.png")
 bridge_drawing = MapDrawing("maps/0_level_bridge.png", floor_img="maps/0_level_bridge_floor.png")
-tv = SpecialEffect(GifReader("maps/stream-loop.gif").get_frame_data(), (40, 75))
