@@ -109,10 +109,40 @@ class LevelZero(Level):
                                   text_layout=RectangleLayout(5, 14, 8, 0, 1), 
                                   on_completion_callable=sign.next_channel, 
                                   range=3)
-        sign_border.max_rotations = -1
         self.the_map.add(sign.x, sign.y, sign)
         self.player.add_child(sign_border)
         
+        tree = BranchingStory({"dance":"draft", "draft":"munches", "munches":None}, None,
+                                  50, 50, 'F', libtcod.white, self.foreground, self)
+        self.the_map.add(tree.x, tree.y, tree)
+        tree0 = RotatingDirective(tree_script_0, tree, self, 
+                                  text="?",
+                                  static=False, 
+                                  offset=(-1, -1), 
+#                                  text_layout=RectangleLayout(5, 14, 8, 0, 1), 
+                                  on_completion_callable=tree.next_branch)
+        
+        tree1 = Directive(tree, self, 
+                                  text=tree_script_1[0],
+                                  sentence=tree_script_1[1],
+                                  static=False, 
+                                  offset=(3, 1), 
+#                                  text_layout=RectangleLayout(5, 14, 8, 0, 1), 
+                                  on_completion_callable=tree.next_branch)
+                                  
+        tree2 = Directive(tree, self, 
+                                  text=tree_script_2[0],
+                                  sentence=tree_script_2[1],
+                                  static=False, 
+                                  offset=(-3, 3), 
+#                                  text_layout=RectangleLayout(5, 14, 8, 0, 1), 
+                                  on_completion_callable=tree.next_branch)
+        tree_branches = [tree0, tree1, tree2]
+        tree0.persistent = False
+        for t in tree_branches:
+            tree.grow_branch(t.phrase, t)
+            self.player.add_child(t)
+                                  
  #       news = Directive(bridge, self, 
  #                        text=news_script_0[0][0], 
  #                        sentence=news_script_0[0][1],

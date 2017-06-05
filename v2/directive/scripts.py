@@ -47,6 +47,15 @@ news_script_0 = deque([("time", "For some time I have been disturbed by the sudd
                     ]
                    )
                    
+tree_script_0 = deque([("hands", "A tree with leaves like ladies' hands"),
+                       ("bands", "Two worms curled round are wedding bands"),
+                       ("dance", "The wind will lead the wedding dance")
+                    ]
+                   )
+                   
+tree_script_1 = ("draft", "Where is that draft coming from?")
+
+tree_script_2 = ("munches", "Something munches near the ground")
 
 ## BRANCHING SCRIPTS
 #

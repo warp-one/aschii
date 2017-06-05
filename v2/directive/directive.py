@@ -42,7 +42,9 @@ class Directive(Tile):
         self.dormant_color = libtcod.red # not used by the _draw method
         self.current_color = self.color
         self.active = False
-        self.visible = False
+        self.visible = True
+        
+        self.phrase_coordinate = (0, 0)
         
     @property
     def location(self):
@@ -73,9 +75,9 @@ class Directive(Tile):
         self.reset()
         
     def is_visible(self):
-        dv = super(Directive, self).is_visible()
+        dv = self.visible
         av = self.anchor.is_visible()
-        return av
+        return av and dv
        
     def draw(self):
         if self.completed: # should only be around to pass if there's a fader
@@ -114,9 +116,11 @@ class Directive(Tile):
                 if self.spaces_transparent:
                     continue
             x, y = self.x, self.y
-            x, y = self.game.camera.to_camera_coordinates(x, y)
             if self.text_layout:
                 x, y = self.text_layout.modulate(x, y, i, ir)
+            if i == self.phrase_position:
+                self.phrase_coordinate = x, y
+            x, y = self.game.camera.to_camera_coordinates(x, y)
             if tools.get_distance((x, y), self.game.player.location) > self.game.player.base_sight:
                 color = libtcod.darker_grey
             else:
@@ -196,14 +200,19 @@ class RotatingDirective(Directive):
         self.max_rotations = len(self.script)
         super(RotatingDirective, self).__init__(*args, **kwargs)
         self.rotate_text()
+        self.persistent = True
     
     def complete(self):
         if self.num_rotations >= self.max_rotations and self.max_rotations > 0:
-            self.text_layout = layout.DirectiveLayout(0, 12, 0, 0, 0)
+            if self.on_completion_callable:
+                self.on_completion_callable()
+            if self.persistent:
+                self.num_rotations = 0
+            else:
+                super(RotatingDirective, self).complete()
+
         self.rotate_text()
         self.reset()
-        if self.on_completion_callable:
-            self.on_completion_callable()
 
     def rotate_text(self):
         new_keyword, new_sentence = self.script[0]

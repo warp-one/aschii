@@ -473,15 +473,35 @@ class Television(Statue):
             self.current_channel = len(self.channels) - 1
         self.start_channel()
     
-        
-    def do(self):
-        self.change_channel()
-
-    def update(self):
-        super(Television, self).update()
-            
     def _draw(self):
-        return
+        pass
+    
+class BranchingStory(Statue):
+    def __init__(self, story_tree, *args, **kwargs):
+        super(BranchingStory, self).__init__(*args, **kwargs)
+        self.branches = {}
+        self.story_tree = story_tree
+        self.current_branch = None
+            
+    def grow_branch(self, tag, branch):
+        self.branches[tag] = branch
+        branch.visible = False
+        if self.current_branch is None:
+            self.activate_branch(tag)
+            
+    def activate_branch(self, tag):
+        if tag is None:
+            self.current_branch is None
+            return
+        self.current_branch = self.branches[tag]
+        self.current_branch.visible = True
+        
+    def next_branch(self):
+        self.current_branch.visible = False
+        self.activate_branch(self.story_tree[self.current_branch.phrase])
+    
+    def do(self):
+        self.next_branch()
             
 ## TRASH BIN | | |
 ## (unused)  V V V

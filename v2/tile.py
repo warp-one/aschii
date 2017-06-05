@@ -24,13 +24,14 @@ class Tile(object):
         self.next = None
         self.prev = None
         self.effects_mode = "discard"
+        self.in_fov = False
         
         self.children = []
         self.effects = []
         
         self.shiny = False
         
-        self.visible = False
+        self.visible = True
         self.transparent = True
         
         self.update_queue = []
@@ -80,7 +81,7 @@ class Tile(object):
         return self.visible
         
     def is_visible(self):
-        return self.visible
+        return self.visible and self.in_fov
 
     def draw(self):
         if self.is_visible():
@@ -166,7 +167,7 @@ class Tile(object):
         #
         if self.shiny:
             self.tileshine()
-        self.visible = libtcod.map_is_in_fov(self.game.the_map.libtcod_map, self.x, self.y)
+        self.in_fov = libtcod.map_is_in_fov(self.game.the_map.libtcod_map, self.x, self.y)
 
 #    def get_next_effect(self):
         

@@ -64,7 +64,7 @@ class FloorDirective(RotatingDirective):
         phrase_flash = not randint(0, 15)
         for i, char in enumerate(self.sentence):
             x, y = self.coords[i][0]
-            if not self.game.the_map.get_tile(x, y).visible:
+            if not self.game.the_map.get_tile(x, y).in_fov:
                 continue
             
             floor_color = self.coords[i][1]
