@@ -74,6 +74,8 @@ class TheScribe(object):
         # (again). something to think about.
         
         num_tiles = len(tiles_to_write)
+        if num_tiles < 1:
+            return
         if len(self.mutated_text) < num_tiles:
             self.mutated_text = self.create_ocean_text(self.waves)
         num_directive_letters = 0
@@ -110,6 +112,9 @@ class TheScribe(object):
                     current_directive = None
             just_finished_one = False
             if current_directive and i >= end_of_current_sentence:
+                if len(current_directive.coords) < len(current_directive.sentence):
+                    print current_directive.coords, current_directive.sentence
+                    raise Exception
                 current_directive = None
                 just_finished_one = True
             if current_directive:
