@@ -39,7 +39,7 @@ bridge_script_0 = deque([("?", "?"),
                     ]
                    )
                    
-sign_script_0 = deque([(">", "WOW! WOW! WOW! WOW! WOW! WOW! > WOW! WOW! ")
+sign_script_0 = deque([(">", "WOW! WOW! WOW! WOW! WOW! WOW! > WOW! WOW!")
                     ]
                    )
 

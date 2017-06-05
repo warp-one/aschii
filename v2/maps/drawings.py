@@ -137,15 +137,16 @@ class SpecialEffect(object):
             self.current_frame = 0
 
     def begin(self, tilemap):
-        for xy in self.frames.keys():
-            x = xy[0] + self.position[0]
-            y = xy[1] + self.position[1]
+        for x, y in self.frames.keys():
+            x += self.position[0]
+            y += self.position[1]
+            print x, y
             tilemap.get_tile(x, y).effects.append(self)
 
     def complete(self, tilemap):
-        for xy in self.frames.keys():
-            x = xy[0] + self.position[0]
-            y = xy[1] + self.position[1]
+        for x, y in self.frames.keys():
+            x += self.position[0]
+            y += self.position[1]
             tilemap.get_tile(x, y).effects.remove(self)
         
 lvl0 = MapDrawing("maps/lvl0.png")

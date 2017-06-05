@@ -102,7 +102,7 @@ class LevelZero(Level):
         sign_border = RotatingDirective(sign_script_0, sign, self, 
                                   text="?",
                                   static=False, 
-                                  offset=(0, 0), 
+                                  offset=(-1, -1), 
                                   text_layout=RectangleLayout(5, 14, 8, 0, 1), 
                                   on_completion_callable=sign.next_channel, 
                                   range=3)

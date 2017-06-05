@@ -51,7 +51,7 @@ class RectangleLayout(DirectiveLayout):
             space = self.rectangle[i]# if self.direction == 1 else self.rectangle[-i]
         except IndexError:
             return x, y
-        return x + space[0] - 1, y + space[1] + self.height - 1
+        return x + space[0], y + space[1] + self.height
 
         
     def tick(self, width):

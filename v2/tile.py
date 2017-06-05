@@ -87,8 +87,6 @@ class Tile(object):
             self._draw()
             for c in self.children:
                 c.draw()
-#        else:
-#            self.clear()
 
     def _draw(self):
         if self.next_char:

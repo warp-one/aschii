@@ -446,6 +446,7 @@ class Television(Statue):
                             for gif in gifs]
         self.current_channel = 0
         self.start_channel()
+        self.blocked = False
         
     def start_channel(self):
         c = self.channels[self.current_channel]
