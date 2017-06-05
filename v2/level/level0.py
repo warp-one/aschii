@@ -60,20 +60,23 @@ class LevelZero(Level):
 #            u.add_link(t)
 #            t.add_link(u)
             
-        schimber = Lightener(lightener_script_0, self.player, self, offset=(0, 0))
+        schimber = Lightener(lightener_script_0, self.player, self,
+                             nodes = [(x, x) for x in range(10, 60, 10)])
         schimber.visible = False
         schimber.nodes = self.lightener_nodes
         self.player.add_child(schimber)
         self.the_map.schimbers.append(schimber)
         self.the_map.scribe.add_directive(schimber)
         
-        schimber1 = Schimber(schimber_script_0, self.player, self, offset=(0, 0))
+        schimber1 = Schimber(schimber_script_0, self.player, self,
+                             nodes = [(x, x) for x in range(10, 110, 30)])
         schimber1.visible = False
         self.player.add_child(schimber1)
         self.the_map.schimbers.append(schimber1)
         self.the_map.scribe.add_directive(schimber1)
         
-        schimber2 = Storyteller(story_script_0, self.player, self, offset=(0, 0))
+        schimber2 = Storyteller(story_script_0, self.player, self, 
+                                nodes = [(x/2, x) for x in range(10, 110, 20)])
         schimber2.visible = False
         self.player.add_child(schimber2)
         self.the_map.schimbers.append(schimber2)
@@ -97,7 +100,7 @@ class LevelZero(Level):
         self.player.add_child(bridge_toggle)
         self.player.add_child(bridge_talker)
         
-        sign = Television(None, 35, 25, ">", libtcod.dark_blue, 
+        sign = Television(None, 40, 17, ">", libtcod.dark_blue, 
                           self.foreground, self)
         sign_border = RotatingDirective(sign_script_0, sign, self, 
                                   text="?",
@@ -110,13 +113,13 @@ class LevelZero(Level):
         self.the_map.add(sign.x, sign.y, sign)
         self.player.add_child(sign_border)
         
-        news = Directive(bridge, self, 
-                         text=news_script_0[0][0], 
-                         sentence=news_script_0[0][1],
-                         static = False, 
-                         offset = (4, -2), 
-                         width = 12)
-        self.player.add_child(news)
+ #       news = Directive(bridge, self, 
+ #                        text=news_script_0[0][0], 
+ #                        sentence=news_script_0[0][1],
+ #                        static = False, 
+ #                        offset = (4, -2), 
+ #                        width = 12)
+ #       self.player.add_child(news)
 #            for info in gates_data:
                 # something different should happen based on which order you complete them
                 # "please I didn't do it"

@@ -8,12 +8,14 @@ from directive import RotatingDirective
 class FloorDirective(RotatingDirective):
 
     next = False # !!!
-    nodes = [(5, 5)]
     appear_flicker_duration = 15
 
     
     def __init__(self, *args, **kwargs):
+        self.nodes = kwargs.get('nodes', [(5, 5)])
+        kwargs.pop('nodes')
         self.coords = []
+        
         super(FloorDirective, self).__init__(*args, **kwargs)
         
         self._draw_on_floor = True
@@ -136,7 +138,6 @@ class FloorDirective(RotatingDirective):
 class Lightener(FloorDirective):
     #should only appear in fixed places, and each disappear after you use it once
 
-    nodes = [(x, x) for x in range(10, 60, 10)]
 
     def __init__(self, *args, **kwargs):
         super(Lightener, self).__init__(*args, **kwargs)
@@ -159,7 +160,6 @@ class Lightener(FloorDirective):
         
 class Schimber(FloorDirective):
 
-    nodes = [(x/2, x) for x in range(10, 110, 20)]
     
     def __init__(self, *args, **kwargs):
         super(Schimber, self).__init__(*args, **kwargs)
@@ -178,7 +178,6 @@ class Schimber(FloorDirective):
      
 class Storyteller(FloorDirective):
        
-    nodes = [(x, x) for x in range(10, 110, 30)]
     
     def __init__(self, *args, **kwargs):
         super(Storyteller, self).__init__(*args, **kwargs)

@@ -140,7 +140,6 @@ class SpecialEffect(object):
         for x, y in self.frames.keys():
             x += self.position[0]
             y += self.position[1]
-            print x, y
             tilemap.get_tile(x, y).effects.append(self)
 
     def complete(self, tilemap):
