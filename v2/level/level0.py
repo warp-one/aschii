@@ -4,48 +4,7 @@ from items import *
 from maps import drawings
 from directive.faders import DirectiveLineFade
 
-statue_script = {"start":("town city", 'I will go to town or city'),
-                     "town":("walk statue", 'and walk past the statue of the men'),
-                         "walk":("", 'briskly, with my collar up.'),
-                         "statue":("", ', the accursed Men of Grava'),
-                     "city":("out, down", 'In or out, up or down'),
-                         "out,":("", 'with my flashlight to light the way'),
-                         "down":("caves", 'into one of the caves'),
-                            "caves":("caves", 'yes, deep into the caves')}
-                            
-statue_script1 = {"start":("frozen, time", 'Everything is frozen, as if in time'),
-                      "frozen,":("changed,", 'It can be changed, but only a little'),
-                        "changed,":("suppose moments", "I suppose it is actually many moments"),
-                          "suppose":("", "Catch the ones you can and leave the rest."),
-                          "moments":("", "If you find one you like, you can leave it that way."),
-                      "time":("specific right", "It's a specific moment. But is it the right moment?"),
-                        "right":("know changing", "You'll know when it is. Until then, keep changing things."),
-                          "know":("you leave", "It's up to you when to leave the caves."),
-                            "you":("anyone will", "I don't know if anyone else will come down here."),
-                              "anyone":("time", "Not for a long time, at least."),
-                              "will":("", "Not for 10,000 years."),
-                            "leave":("ever", "You don't really have to go ever"),
-                              "ever":("time", "You can just stay here for a time"),
-                          "changing":("things change", "If it weren't for you, some things would never change"),
-                            "things":("time", "They would be the same for all time"),
-                            "change":("", "They wouldn't ever be interfered with."),
-                        "specific":("like now", "What is it like right now?"),
-                          "like":("time", "It's fairly damp. And jacket weather. The time"),
-                          "now":("", "It's very today, today.")}
-                          
-statue_script2 = {"start":("", 'I would rather be...')}
 
-            
-                          
-reveal_script0 = {"start":("bug", 'bug'),
-                      "bug":("", 'noo noooo no')}
-                      
-reveal_script1 = {"start":("GOBLINS", 'CAVE OF THE GOBLINS ---->'),
-                    "GOBLINS":("",'grrr'),
-                    "newchoices":(" CAVE"),
-                    "CAVE":("dark", 'Pretty dark in here, isn\'t it?'),
-                    "dark":("", 'Almost too dark to see.')}
-                    
 gates_data = [((70, 16), "I"),
               ((71, 16), "swear"),
               ((79, 28), "I"),
@@ -132,7 +91,7 @@ class LevelZero(Level):
         bridge_talker = RotatingDirective(bridge_script_0, bridge, self, 
                                   static=False, 
                                   offset=(1, 1), 
-                                  flair=RollingFlair(3, 0, 3, 0, 1), 
+                                  text_layout=RollingLayout(3, 0, 3, 0, 1), 
                                   on_completion_callable=None)
         self.the_map.add(bridge.x, bridge.y, bridge)
         self.player.add_child(bridge_toggle)
@@ -144,7 +103,7 @@ class LevelZero(Level):
                                   text="?",
                                   static=False, 
                                   offset=(0, 0), 
-                                  flair=RectangleFlair(5, 14, 8, 0, 1), 
+                                  text_layout=RectangleLayout(5, 14, 8, 0, 1), 
                                   on_completion_callable=sign.next_channel, 
                                   range=3)
         sign_border.max_rotations = -1

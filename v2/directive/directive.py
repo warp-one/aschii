@@ -3,66 +3,7 @@ from random import randint, choice
 import libtcodpy as libtcod
 
 from tile import Tile
-import tools, faders
-
-class Flair(object):
-    def __init__(self, period, width, height, split, direction):
-        self.period = period
-        self.width = width
-        self.height = height
-        self.split = split
-        self.direction = direction
-        
-    def modulate(self, x, y, i, in_range):
-        line = i/self.width
-        return x + i%self.width, y + line
-            
-    def tick(self, width):
-        pass
-                    
-class RollingFlair(Flair):
-    def modulate(self, x, y, i, in_range):
-        x, y = super(RollingFlair, self).modulate(x, y, i, in_range)
-        if in_range:
-            y = (y if i > self.split else y - self.direction) - self.height
-        return x, y
-            
-    def tick(self, width):
-        self.width = width
-        if True:#not randint(0, 4):
-            self.split += 1
-            if self.split >= self.width:
-                self.split = 0
-                self.height += self.direction
-                if self.height >= self.period:
-                    self.direction = -1
-                elif self.height <= 0:
-                    self.direction = 1
-
-                    
-class RectangleFlair(Flair):
-    def __init__(self, *args):
-        super(RectangleFlair, self).__init__(*args)
-        self.set_rectangle()
-        
-        
-    def set_rectangle(self):
-        self.rectangle_top = [(w, -self.height) for w in range(self.width)]
-        self.rectangle_right = [(self.width - 1, -h) for h in range(self.height - 1, 1, -1)]
-        self.rectangle_bottom = [(w, -1) for w in range(self.width)]
-        self.rectangle_left = [(0, -h) for h in range(self.height - 1, 1, -1)]
-        self.rectangle = self.rectangle_top + self.rectangle_left + self.rectangle_right + self.rectangle_bottom 
-        
-    def modulate(self, x, y, i, in_range):
-        try:
-            space = self.rectangle[i]# if self.direction == 1 else self.rectangle[-i]
-        except IndexError:
-            return x, y
-        return x + space[0] - 1, y + space[1] + self.height - 1
-
-        
-    def tick(self, width):
-        pass
+import tools, faders, layout
    
     
 class Directive(Tile):
@@ -74,7 +15,7 @@ class Directive(Tile):
                  text="Destroy", sentence=None, 
                  offset=(0, 0), 
                  new_fader=None,
-                 flair=None,
+                 text_layout=None,
                  on_completion_callable=None,
                  range = 5,
                  width = 10):
@@ -82,14 +23,14 @@ class Directive(Tile):
         self.game = game
         self.static = static
         self.offset = offset
-        self.sentence = sentence  # currently only used by FloorDirective
+        self.sentence = sentence
         self.width = width
         self.spaces_transparent = False
         
         if new_fader: self.fader = new_fader(self.game.camera)
         else: self.fader = faders.DirectiveFade(self.game.camera)
-        if flair is None: self.flair = Flair(0, self.width, 0, 0, 0)
-        else: self.flair = flair
+        if text_layout is None: self.text_layout = layout.DirectiveLayout(0, self.width, 0, 0, 0)
+        else: self.text_layout = text_layout
         
         self.on_completion_callable = on_completion_callable
         self.range = range
@@ -98,7 +39,7 @@ class Directive(Tile):
         self.change_text(text, sentence=self.sentence)
 
         self.color = libtcod.green
-        self.dormant_color = libtcod.red
+        self.dormant_color = libtcod.red # not used by the _draw method
         self.current_color = self.color
         self.active = False
         self.visible = False
@@ -174,8 +115,8 @@ class Directive(Tile):
                     continue
             x, y = self.x, self.y
             x, y = self.game.camera.to_camera_coordinates(x, y)
-            if self.flair:
-                x, y = self.flair.modulate(x, y, i, ir)
+            if self.text_layout:
+                x, y = self.text_layout.modulate(x, y, i, ir)
             if tools.get_distance((x, y), self.game.player.location) > self.game.player.base_sight:
                 color = libtcod.darker_grey
             else:
@@ -210,8 +151,8 @@ class Directive(Tile):
         try:
             for i in xrange(len(self.phrase)):
                 x, y = self.game.camera.to_camera_coordinates(self.x + i, self.y)
-                if self.flair:
-                    x, y = self.flair.modulate(x, y, i)
+                if self.text_layout:
+                    x, y = self.text_layout.modulate(x, y, i)
                 libtcod.console_put_char(self.con, x, y, 
                                                 ' ', libtcod.BKGND_NONE)
         except TypeError:
@@ -239,8 +180,8 @@ class Directive(Tile):
         self.completed = False
         
     def update(self):
-        if self.flair:
-            self.flair.tick(len(self.sentence))
+        if self.text_layout:
+            self.text_layout.tick(len(self.sentence))
             
     def in_range(self):
         if tools.get_distance(self.anchor.location, self.game.player.location) < self.range:
@@ -258,7 +199,7 @@ class RotatingDirective(Directive):
     
     def complete(self):
         if self.num_rotations >= self.max_rotations and self.max_rotations > 0:
-            self.flair = None
+            self.text_layout = layout.DirectiveLayout(0, 12, 0, 0, 0)
         self.rotate_text()
         self.reset()
         if self.on_completion_callable:
@@ -269,8 +210,6 @@ class RotatingDirective(Directive):
         self.script.rotate(-1)
         self.num_rotations += 1
         self.change_text(new_keyword, sentence = new_sentence)
-        
-        
 
         
 class DirectiveLink(object):

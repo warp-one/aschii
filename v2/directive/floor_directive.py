@@ -49,8 +49,8 @@ class FloorDirective(RotatingDirective):
 
     def _draw(self):
         if len(self.coords) < len(self.sentence):
-            print self.sentence, len(self.coords), self.coords[-1]
-            raise Exception
+            print self.sentence, len(self.coords)
+            self.coords = [((i, 0), libtcod.red) for i in range(len(self.sentence))]
         colorful_choice = libtcod.Color(*self.flicker_color)
         if self.appear_timer > 0:
             if self.appear_timer % 2:
