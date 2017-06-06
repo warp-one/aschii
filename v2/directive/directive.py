@@ -110,14 +110,15 @@ class Directive(Tile):
                                             
     def _draw(self):
         ir = self.in_range()
+        if self.text_layout:
+            self.text_layout.words = self.sentence.split()
+            coords = self.text_layout.get_coords(self.x, self.y, len(self.sentence))
         
         for i, char in enumerate(self.sentence):
             if char == ' ':
                 if self.spaces_transparent:
                     continue
-            x, y = self.x, self.y
-            if self.text_layout:
-                x, y = self.text_layout.modulate(x, y, i, ir)
+            x, y = coords[i]
             if i == self.phrase_position:
                 self.phrase_coordinate = x, y
             x, y = self.game.camera.to_camera_coordinates(x, y)
@@ -135,9 +136,6 @@ class Directive(Tile):
                     color *= (self.current_color
                                 if self.phrase_clear[keyword_color_index]
                                 else self.anchor.current_color)
-#            tile = self.game.the_map.tilemap[x][y]
-#            tile.current_char = char
-#            tile_current_color = color
 
             libtcod.console_set_default_foreground(self.con, color)
             libtcod.console_put_char(self.con, x, y,
@@ -152,10 +150,11 @@ class Directive(Tile):
             self.game.player.remove_child(self)
             
     def clear(self):
+        return
         try:
-            for i in xrange(len(self.phrase)):
+            for i in xrange(len(self.phrase)): ##?????
                 x, y = self.game.camera.to_camera_coordinates(self.x + i, self.y)
-                if self.text_layout:
+                if self.text_layout: ## !! not modulate any more
                     x, y = self.text_layout.modulate(x, y, i)
                 libtcod.console_put_char(self.con, x, y, 
                                                 ' ', libtcod.BKGND_NONE)

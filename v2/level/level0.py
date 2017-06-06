@@ -119,7 +119,7 @@ class LevelZero(Level):
                                   text="?",
                                   static=False, 
                                   offset=(-1, -1), 
-#                                  text_layout=RectangleLayout(5, 14, 8, 0, 1), 
+                                  text_layout=ScatterLayout([(-5, -5), (-3, -4), (0, -3), (-4, -2), (-1, -1), (2, 1), (-3, 2)]), 
                                   on_completion_callable=tree.next_branch)
         
         tree1 = Directive(tree, self, 

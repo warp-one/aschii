@@ -4,7 +4,7 @@ import libtcodpy as libtcod
 
 import orders, settings, tools
 from actions import ActionManager
-from directive import Directive, PlayerArrow, PlayerWASD, ItemToggle, Lightener
+from directive import Directive, ItemToggle, Lightener
 from items import Lamp
 from items import Inventory
 from observer import Listener
