@@ -90,23 +90,6 @@ class Directive(Tile):
                     self.game.player.remove_child(self)
         elif self.is_visible():
             self._draw()
-
-    def p_draw(self):
-        Ploc = self.game.player.location
-        Sloc = self.anchor.location
-        in_range = tools.get_distance(Ploc, Sloc) < self.range
-        self.dormant_color = libtcod.red if in_range else libtcod.grey
-        to_draw = self.phrase
-        for i, char in enumerate(to_draw):
-            x, y = self.x + i, self.y
-#            if (x, y) == self.anchor.location:
-#                continue
-            x, y = self.game.camera.to_camera_coordinates(x, y)
-            color = (self.current_color if self.phrase_clear[i] 
-                                        else self.dormant_color)
-            libtcod.console_set_default_foreground(self.con, color)
-            libtcod.console_put_char(self.con, x, y, 
-                                            char, libtcod.BKGND_NONE)
                                             
     def _draw(self):
         ir = self.in_range()
