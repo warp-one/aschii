@@ -82,8 +82,7 @@ class LevelZero(Level):
         self.the_map.schimbers.append(schimber2)
         self.the_map.scribe.add_directive(schimber2)
         
-        bridge = BridgeBuilder(None, 
-                               20, 20, "!", libtcod.dark_green, 
+        bridge = BridgeBuilder(20, 20, "!", libtcod.dark_green, 
                                self.foreground, self)
         bridge_toggle = Directive(bridge, self, 
                                   text="crank", 
@@ -100,7 +99,7 @@ class LevelZero(Level):
         self.player.add_child(bridge_toggle)
         self.player.add_child(bridge_talker)
         
-        sign = Television(None, 40, 17, ">", libtcod.dark_blue, 
+        sign = Television(40, 17, ">", libtcod.dark_blue, 
                           self.foreground, self)
         sign_border = RotatingDirective(sign_script_0, sign, self, 
                                   text="?",
@@ -112,8 +111,8 @@ class LevelZero(Level):
         self.the_map.add(sign.x, sign.y, sign)
         self.player.add_child(sign_border)
         
-        tree = BranchingStory({"dance":"draft", "draft":"munches", "munches":None}, None,
-                                  50, 50, 'F', libtcod.white, self.foreground, self)
+        tree = BranchingStory({"dance":"draft", "draft":"munches", "munches":None},
+                                  50, 50, 'F', libtcod.red, self.foreground, self)
         self.the_map.add(tree.x, tree.y, tree)
         tree0 = RotatingDirective(tree_script_0, tree, self, 
                                   text="?",

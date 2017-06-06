@@ -48,7 +48,7 @@ class Directive(Tile):
         
     @property
     def location(self):
-        return self.anchor.x + self.offset[0], self.anchor.y + self.offset[1]
+        return self.x, self.y
         
     @property
     def x(self):
@@ -121,7 +121,6 @@ class Directive(Tile):
             x, y = coords[i]
             if i == self.phrase_position:
                 self.phrase_coordinate = x, y
-            x, y = self.game.camera.to_camera_coordinates(x, y)
             if tools.get_distance((x, y), self.game.player.location) > self.game.player.base_sight:
                 color = libtcod.darker_grey
             else:
@@ -136,7 +135,8 @@ class Directive(Tile):
                     color *= (self.current_color
                                 if self.phrase_clear[keyword_color_index]
                                 else self.anchor.current_color)
-
+                                
+            x, y = self.game.camera.to_camera_coordinates(x, y)
             libtcod.console_set_default_foreground(self.con, color)
             libtcod.console_put_char(self.con, x, y,
                                             char, libtcod.BKGND_NONE)
@@ -191,6 +191,7 @@ class Directive(Tile):
             return True
         else:
             return False
+            
         
 class RotatingDirective(Directive):
     def __init__(self, script, *args, **kwargs):

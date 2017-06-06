@@ -250,73 +250,8 @@ class Waypoint(Directive):
         
         
 
-class SpeakingObject(Unit):
-
-    line_index_by_num_words = {1:(1,), 2:(1, 0), 3:(1, 0, -1), 4:(1, 0, 0, -1),
-                               5:(1, 1, 0, 0, -1), 6:(1, 1, 0, 0, -1, -1),
-                               7:(1, 1, 0, 0, 0, -1, -1)}
-
-    def __init__(self, script, *args):
-        self.loop = False
-        self.script = script
-        self.words = []
-        self.nextwords = []
-        self.line = ""
-        
-        super(SpeakingObject, self).__init__(*args)
-        self.say_line("start")
-        
-    def say_line(self, dialogue_choice):
-        # {"start":("town city", 'I will go to town or city')}
-        if self.script:
-            self.line = self.script[dialogue_choice]
-            self.keywords = self.line[0].split()
-            individual_words = self.line[1].split()
-            if self.loop:
-                if not self.keywords:
-                    self.keywords = ["start"]
-                    individual_words.extend([">", "start"])
-
-            for nw in self.nextwords:
-                try:
-                    self.game.player.remove_child(nw)
-                except ValueError:
-                    pass
-            self.nextwords = []
-            self.words = []
- 
-            for i, w in enumerate(individual_words):
-                x = self.x + (len(individual_words[i-1]) + 1 if i%2 else 0)
-                x -= len(individual_words[0])
-                y = self.y + i/2
-                if w in self.keywords:
-                    x = x - self.x
-                    y = y - self.y
-                    choice = DialogueChoice(self, self.game, static=True, text=w, offset=(x, y))
-                    self.nextwords.append(choice)
-                    self.game.player.add_child(choice)
-                    continue
-                next_word = Tile(x, y, ' ', libtcod.grey, self.con, self.game, phrase=w)
-                self.words.append(next_word)
-                
-                    
-    def draw(self):
-        for w in self.words:
-            if self.is_visible():
-                w._draw()
-        super(SpeakingObject, self).draw()
             
-    def clear(self):
-        super(SpeakingObject, self).clear()
-        for w in self.words:
-            w.clear()
-        for n in self.nextwords:
-            n.clear()
-
-           
-           
-            
-class Statue(SpeakingObject):
+class Statue(Unit):
     def __init__(self, *args, **kwargs):
         super(Statue, self).__init__(*args, **kwargs)
         self.blocked = True

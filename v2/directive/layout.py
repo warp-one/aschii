@@ -1,5 +1,6 @@
 from random import randint
 
+
 class DirectiveLayout(object):
     def __init__(self, period, width, height, split, direction):
         self.period = period
@@ -86,6 +87,7 @@ class RectangleLayout(DirectiveLayout):
         
     def tick(self, width):
         pass
+        
 
 class ScatterLayout(DirectiveLayout):
     def __init__(self, points):
