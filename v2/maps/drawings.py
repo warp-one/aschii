@@ -45,7 +45,7 @@ def make_tile(map_drawing,
                             if not blocked 
                             else libtcod.Color(*tile_rgb))
     if blocked:
-        char = choice(['@', '%', '#'])
+        char = ' '#choice(['@', '%', '#'])
     else:
         char = ' '
     tile_class = tileset.get_tile_from_RGB(tile_rgb)
