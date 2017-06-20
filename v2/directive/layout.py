@@ -114,3 +114,4 @@ class ScatterLayout(DirectiveLayout):
         
     def tick(self, width):
         pass
+

@@ -84,7 +84,7 @@ class LevelZero(Level):
         
         bridge = BridgeBuilder(20, 20, "!", libtcod.dark_green, 
                                self.foreground, self)
-        bridge_toggle = Directive(bridge, self, 
+        bridge_toggle = TestingDirective(bridge, self, 
                                   text="crank", 
                                   sentence="turn the crank",
                                   static=False, 

@@ -34,6 +34,7 @@ class Directive(Tile):
         
         self.on_completion_callable = on_completion_callable
         self.range = range
+        self.guessed = ""
 
         self.con = game.foreground
         self.change_text(text, sentence=self.sentence)
@@ -57,6 +58,10 @@ class Directive(Tile):
     @property    
     def y(self):
         return self.anchor.y + self.offset[1]
+        
+    @property
+    def to_draw(self):
+        return self.sentence
 
     def toggle_active(self):
         if self.active:
@@ -94,10 +99,10 @@ class Directive(Tile):
     def _draw(self):
         ir = self.in_range()
         if self.text_layout:
-            self.text_layout.words = self.sentence.split()
+            self.text_layout.words = self.to_draw.split()
             coords = self.text_layout.get_coords(self.x, self.y, len(self.sentence))
         
-        for i, char in enumerate(self.sentence):
+        for i, char in enumerate(self.to_draw):
             if char == ' ':
                 if self.spaces_transparent:
                     continue
@@ -164,6 +169,7 @@ class Directive(Tile):
         self.phrase_index = 0
         self.clear()
         self.completed = False
+        self.guessed = ""
         
     def update(self):
         if self.text_layout:
@@ -217,3 +223,36 @@ class DirectiveLink(object):
     def notify_links(self, command):
         for l in self.links:
             getattr(l, command)()
+            
+            
+class TestingDirective(Directive):
+    def tick_phrase(self, letter):
+        if len(self.phrase) is 0:
+            return
+        if not self.completed:
+            if self.anchor.is_visible() and self.is_visible() and self.in_range():
+                remaining_letters = [char for char in self.phrase if char not in self.guessed]
+                if letter in self.not_guessed:
+                    self.guessed += letter
+                    self.phrase_clear[self.phrase_index] = True
+                    self.phrase_index += 1
+                    if len(self.guessed) >= len(self.phrase):
+                        if self.guessed == self.phrase:
+                            self.complete()
+                        else:
+                            self.reset()
+                else:
+                    self.reset()
+                return True
+        return False
+        
+    @property
+    def not_guessed(self):
+        return "".join([char for char in self.phrase if char not in self.guessed])
+
+    @property
+    def to_draw(self):
+        phrase_replacement = self.guessed + self.not_guessed 
+        return self.sentence.replace(self.phrase, phrase_replacement)
+
+        
