@@ -115,3 +115,21 @@ class ScatterLayout(DirectiveLayout):
     def tick(self, width):
         pass
 
+
+class GatherLayout(DirectiveLayout):
+    def __init__(self, directive, *args):
+        super(GatherLayout, self).__init__(*args)
+        self.directive = directive
+        self.letter_pile = [(randint(-self.width, self.width), 
+                            randint(-self.height, self.height)) 
+                              for _ in range(len(self.directive.phrase))]
+       
+    def get_coords(self, x, y, len_sentence):
+        coords = super(GatherLayout, self).get_coords(x, y, len_sentence)
+        unguessed_len = len(self.directive.phrase) - len(self.directive.guessed)
+        unguessed_start = self.directive.phrase_location + len(self.directive.guessed) 
+        unguessed_end = unguessed_start + unguessed_len 
+        coords[unguessed_start:unguessed_end] = [(p[0] + x, p[1] + y)
+                                                 for p in self.letter_pile[:unguessed_len]]
+        return coords
+        

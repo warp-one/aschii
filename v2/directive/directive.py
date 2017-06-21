@@ -62,6 +62,10 @@ class Directive(Tile):
     @property
     def to_draw(self):
         return self.sentence
+        
+    @property
+    def phrase_location(self):
+        return self.sentence.find(self.phrase)
 
     def toggle_active(self):
         if self.active:
@@ -231,7 +235,6 @@ class TestingDirective(Directive):
             return
         if not self.completed:
             if self.anchor.is_visible() and self.is_visible() and self.in_range():
-                remaining_letters = [char for char in self.phrase if char not in self.guessed]
                 if letter in self.not_guessed:
                     self.guessed += letter
                     self.phrase_clear[self.phrase_index] = True
@@ -248,7 +251,15 @@ class TestingDirective(Directive):
         
     @property
     def not_guessed(self):
-        return "".join([char for char in self.phrase if char not in self.guessed])
+        guessed_letters = list(self.guessed)
+        unguessed_letters = []
+        for l in self.phrase:
+            if l in guessed_letters:
+                guessed_letters.remove(l)
+                continue
+            else:
+                unguessed_letters.append(l)
+        return "".join(unguessed_letters)
 
     @property
     def to_draw(self):

@@ -84,20 +84,29 @@ class LevelZero(Level):
         
         bridge = BridgeBuilder(20, 20, "!", libtcod.dark_green, 
                                self.foreground, self)
-        bridge_toggle = TestingDirective(bridge, self, 
+        bridge_toggle = Directive(bridge, self, 
                                   text="crank", 
                                   sentence="turn the crank",
-                                  static=False, 
                                   offset=(-4, 4), 
                                   on_completion_callable=bridge.do)
         bridge_talker = RotatingDirective(bridge_script_0, bridge, self, 
-                                  static=False, 
                                   offset=(1, 1), 
                                   text_layout=RollingLayout(3, 0, 3, 0, 1), 
                                   on_completion_callable=None)
         self.the_map.add(bridge.x, bridge.y, bridge)
         self.player.add_child(bridge_toggle)
         self.player.add_child(bridge_talker)
+        
+        plinth = EnvironmentTile(True, 81, 75, "m", libtcod.white, self.foreground, self)
+        self.the_map.add(plinth.x, plinth.y, plinth)
+        broken_pot = TestingDirective(plinth, self,
+                                      text="pottery",
+                                      sentence="several pieces of luminescent white pottery lie on the ground",
+                                      offset=(-5, 2),
+                                      on_completion_callable=None)
+        pot_layout = GatherLayout(broken_pot, 0, 15, 5, 0, 1)
+        broken_pot.text_layout = pot_layout
+        self.player.add_child(broken_pot)
         
         sign = Television(40, 17, ">", libtcod.dark_blue, 
                           self.foreground, self)
