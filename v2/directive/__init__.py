@@ -5,3 +5,4 @@ from floor_directive import *
 from scripts import *
 from directive import Directive, RotatingDirective, TestingDirective
 from layout import *
+from directive_colors import *

@@ -3,7 +3,7 @@ from random import randint, choice
 import libtcodpy as libtcod
 
 from tile import Tile
-import tools, faders, layout
+import tools, faders, layout, directive_colors
    
     
 class Directive(Tile):
@@ -16,8 +16,9 @@ class Directive(Tile):
                  offset=(0, 0), 
                  new_fader=None,
                  text_layout=None,
+                 color_scheme=None,
                  on_completion_callable=None,
-                 range = 5,
+                 range = 10,
                  width = 10):
         self.anchor = anchor
         self.game = game
@@ -31,6 +32,8 @@ class Directive(Tile):
         else: self.fader = faders.DirectiveFade(self.game.camera)
         if text_layout is None: self.text_layout = layout.DirectiveLayout(0, self.width, 0, 0, 0)
         else: self.text_layout = text_layout
+        if color_scheme is None: self.color_scheme = directive_colors.ColorScheme(directive_colors.basic_red)
+        else: self.color_scheme = color_scheme
         
         self.on_completion_callable = on_completion_callable
         self.range = range
@@ -64,6 +67,18 @@ class Directive(Tile):
         return self.sentence
         
     @property
+    def not_guessed(self):
+        guessed_letters = list(self.guessed)
+        unguessed_letters = []
+        for l in self.phrase:
+            if l in guessed_letters:
+                guessed_letters.remove(l)
+                continue
+            else:
+                unguessed_letters.append(l)
+        return "".join(unguessed_letters)
+        
+    @property
     def phrase_location(self):
         return self.sentence.find(self.phrase)
 
@@ -81,6 +96,7 @@ class Directive(Tile):
         else:
             self.sentence = sentence
             self.phrase_position = self.sentence.find(self.phrase)
+        self.text_layout.words = self.to_draw.split()
         self.reset()
         
     def is_visible(self):
@@ -102,31 +118,34 @@ class Directive(Tile):
                                             
     def _draw(self):
         ir = self.in_range()
-        if self.text_layout:
-            self.text_layout.words = self.to_draw.split()
-            coords = self.text_layout.get_coords(self.x, self.y, len(self.sentence))
-        
+        coords = self.text_layout.get_coords(self.x, self.y, len(self.sentence))
+        colors = self.color_scheme.get_colors(self.phrase, self.to_draw, ir)
+
         for i, char in enumerate(self.to_draw):
-            if char == ' ':
-                if self.spaces_transparent:
-                    continue
+            if char == ' ' and self.spaces_transparent:
+                continue
             x, y = coords[i]
             if i == self.phrase_position:
                 self.phrase_coordinate = x, y
-            if tools.get_distance((x, y), self.game.player.location) > self.game.player.base_sight:
-                color = libtcod.darker_grey
-            else:
-                color = libtcod.grey
-                
-            keyword_color_index = i - self.phrase_position
+#            if tools.get_distance((x, y), self.game.player.location) > self.game.player.base_sight:
+#                color = libtcod.darker_grey
+#            else:
+#                color = libtcod.grey
 
-            if keyword_color_index < 0 or keyword_color_index > len(self.phrase) - 1:
-                pass
-            else:
-                if ir:
-                    color *= (self.current_color
-                                if self.phrase_clear[keyword_color_index]
-                                else self.anchor.current_color)
+#            keyword_color_index = i - self.phrase_position
+
+#            if keyword_color_index < 0 or keyword_color_index > len(self.phrase) - 1:
+#                pass
+#            else:
+#                if ir:
+#                    color *= (self.current_color
+#                                if self.phrase_clear[keyword_color_index]
+#                                else self.anchor.current_color)
+#                    if not randint(0, 7):
+#                        for _ in range(randint(0, 2)):
+#                            color += libtcod.dark_grey
+                            
+            color = colors[i]
                                 
             x, y = self.game.camera.to_camera_coordinates(x, y)
             libtcod.console_set_default_foreground(self.con, color)
@@ -249,18 +268,6 @@ class TestingDirective(Directive):
                 return True
         return False
         
-    @property
-    def not_guessed(self):
-        guessed_letters = list(self.guessed)
-        unguessed_letters = []
-        for l in self.phrase:
-            if l in guessed_letters:
-                guessed_letters.remove(l)
-                continue
-            else:
-                unguessed_letters.append(l)
-        return "".join(unguessed_letters)
-
     @property
     def to_draw(self):
         phrase_replacement = self.guessed + self.not_guessed 

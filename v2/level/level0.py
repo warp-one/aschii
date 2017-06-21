@@ -88,7 +88,8 @@ class LevelZero(Level):
                                   text="crank", 
                                   sentence="turn the crank",
                                   offset=(-4, 4), 
-                                  on_completion_callable=bridge.do)
+                                  on_completion_callable=bridge.do,
+                                  color_scheme=ColorScheme(basic_green))
         bridge_talker = RotatingDirective(bridge_script_0, bridge, self, 
                                   offset=(1, 1), 
                                   text_layout=RollingLayout(3, 0, 3, 0, 1), 
@@ -103,7 +104,8 @@ class LevelZero(Level):
                                       text="pottery",
                                       sentence="several pieces of luminescent white pottery lie on the ground",
                                       offset=(-5, 2),
-                                      on_completion_callable=None)
+                                      on_completion_callable=None,
+                                      color_scheme=SparklyKeyword(basic_grey))
         pot_layout = GatherLayout(broken_pot, 0, 15, 5, 0, 1)
         broken_pot.text_layout = pot_layout
         self.player.add_child(broken_pot)
