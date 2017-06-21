@@ -1,4 +1,4 @@
-from random import randint
+from random import randint, shuffle
 
 
 class DirectiveLayout(object):
@@ -120,9 +120,18 @@ class GatherLayout(DirectiveLayout):
     def __init__(self, directive, *args):
         super(GatherLayout, self).__init__(*args)
         self.directive = directive
-        self.letter_pile = [(randint(-self.width, self.width), 
-                            randint(-self.height, self.height)) 
-                              for _ in range(len(self.directive.phrase))]
+        self.letter_pile = []
+        starting_x, current_y = 0, 0
+        current_x = starting_x
+        ox, oy = self.directive.offset
+        while len(self.letter_pile) < len(self.directive.phrase):
+            self.letter_pile.append((current_x - ox, current_y - oy - 5))
+            current_x += 1
+            if current_x > abs(starting_x):
+                current_y += 1
+                starting_x -= 1
+                current_x = starting_x
+        shuffle(self.letter_pile)
        
     def get_coords(self, x, y, len_sentence):
         coords = super(GatherLayout, self).get_coords(x, y, len_sentence)
