@@ -146,8 +146,8 @@ class Directive(Tile):
 #                            color += libtcod.dark_grey
                             
             color = colors[i]
-                                
-            x, y = self.game.camera.to_camera_coordinates(x, y)
+            if not self.static:                    
+                x, y = self.game.camera.to_camera_coordinates(x, y)
             libtcod.console_set_default_foreground(self.con, color)
             libtcod.console_put_char(self.con, x, y,
                                             char, libtcod.BKGND_NONE)
@@ -231,7 +231,8 @@ class RotatingDirective(Directive):
         self.script.rotate(-1)
         self.num_rotations += 1
         self.change_text(new_keyword, sentence = new_sentence)
-
+        
+      
         
 class DirectiveLink(object):
     def __init__(self):

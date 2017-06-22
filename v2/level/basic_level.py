@@ -1,6 +1,6 @@
 import libtcodpy as libtcod
 
-import settings
+import settings, narrative
 from maps import TileMap
 from player import Player
 
@@ -47,6 +47,8 @@ class Level(object):
         self.player = Player(3, 3, ' ', libtcod.white, self.foreground, self)
         self.player.add_observer(self.the_map)
         self.player.place(*self.start_location)
+        
+        self.narrative = narrative.RunningNarrative(self)
         
         self.last_render = []
         self.next_render = []

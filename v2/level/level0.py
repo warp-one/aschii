@@ -36,7 +36,6 @@ class LevelZero(Level):
 #        self.player.add_power(Power(self.player, self, static=True, offset=(0, 30+len(self.player.children))))
 #        self.player.add_power(Sprint(self.player, self, text="sprint", static=True, offset=(0, 30+len(self.player.children))))
         
-#        self.narrative = narrative.RunningNarrative()
         self.statues = []
         #s = Statue(statue_script2, 19, 27 + _, ' ', libtcod.green, self.foreground, self)
         #s.loop = False
@@ -96,11 +95,13 @@ class LevelZero(Level):
                                   text_layout=RollingLayout(3, 0, 3, 0, 1), 
                                   on_completion_callable=None)
         self.the_map.add(bridge.x, bridge.y, bridge)
+        self.narrative.add_object(bridge)
         self.player.add_child(bridge_toggle)
         self.player.add_child(bridge_talker)
         
         plinth = EnvironmentTile(True, 81, 75, "m", libtcod.white, self.foreground, self)
         self.the_map.add(plinth.x, plinth.y, plinth)
+        self.narrative.add_object(plinth)
         broken_pot = TestingDirective(plinth, self,
                                       text="pottery",
                                       sentence="several pieces of luminescent white pottery lie on the ground",
@@ -121,11 +122,13 @@ class LevelZero(Level):
                                   on_completion_callable=sign.next_channel, 
                                   range=3)
         self.the_map.add(sign.x, sign.y, sign)
+        self.narrative.add_object(sign)
         self.player.add_child(sign_border)
         
         tree = BranchingStory({"dance":"draft", "draft":"munches", "munches":None},
                                   50, 50, 'F', libtcod.red, self.foreground, self)
         self.the_map.add(tree.x, tree.y, tree)
+        self.narrative.add_object(tree)
         tree0 = RotatingDirective(tree_script_0, tree, self, 
                                   text="?",
                                   static=False, 
@@ -156,6 +159,7 @@ class LevelZero(Level):
             
         tourist = RealPerson(66, 42, ' ', libtcod.blue, self.foreground, self)
         self.the_map.add(tourist.x, tourist.y, tourist)
+        self.narrative.add_object(tourist)
                                   
  #       news = Directive(bridge, self, 
  #                        text=news_script_0[0][0], 
