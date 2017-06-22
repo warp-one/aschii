@@ -1,14 +1,14 @@
 from collections import deque
 
-import settings, directive
+import libtcodpy as libtcod
 
-class RunningNarrative(object):
-    x = 0
-    y = settings.SCREEN_HEIGHT - 5
+import settings, directive, tile
+
+class RunningNarrative(tile.Tile):
     width = settings.SCREEN_WIDTH
     
-    def __init__(self, level):
-        self.level = level
+    def __init__(self, *args, **kwargs):
+        super(RunningNarrative, self).__init__(*args, **kwargs)
         self.descriptions = {}
         
     def draw(self): # descriptions are directives?
@@ -29,24 +29,28 @@ class RunningNarrative(object):
         for d in active_descriptions:
             d.visible = True
             d.offset = len_prev_sentences % self.width, len_prev_sentences/self.width
-            len_prev_sentences += len(l.to_draw)
+            len_prev_sentences += len(d.to_draw)
         
-    def clear(self):
-        pass
+    def clear(self): #oof
+        for tx in range(self.width):
+            for ty in range(5):
+                libtcod.console_put_char(self.con, tx + self.x, ty + self.y, 
+                                        ' ', libtcod.BKGND_NONE)
+
         
     def add_object(self, thing):
         thing_narrative = directive.RotatingDirective( 
                                     deque([("thing", "It's a thing!")]),
                                     self,
-                                    self.level,
+                                    self.game,
                                     static=True,
                                     on_completion_callable=self.elaborate)
         self.descriptions[thing] = thing_narrative
-        self.level.player.add_child(thing_narrative)
+        self.game.player.add_child(thing_narrative)
                                     
     def remove_object(self, thing):
         del self.descriptions[thing]
-        self.level.player.remove_child(thing_narrative)
+        self.game.player.remove_child(thing_narrative)
                     
     def elaborate(self):
         pass

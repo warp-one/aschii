@@ -48,7 +48,12 @@ class Level(object):
         self.player.add_observer(self.the_map)
         self.player.place(*self.start_location)
         
-        self.narrative = narrative.RunningNarrative(self)
+        self.narrative = narrative.RunningNarrative(
+                            0, settings.SCREEN_HEIGHT - 5, 
+                            ' ', libtcod.white, 
+                            self.foreground, 
+                            self)
+        self.hud.append(self.narrative)
         
         self.last_render = []
         self.next_render = []

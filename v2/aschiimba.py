@@ -56,7 +56,7 @@ class Game(object):
             
     def execute(self):
         while not libtcod.console_is_window_closed():
-            libtcod.console_set_default_foreground(0, libtcod.white)
+#            libtcod.console_set_default_foreground(0, libtcod.white)
             self.current_level.update_all()
             self.current_level.render_all()
             libtcod.console_blit(self.current_level.foreground, 0, 0, 
