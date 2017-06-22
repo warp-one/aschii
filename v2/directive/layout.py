@@ -142,3 +142,7 @@ class GatherLayout(DirectiveLayout):
                                                  for p in self.letter_pile[:unguessed_len]]
         return coords
         
+        
+class MarqueeLayout(DirectiveLayout):
+    pass
+    

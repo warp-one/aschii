@@ -11,14 +11,14 @@ FONT_IMG =  '16x16custom.png' #'terminal8x8_gs_ro.png'#
 LVL0_MAP_WIDTH = 1
 LVL0_MAP_HEIGHT = 1
  
-LIMIT_FPS = 100   # frames-per-second maximum
+LIMIT_FPS = 20   # frames-per-second maximum
 PROFILE = False#True
 
 PLAYER_MAX_SIGHT = 41
 RENDER_RADIUS_CIRCLE = PLAYER_MAX_SIGHT + 5
 
-EAST_LEFT_FOOT = 128
-EAST_RIGHT_FOOT = 129
+EAST_LEFT_FOOT = 128   # libtcod maps characters to tiles in the tileset with
+EAST_RIGHT_FOOT = 129  # the integers 0-255
 NORTH_LEFT_FOOT = 130
 NORTH_RIGHT_FOOT = 131
 WEST_RIGHT_FOOT = 132

@@ -152,6 +152,9 @@ class LevelZero(Level):
         for t in tree_branches:
             tree.grow_branch(t.phrase, t)
             self.player.add_child(t)
+            
+        tourist = RealPerson(66, 42, ' ', libtcod.blue, self.foreground, self)
+        self.the_map.add(tourist.x, tourist.y, tourist)
                                   
  #       news = Directive(bridge, self, 
  #                        text=news_script_0[0][0], 

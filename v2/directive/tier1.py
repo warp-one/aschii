@@ -215,18 +215,8 @@ class RealPerson(Statue): # inherits from statue (!)
     def __init__(self, *args, **kwargs):
         super(RealPerson, self).__init__(*args, **kwargs)
         self.phrase = [choice(['o', 'O', libtcod.CHAR_BLOCK2]), libtcod.CHAR_DTEES, libtcod.CHAR_DVLINE]
-
-    def clear(self):
-        for i, char in enumerate(self.phrase):
-            x, y = self.game.camera.to_camera_coordinates(self.x, self.y + i)
-            libtcod.console_put_char(self.con, x, y, 
-                                           ' ', libtcod.BKGND_NONE)
-        for c in self.children:
-            c.clear()
-        for w in self.words:
-            w.clear()
-        for n in self.nextwords:
-            n.clear()
+        self.vertical = True
+        
         
 class LinkedStatue(Statue):
     def __init__(self, *args, **kwargs):

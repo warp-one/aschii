@@ -25,6 +25,7 @@ class Tile(object):
         self.prev = None
         self.effects_mode = "discard"
         self.in_fov = False
+        self.vertical = False
         
         self.children = []
         self.effects = []
@@ -104,7 +105,11 @@ class Tile(object):
 
         if self.phrase:
             for i, char in enumerate(self.phrase):
-                x, y = self.game.camera.to_camera_coordinates(self.x + i, self.y)
+                x, y = self.game.camera.to_camera_coordinates(self.x, self.y)
+                if self.vertical:
+                    y += i
+                else:
+                    x += i
                 libtcod.console_set_default_foreground(self.con, color)
                 libtcod.console_put_char(self.con, x, y, 
                                                 char, libtcod.BKGND_NONE)
