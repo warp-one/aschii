@@ -36,6 +36,7 @@ class LevelZero(Level):
 #        self.player.add_power(Power(self.player, self, static=True, offset=(0, 30+len(self.player.children))))
 #        self.player.add_power(Sprint(self.player, self, text="sprint", static=True, offset=(0, 30+len(self.player.children))))
         
+#        self.narrative = narrative.RunningNarrative()
         self.statues = []
         #s = Statue(statue_script2, 19, 27 + _, ' ', libtcod.green, self.foreground, self)
         #s.loop = False
@@ -216,3 +217,6 @@ class LevelZero(Level):
 #        self.player.add_child(ItemGrab(self.lute, self, text="pick up", offset = (-2, 2)))
         self.player.add_child(ItemGrab(self.lamp, self, text="pick up", offset = (-2, 2)))
 
+    def load_object(self, thing):
+        self.the_map.add(thing.x, thing.y, thing)
+        self.narrative.add(thing)

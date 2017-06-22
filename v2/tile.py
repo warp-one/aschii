@@ -197,7 +197,6 @@ class Tile(object):
         
     def delete(self):
         self.game.the_map.remove(self)
-        del self
 
 
 class EnvironmentTile(Tile):
