@@ -47,7 +47,6 @@ class RunningNarrative(tile.Tile):
 
         name_color = thing.current_color
         colors = directive.make_color_scheme(keyword=name_color)
-        print colors
         thing_narrative = directive.RotatingDirective( 
                                     thing_sentence,
                                     self,

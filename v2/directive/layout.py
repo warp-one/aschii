@@ -29,15 +29,15 @@ class DirectiveLayout(object):
         
 class NarrativeLayout(DirectiveLayout):
     def __init__(self):
-        pass
+        self.n_width = settings.SCREEN_WIDTH - 11
         
     def get_coords(self, x, y, len_sentence):
         coords = []
         line = 0
         current_x = x
         for i in xrange(len_sentence):
-            line = (x + i)/settings.SCREEN_WIDTH
-            lx = (x + i)%settings.SCREEN_WIDTH
+            line = (x + i)/self.n_width
+            lx = (x + i)%self.n_width
             coords.append((lx, y + line))
         return coords
         

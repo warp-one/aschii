@@ -19,14 +19,14 @@ RENDER_RADIUS_CIRCLE = PLAYER_MAX_SIGHT + 5
 
 # these are more like game constants...
 
-EAST_LEFT_FOOT = 128   # libtcod maps characters to tiles in the tileset with
-EAST_RIGHT_FOOT = 129  # the integers 0-255
+EAST_RIGHT_FOOT = 128   # libtcod maps characters to tiles in the tileset with
+EAST_LEFT_FOOT = 129  # the integers 0-255
 NORTH_LEFT_FOOT = 130
 NORTH_RIGHT_FOOT = 131
 WEST_RIGHT_FOOT = 132
 WEST_LEFT_FOOT = 133
-SOUTH_RIGHT_FOOT = 134
-SOUTH_LEFT_FOOT = 135
+SOUTH_LEFT_FOOT = 134
+SOUTH_RIGHT_FOOT = 135
 
 FEET_CHARS = {(1, 0):(EAST_LEFT_FOOT, EAST_RIGHT_FOOT),
               (0, -1):(NORTH_LEFT_FOOT, NORTH_RIGHT_FOOT),
