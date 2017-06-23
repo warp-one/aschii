@@ -17,6 +17,8 @@ PROFILE = False#True #
 PLAYER_MAX_SIGHT = 41
 RENDER_RADIUS_CIRCLE = PLAYER_MAX_SIGHT + 5
 
+# these are more like game constants...
+
 EAST_LEFT_FOOT = 128   # libtcod maps characters to tiles in the tileset with
 EAST_RIGHT_FOOT = 129  # the integers 0-255
 NORTH_LEFT_FOOT = 130

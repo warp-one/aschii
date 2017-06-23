@@ -82,7 +82,8 @@ class FloorDirective(RotatingDirective):
             if self.draw_on_floor:
                 x, y = self.game.camera.to_camera_coordinates(x, y)
             else:
-                print x, y, "AGAWERGERG"
+                pass
+                #print x, y, "AGAWERGERG"
 
             keyword_color_index = i - keyword_position
 

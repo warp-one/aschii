@@ -1,5 +1,7 @@
 from random import randint, shuffle
 
+import settings
+
 
 class DirectiveLayout(object):
     def __init__(self, period, width, height, split, direction):
@@ -22,6 +24,24 @@ class DirectiveLayout(object):
         return x + i%self.width, y + line
             
     def tick(self, width):
+        pass
+        
+        
+class NarrativeLayout(DirectiveLayout):
+    def __init__(self):
+        pass
+        
+    def get_coords(self, x, y, len_sentence):
+        coords = []
+        line = 0
+        current_x = x
+        for i in xrange(len_sentence):
+            line = (x + i)/settings.SCREEN_WIDTH
+            lx = (x + i)%settings.SCREEN_WIDTH
+            coords.append((lx, y + line))
+        return coords
+        
+    def tick(self, indentation):
         pass
 
 

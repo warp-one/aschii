@@ -92,13 +92,12 @@ class Level(object):
                 libtcod.console_put_char(self.foreground, x, y, 
                                 ' ', libtcod.BKGND_NONE)
         return # HMMMMMM
+        self.last_render = []
 
         for t in self.last_render:
             t.clear()
         for i in self.hud:
             i.clear()
-        self.last_render = []
-        
         for a in self.player.action_manager.actions:
             a.clear()
 

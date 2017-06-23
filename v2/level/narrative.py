@@ -40,12 +40,23 @@ class RunningNarrative(tile.Tile):
 
         
     def add_object(self, thing):
+        try:
+            thing_sentence = deque([(thing.name, thing.description)])
+        except AttributeError:
+            thing_sentence = deque([("object", "There's a mysterious object on the ground.")])
+
+        name_color = thing.current_color
+        colors = directive.make_color_scheme(keyword=name_color)
+        print colors
         thing_narrative = directive.RotatingDirective( 
-                                    deque([("thing", "It's a thing!")]),
+                                    thing_sentence,
                                     self,
                                     self.game,
                                     static=True,
+                                    text_layout=directive.NarrativeLayout(),
+                                    color_scheme=directive.ColorScheme(colors),
                                     on_completion_callable=self.elaborate)
+        thing_narrative.range = 1000
         self.descriptions[thing] = thing_narrative
         self.game.player.add_child(thing_narrative)
                                     

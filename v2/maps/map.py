@@ -118,7 +118,7 @@ class TileMap(Listener, object):
                                  player.max_sight*2,        # but it performs
                                  player.max_sight*2,        # fine and solves
                                  anchor="default")          # update problems
-        elif area_shape == "circle":
+        elif area_shape == "circle": # extremely resource intensive
             render_radius = settings.RENDER_RADIUS_CIRCLE
             return self.get_round_area(player.location, render_radius)
 

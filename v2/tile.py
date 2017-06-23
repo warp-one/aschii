@@ -43,6 +43,12 @@ class Tile(object):
         self.x += dx
         self.y += dy
         
+    def describe(self, name, description):
+        self.name = name
+        self.description = description
+        if self.name not in self.description:
+            self.description += " {0}.".format(self.name)
+        
     def do(self):
         print "I act."
         

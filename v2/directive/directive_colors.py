@@ -10,6 +10,13 @@ basic_white = {"base":libtcod.grey, "keyword":libtcod.white}
 basic_green = {"base":libtcod.grey, "keyword":libtcod.green}
 
 
+def make_color_scheme(**kwargs):
+    colors = {"base":libtcod.grey, "keyword":libtcod.red}
+    for c in kwargs:
+        colors[c] = kwargs[c]
+    return colors
+
+
 class ColorScheme(object):
     def __init__(self, colors=None):
         self.colors = colors
