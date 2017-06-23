@@ -87,6 +87,12 @@ class Level(object):
         self.next_render = []
 
     def clear_all(self):
+        for x in xrange(settings.SCREEN_WIDTH):
+            for y in xrange(settings.SCREEN_HEIGHT):
+                libtcod.console_put_char(self.foreground, x, y, 
+                                ' ', libtcod.BKGND_NONE)
+        return # HMMMMMM
+
         for t in self.last_render:
             t.clear()
         for i in self.hud:

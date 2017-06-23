@@ -59,7 +59,6 @@ class TileMap(Listener, object):
         try:
             return self.tilemap[x][y]
         except IndexError:
-            print x, y
             return False
 
     def can_schimb(self, x, y):
@@ -111,7 +110,7 @@ class TileMap(Listener, object):
             for x in xrange(self.width):
                 yield self.tilemap[x][y]
                 
-    def get_tiles_in_render_area(self, area_shape="circle"):
+    def get_tiles_in_render_area(self, area_shape="square"):
         player = self.game.player
         if area_shape == "square":
             return self.get_area(player.x-player.max_sight, 

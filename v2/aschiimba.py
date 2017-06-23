@@ -49,7 +49,7 @@ class Game(object):
                 libtcod.FONT_TYPE_GREYSCALE | libtcod.FONT_LAYOUT_ASCII_INROW,
                 )
         libtcod.console_init_root(self.width, self.height, 
-                'the caves', False)#, renderer=libtcod.RENDERER_GLSL)
+                'the caves', False, renderer=libtcod.RENDERER_GLSL)
         libtcod.sys_set_fps(settings.LIMIT_FPS)
 
         self.current_level = LevelZero(self, bridge_drawing)

@@ -12,7 +12,7 @@ LVL0_MAP_WIDTH = 1
 LVL0_MAP_HEIGHT = 1
  
 LIMIT_FPS = 20   # frames-per-second maximum
-PROFILE = False#True
+PROFILE = False#True #
 
 PLAYER_MAX_SIGHT = 41
 RENDER_RADIUS_CIRCLE = PLAYER_MAX_SIGHT + 5

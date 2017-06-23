@@ -32,6 +32,7 @@ class RunningNarrative(tile.Tile):
             len_prev_sentences += len(d.to_draw)
         
     def clear(self): #oof
+        return
         for tx in range(self.width):
             for ty in range(5):
                 libtcod.console_put_char(self.con, tx + self.x, ty + self.y, 

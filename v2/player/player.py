@@ -182,6 +182,8 @@ class Player(Listener, orders.Orders, Unit):
                 self.inventory.toggle_item()
         elif key.vk == libtcod.KEY_TAB:
             self.inventory.switch_item()
+            print libtcod.sys_get_last_frame_length()
+
         elif key.vk == libtcod.KEY_BACKSPACE:
             self.inventory.drop_item()
  
