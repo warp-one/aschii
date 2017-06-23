@@ -113,7 +113,7 @@ class Tile(object):
             for i, char in enumerate(self.phrase):
                 x, y = self.game.camera.to_camera_coordinates(self.x, self.y)
                 if self.vertical:
-                    y += i
+                    y -= i
                 else:
                     x += i
                 libtcod.console_set_default_foreground(self.con, color)

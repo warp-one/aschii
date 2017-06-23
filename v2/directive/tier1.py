@@ -214,7 +214,7 @@ class RealPerson(Statue): # inherits from statue (!)
 
     def __init__(self, *args, **kwargs):
         super(RealPerson, self).__init__(*args, **kwargs)
-        self.phrase = [choice(['o', 'O', libtcod.CHAR_BLOCK2]), libtcod.CHAR_DTEES, libtcod.CHAR_DVLINE]
+        self.phrase = [libtcod.CHAR_DVLINE, libtcod.CHAR_DTEES, choice(['o', 'O', libtcod.CHAR_BLOCK2])]
         self.vertical = True
         
         

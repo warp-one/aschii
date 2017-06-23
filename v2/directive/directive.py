@@ -42,9 +42,7 @@ class Directive(Tile):
         self.con = game.foreground
         self.change_text(text, sentence=self.sentence)
 
-        self.color = libtcod.green
         self.dormant_color = libtcod.red # not used by the _draw method
-        self.current_color = self.color
         self.active = False
         self.visible = True
         
@@ -119,33 +117,18 @@ class Directive(Tile):
     def _draw(self):
         ir = self.in_range()
         coords = self.text_layout.get_coords(self.x, self.y, len(self.sentence))
-        colors = self.color_scheme.get_colors(self.phrase, self.to_draw, ir)
+        colors = self.color_scheme.get_colors(self.phrase, self.to_draw, ir, self.phrase_index)
 
         for i, char in enumerate(self.to_draw):
             if char == ' ' and self.spaces_transparent:
                 continue
+                
             x, y = coords[i]
             if i == self.phrase_position:
                 self.phrase_coordinate = x, y
-#            if tools.get_distance((x, y), self.game.player.location) > self.game.player.base_sight:
-#                color = libtcod.darker_grey
-#            else:
-#                color = libtcod.grey
-
-#            keyword_color_index = i - self.phrase_position
-
-#            if keyword_color_index < 0 or keyword_color_index > len(self.phrase) - 1:
-#                pass
-#            else:
-#                if ir:
-#                    color *= (self.current_color
-#                                if self.phrase_clear[keyword_color_index]
-#                                else self.anchor.current_color)
-#                    if not randint(0, 7):
-#                        for _ in range(randint(0, 2)):
-#                            color += libtcod.dark_grey
                             
             color = colors[i]
+            
             if not self.static:                    
                 x, y = self.game.camera.to_camera_coordinates(x, y)
             libtcod.console_set_default_foreground(self.con, color)

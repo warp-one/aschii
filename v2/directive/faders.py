@@ -23,7 +23,7 @@ class DirectiveFade(Fader):
         in_range = tools.get_distance(Ploc, Sloc) < directive.range
         directive.dormant_color = libtcod.red if in_range else libtcod.grey
         to_draw = directive.phrase
-        color = directive.current_color - self.color_add * iteration
+        color = directive.color_scheme.colors["letters"] - self.color_add * iteration
         if color == libtcod.black:
             return False
 
@@ -49,12 +49,12 @@ class DirectiveLineFade(Fader):
         Ploc = directive.game.player.location
         Sloc = directive.anchor.location
         in_range = tools.get_distance(Ploc, Sloc) < directive.range
-        directive.dormant_color = libtcod.red if in_range else libtcod.grey
+        #directive.color_sche = libtcod.red if in_range else libtcod.grey
         to_draw = directive.phrase
 
         for i, char in enumerate(to_draw):
             shade_amount = iteration - i
-            color = directive.current_color - self.color_add * (shade_amount)
+            color = directive.color_scheme.colors["letters"] - self.color_add * (shade_amount)
             if color == libtcod.black and i == len(to_draw) - 1:
                 return False
             x, y = self.camera.to_camera_coordinates(directive.x + i, directive.y)

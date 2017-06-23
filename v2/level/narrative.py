@@ -46,7 +46,7 @@ class RunningNarrative(tile.Tile):
             thing_sentence = deque([("object", "There's a mysterious object on the ground.")])
 
         name_color = thing.current_color
-        colors = directive.make_color_scheme(keyword=name_color)
+        colors = directive.make_color_scheme(keyword=name_color, letters=(name_color+libtcod.dark_grey))
         thing_narrative = directive.RotatingDirective( 
                                     thing_sentence,
                                     self,
