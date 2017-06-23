@@ -17,7 +17,7 @@ class RunningNarrative(tile.Tile):
         if self.current_elaboration:
             for i, l in enumerate(self.current_elaboration):
                 libtcod.console_set_default_foreground(self.con, libtcod.white)
-                libtcod.console_put_char(self.con, self.x + i, settings.MAP_HEIGHT - 3, 
+                libtcod.console_put_char(self.con, self.x + i, settings.SCREEN_HEIGHT - 3, 
                                                 l, libtcod.BKGND_NONE)
                 
     def is_visible(self):
@@ -46,7 +46,7 @@ class RunningNarrative(tile.Tile):
         except AttributeError:
             thing_sentence = deque([("object", "There's a mysterious object on the ground.")])
 
-        name_color = thing.current_color
+        name_color = thing.current_color - libtcod.grey
         colors = directive.make_color_scheme(keyword=name_color, letters=(name_color+libtcod.dark_grey))
         thing_narrative = directive.NarrativeDirective( 
                                     thing_sentence,
@@ -62,9 +62,9 @@ class RunningNarrative(tile.Tile):
         self.game.player.add_child(thing_narrative)
                                     
     def remove_object(self, thing):
-        del self.descriptions[thing]
-        self.game.player.remove_child(thing_narrative)
+        self.descriptions.remove(thing)
+        self.game.player.remove_child(thing)
                     
     def elaborate(self, description):
-        self.current_thing = description.anchor
-        self.current_elaboration = description.anchor.current_description
+        self.current_thing = description
+        self.current_elaboration = description.anchor.current_about

@@ -100,7 +100,7 @@ class LevelZero(Level):
         self.player.add_child(bridge_talker)
         
         plinth = EnvironmentTile(True, 81, 75, "m", libtcod.white, self.foreground, self)
-        describe(plinth, plinth_description)
+        describe(plinth, plinth_about)
         self.the_map.add(plinth.x, plinth.y, plinth)
         self.narrative.add_object(plinth)
         broken_pot = TestingDirective(plinth, self,
