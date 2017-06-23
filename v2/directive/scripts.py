@@ -1,6 +1,18 @@
 from collections import deque
 
 
+
+def describe(unit, descriptions): # all this is only used by the narrative hud
+        unit.name = descriptions[0][0]
+        unit.sight = descriptions[0][1]
+        unit.descriptions = descriptions[1:]
+        unit.current_description = unit.descriptions[1]
+        if unit.name not in unit.current_description:
+            unit.current_description += " {0}.".format(unit.name)
+            
+            
+
+
 ## ROTATING SCRIPTS
 #
 #
@@ -101,3 +113,7 @@ reveal_script_1 = {"start":("GOBLINS", 'CAVE OF THE GOBLINS ---->'),
                     "CAVE":("dark", 'Pretty dark in here, isn\'t it?'),
                     "dark":("", 'Almost too dark to see.')}
 
+                    
+## OBJECT DESCRIPTIONS
+
+plinth_description = [("plinth", "a plinth made of white stone"), "Around it are scattered some luminous pieces of pottery", "The reconstructed pot gleams like a silver tooth in the quiet cavern."]

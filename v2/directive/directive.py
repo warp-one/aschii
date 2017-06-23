@@ -108,15 +108,23 @@ class Directive(Tile):
                 if self.fader.apply_draw_step_for_erase(self):
                     return
                 else:
-                    if self.on_completion_callable:
-                        self.on_completion_callable()
+                    self.do_completion_actions()
                     self.game.player.remove_child(self)
         elif self.is_visible():
             self._draw()
+            
+    def do_completion_actions(self):
+        if self.on_completion_callable:
+            self.on_completion_callable()
+        
                                             
     def _draw(self):
         ir = self.in_range()
-        coords = self.text_layout.get_coords(self.x, self.y, len(self.sentence))
+        if self.static:
+            ox, oy = self.offset
+            coords = self.text_layout.get_coords(ox, oy, len(self.sentence))
+        else:
+            coords = self.text_layout.get_coords(self.x, self.y, len(self.sentence))
         colors = self.color_scheme.get_colors(self.phrase, self.to_draw, ir, self.phrase_index)
 
         for i, char in enumerate(self.to_draw):
@@ -199,8 +207,7 @@ class RotatingDirective(Directive):
     
     def complete(self):
         if self.num_rotations >= self.max_rotations and self.max_rotations > 0:
-            if self.on_completion_callable:
-                self.on_completion_callable()
+            self.do_completion_actions()
             if self.persistent:
                 self.num_rotations = 0
             else:
@@ -258,3 +265,8 @@ class TestingDirective(Directive):
         return self.sentence.replace(self.phrase, phrase_replacement)
 
         
+class NarrativeDirective(RotatingDirective):
+    def do_completion_actions(self):
+        if self.on_completion_callable:
+            self.on_completion_callable(self)
+    

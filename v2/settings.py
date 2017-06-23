@@ -1,5 +1,3 @@
-import libtcodpy as libtcod
-
 _DEBUG = False
 
 # actual size of the window
