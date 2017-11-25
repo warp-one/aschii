@@ -27,6 +27,7 @@ class Directive(Tile):
         self.sentence = sentence
         self.width = width
         self.spaces_transparent = False
+        self.visible_timer = 0
         
         if new_fader: self.fader = new_fader(self.game.camera)
         else: self.fader = faders.DirectiveFade(self.game.camera)
@@ -186,6 +187,9 @@ class Directive(Tile):
         self.guessed = ""
         
     def update(self):
+        self.visible_timer += 1
+        if not self.is_visible():
+            self.visible_timer = 0
         if self.text_layout:
             self.text_layout.tick(len(self.sentence))
             

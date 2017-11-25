@@ -2,6 +2,15 @@ from random import randint, shuffle
 
 import settings
 
+class HUDLayoutTracker(object):
+    directives = [None] * 4
+    def add_directive(self, directive):
+        for i, d in enumerate(HUDLayoutTracker.directives):
+            if d is None:
+                HUDLayoutTracker.directives[i] = d
+                return
+        return False
+
 
 class DirectiveLayout(object):
     def __init__(self, period, width, height, split, direction):
@@ -107,6 +116,8 @@ class RectangleLayout(DirectiveLayout):
         
     def tick(self, width):
         pass
+        
+
         
 
 class ScatterLayout(DirectiveLayout):

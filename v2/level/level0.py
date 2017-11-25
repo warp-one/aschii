@@ -94,20 +94,19 @@ class LevelZero(Level):
                                   offset=(1, 1), 
                                   text_layout=RollingLayout(3, 0, 3, 0, 1), 
                                   on_completion_callable=None)
-        self.the_map.add(bridge.x, bridge.y, bridge)
-        self.narrative.add_object(bridge)
+        self.load_object(bridge)
         self.player.add_child(bridge_toggle)
         self.player.add_child(bridge_talker)
         
         plinth = EnvironmentTile(True, 81, 75, "m", libtcod.white, self.foreground, self)
         describe(plinth, plinth_about)
-        self.the_map.add(plinth.x, plinth.y, plinth)
-        self.narrative.add_object(plinth)
+        self.load_object(plinth)
         broken_pot = TestingDirective(plinth, self,
                                       text="pottery",
                                       sentence="several pieces of luminescent white pottery lie on the ground",
-                                      offset=(-5, 2),
+                                      offset = (0, 0),
                                       on_completion_callable=None,
+                                      static = True,
                                       color_scheme=SparklyKeyword(basic_grey))
         pot_layout = GatherLayout(broken_pot, 0, 15, 5, 0, 1)
         broken_pot.text_layout = pot_layout
@@ -159,8 +158,7 @@ class LevelZero(Level):
             self.player.add_child(t)
             
         tourist = RealPerson(66, 42, ' ', libtcod.blue, self.foreground, self)
-        self.the_map.add(tourist.x, tourist.y, tourist)
-        self.narrative.add_object(tourist)
+        self.load_object(tourist)
                                   
  #       news = Directive(bridge, self, 
  #                        text=news_script_0[0][0], 
@@ -224,4 +222,4 @@ class LevelZero(Level):
 
     def load_object(self, thing):
         self.the_map.add(thing.x, thing.y, thing)
-        self.narrative.add(thing)
+        self.narrative.add_object(thing)
