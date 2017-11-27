@@ -101,3 +101,6 @@ class Level(object):
         for a in self.player.action_manager.actions:
             a.clear()
 
+    def load_object(self, thing):
+        self.the_map.add(thing.x, thing.y, thing)
+        self.narrative.add_object(thing)

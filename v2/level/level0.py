@@ -30,7 +30,8 @@ class LevelZero(Level):
     start_location = 18, 14
     
     lightener_nodes = [(x, randint(10, 20)) for x in range(25, 55, 8)]
-
+    directive_stories = []
+    
     def __init__(self, *args):
         super(LevelZero, self).__init__(*args)
 #        self.player.add_power(Power(self.player, self, static=True, offset=(0, 30+len(self.player.children))))
@@ -92,33 +93,57 @@ class LevelZero(Level):
                                   color_scheme=ColorScheme(basic_green))
         bridge_talker = RotatingDirective(bridge_script_0, bridge, self, 
                                   offset=(1, 1), 
-                                  text_layout=RollingLayout(3, 0, 3, 0, 1), 
+                                  text_layout=(RollingLayout, (3, 0, 3, 0, 1)), 
                                   on_completion_callable=None)
         self.load_object(bridge)
         self.player.add_child(bridge_toggle)
         self.player.add_child(bridge_talker)
         
-        plinth = EnvironmentTile(True, 81, 75, "m", libtcod.white, self.foreground, self)
+        pot_story = DirectiveGrouper(self)
+        self.directive_stories.append(pot_story)
+        
+        plinth = EnvironmentTile(True, 60, 90, "m", libtcod.white, self.foreground, self)
         describe(plinth, plinth_about)
         self.load_object(plinth)
-        broken_pot = TestingDirective(plinth, self,
-                                      text="pottery",
-                                      sentence="several pieces of luminescent white pottery lie on the ground",
-                                      offset = (0, 0),
-                                      on_completion_callable=None,
-                                      static = True,
-                                      color_scheme=SparklyKeyword(basic_grey))
-        pot_layout = GatherLayout(broken_pot, 0, 15, 5, 0, 1)
-        broken_pot.text_layout = pot_layout
-        self.player.add_child(broken_pot)
         
+        broken_pot_data = (TestingDirective, 
+                            (plinth, self),
+                            dict(text="pottery",
+                                sentence="What's this? A big pile of pottery?",
+                                offset = (0, 0),
+                                on_completion_callable=None,
+                                static = True, 
+                                color_scheme=SparklyKeyword(basic_grey),
+                                text_layout = (GatherLayout, ("self", 0, 15, 5, 0, 1))
+                                )
+                                )
+        
+        plinth2 = EnvironmentTile(True, 75, 90, "n", libtcod.white, self.foreground, self)
+        describe(plinth2, plinth_about)
+        self.load_object(plinth)
+        
+        broken_pot2_data = (TestingDirective, 
+                            (plinth2, self),
+                            dict(text="Another",
+                                sentence="Another one! And broken too!",
+                                offset = (0, 0),
+                                on_completion_callable=None,
+                                static = True, 
+                                color_scheme=SparklyKeyword(basic_grey),
+                                text_layout = (GatherLayout, ("self", 0, 15, 5, 0, 1))
+                                )
+                                )
+                                
+        pot_story.add_directive(broken_pot_data, "start")
+        pot_story.add_directive(broken_pot2_data, "pottery")
+                                
         sign = Television(40, 17, ">", libtcod.dark_blue, 
                           self.foreground, self)
         sign_border = RotatingDirective(sign_script_0, sign, self, 
                                   text="?",
                                   static=False, 
                                   offset=(-1, -1), 
-                                  text_layout=RectangleLayout(5, 14, 8, 0, 1), 
+                                  text_layout=(RectangleLayout, (5, 14, 8, 0, 1)), 
                                   on_completion_callable=sign.next_channel, 
                                   range=3)
         self.the_map.add(sign.x, sign.y, sign)
@@ -133,7 +158,7 @@ class LevelZero(Level):
                                   text="?",
                                   static=False, 
                                   offset=(-1, -1), 
-                                  text_layout=ScatterLayout([(-5, -5), (-3, -4), (0, -3), (-4, -2), (-1, -1), (2, 1), (-3, 2)]), 
+                                  text_layout=(ScatterLayout, ([(-5, -5), (-3, -4), (0, -3), (-4, -2), (-1, -1), (2, 1), (-3, 2)],)), 
                                   on_completion_callable=tree.next_branch)
         
         tree1 = Directive(tree, self, 
@@ -141,7 +166,6 @@ class LevelZero(Level):
                                   sentence=tree_script_1[1],
                                   static=False, 
                                   offset=(3, 1), 
-#                                  text_layout=RectangleLayout(5, 14, 8, 0, 1), 
                                   on_completion_callable=tree.next_branch)
                                   
         tree2 = Directive(tree, self, 
@@ -149,7 +173,6 @@ class LevelZero(Level):
                                   sentence=tree_script_2[1],
                                   static=False, 
                                   offset=(-3, 3), 
-#                                  text_layout=RectangleLayout(5, 14, 8, 0, 1), 
                                   on_completion_callable=tree.next_branch)
         tree_branches = [tree0, tree1, tree2]
         tree0.persistent = False
@@ -220,6 +243,5 @@ class LevelZero(Level):
 #        self.player.add_child(ItemGrab(self.lute, self, text="pick up", offset = (-2, 2)))
         self.player.add_child(ItemGrab(self.lamp, self, text="pick up", offset = (-2, 2)))
 
-    def load_object(self, thing):
-        self.the_map.add(thing.x, thing.y, thing)
-        self.narrative.add_object(thing)
+        for d in self.directive_stories:
+            d.start()

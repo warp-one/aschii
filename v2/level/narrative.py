@@ -54,7 +54,7 @@ class RunningNarrative(tile.Tile):
                                     self.game,
                                     static=True,
                                     offset=(self.x, self.y),
-                                    text_layout=directive.NarrativeLayout(),
+                                    text_layout=(directive.NarrativeLayout, None),
                                     color_scheme=directive.ColorScheme(colors),
                                     on_completion_callable=self.elaborate)
         thing_narrative.range = 1000

@@ -2,15 +2,6 @@ from random import randint, shuffle
 
 import settings
 
-class HUDLayoutTracker(object):
-    directives = [None] * 4
-    def add_directive(self, directive):
-        for i, d in enumerate(HUDLayoutTracker.directives):
-            if d is None:
-                HUDLayoutTracker.directives[i] = d
-                return
-        return False
-
 
 class DirectiveLayout(object):
     def __init__(self, period, width, height, split, direction):
@@ -152,25 +143,25 @@ class GatherLayout(DirectiveLayout):
         super(GatherLayout, self).__init__(*args)
         self.directive = directive
         self.letter_pile = []
-        starting_x, current_y = 0, 0
+        starting_x, current_y = directive.location
         current_x = starting_x
-        ox, oy = self.directive.offset
         while len(self.letter_pile) < len(self.directive.phrase):
-            self.letter_pile.append((current_x - ox, current_y - oy - 5))
+            self.letter_pile.append((current_x, current_y + 5))
             current_x += 1
             if current_x > abs(starting_x):
                 current_y += 1
-                starting_x -= 1
+                starting_x += 1
                 current_x = starting_x
         shuffle(self.letter_pile)
        
     def get_coords(self, x, y, len_sentence):
+        letter_pile_screen_coords = [self.directive.screen_location(i, j) for i, j in self.letter_pile]
         coords = super(GatherLayout, self).get_coords(x, y, len_sentence)
         unguessed_len = len(self.directive.phrase) - len(self.directive.guessed)
         unguessed_start = self.directive.phrase_location + len(self.directive.guessed) 
         unguessed_end = unguessed_start + unguessed_len 
-        coords[unguessed_start:unguessed_end] = [(p[0] + x, p[1] + y)
-                                                 for p in self.letter_pile[:unguessed_len]]
+        coords[unguessed_start:unguessed_end] = [(p[0], p[1])
+                                                 for p in letter_pile_screen_coords[:unguessed_len]]
         return coords
         
         

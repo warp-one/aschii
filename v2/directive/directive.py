@@ -24,34 +24,66 @@ class Directive(Tile):
         self.game = game
         self.static = static
         self.offset = offset
+        self.phrase = text
         self.sentence = sentence
         self.width = width
         self.spaces_transparent = False
         self.visible_timer = 0
-        
-        if new_fader: self.fader = new_fader(self.game.camera)
-        else: self.fader = faders.DirectiveFade(self.game.camera)
-        if text_layout is None: self.text_layout = layout.DirectiveLayout(0, self.width, 0, 0, 0)
-        else: self.text_layout = text_layout
-        if color_scheme is None: self.color_scheme = directive_colors.ColorScheme(directive_colors.basic_red)
-        else: self.color_scheme = color_scheme
-        
         self.on_completion_callable = on_completion_callable
         self.range = range
         self.guessed = ""
+        self.phrase_coordinate = (0, 0)
+        
+        # Order Matters
+        self.set_fader(new_fader)
+        self.set_text_layout(text_layout)
+        self.set_color_scheme(color_scheme)
+        self.change_text(text, sentence=self.sentence)
+        
 
         self.con = game.foreground
-        self.change_text(text, sentence=self.sentence)
 
         self.dormant_color = libtcod.red # not used by the _draw method
         self.active = False
         self.visible = True
         
-        self.phrase_coordinate = (0, 0)
         
-    @property
-    def location(self):
-        return self.x, self.y
+        self.story_group = None
+        
+    def change_text(self, text, sentence=None):
+        self.phrase = text
+        if not sentence:
+            self.sentence = text
+            self.phrase_position = 0
+        else:
+            self.sentence = sentence
+            self.phrase_position = self.sentence.find(self.phrase)
+        self.text_layout.words = self.to_draw.split()
+        self.reset()
+        
+    def set_fader(self, new_fader):
+        if new_fader: 
+            self.fader = new_fader(self.game.camera)
+        else: 
+            self.fader = faders.DirectiveFade(self.game.camera)
+        
+    def set_text_layout(self, text_layout):
+        if text_layout is None: 
+            self.text_layout = layout.DirectiveLayout(0, self.width, 0, 0, 0)
+        else:
+            if text_layout[1] is not None:
+                if text_layout[1][0] == "self":
+                    self.text_layout = text_layout[0](self, *text_layout[1][1:])
+                else:
+                    self.text_layout = text_layout[0](*text_layout[1])
+            else:
+                self.text_layout = text_layout[0]()
+                
+    def set_color_scheme(self, color_scheme):
+        if color_scheme is None: 
+            self.color_scheme = directive_colors.ColorScheme(directive_colors.basic_red)
+        else: 
+            self.color_scheme = color_scheme
         
     @property
     def x(self):
@@ -60,6 +92,15 @@ class Directive(Tile):
     @property    
     def y(self):
         return self.anchor.y + self.offset[1]
+        
+    @property
+    def location(self):
+        return self.x, self.y
+        
+    def screen_location(self, x=None, y=None):
+        if x is None:
+            x, y = self.location
+        return self.game.camera.to_camera_coordinates(x, y)
         
     @property
     def to_draw(self):
@@ -87,17 +128,6 @@ class Directive(Tile):
         else:
             self.active = True
             
-    def change_text(self, text, sentence=None):
-        self.phrase = text
-        if not sentence:
-            self.sentence = text
-            self.phrase_position = 0
-        else:
-            self.sentence = sentence
-            self.phrase_position = self.sentence.find(self.phrase)
-        self.text_layout.words = self.to_draw.split()
-        self.reset()
-        
     def is_visible(self):
         dv = self.visible
         av = self.anchor.is_visible()
@@ -139,7 +169,7 @@ class Directive(Tile):
             color = colors[i]
             
             if not self.static:                    
-                x, y = self.game.camera.to_camera_coordinates(x, y)
+                x, y = self.screen_location(x=x, y=y)
             libtcod.console_set_default_foreground(self.con, color)
             libtcod.console_put_char(self.con, x, y,
                                             char, libtcod.BKGND_NONE)
@@ -151,20 +181,13 @@ class Directive(Tile):
             return
         else:
             self.game.player.remove_child(self)
+            if self.story_group:    
+                self.story_group.complete_directive(self.phrase)
+            else:
+                print "I was a solo directive named " + self.phrase
             
     def clear(self):
         return
-        try:
-            for i in xrange(len(self.phrase)): ##?????
-                x, y = self.game.camera.to_camera_coordinates(self.x + i, self.y)
-                if self.text_layout: ## !! not modulate any more
-                    x, y = self.text_layout.modulate(x, y, i)
-                libtcod.console_put_char(self.con, x, y, 
-                                                ' ', libtcod.BKGND_NONE)
-        except TypeError:
-            x, y = self.game.camera.to_camera_coordinates(self.x, self.y)
-            libtcod.console_put_char(self.con, self.x, self.y, 
-                                            ' ', libtcod.BKGND_NONE)
             
     def tick_phrase(self, letter):
         if len(self.phrase) is 0:
