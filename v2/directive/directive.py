@@ -176,15 +176,15 @@ class Directive(Tile):
                                                     
     def complete(self):
         self.completed = True
+        if self.story_group is not None:    
+            self.story_group.complete_directive(self.phrase)
+        else:
+            print "I was a solo directive named " + self.phrase
         if self.fader:
             self.clear()
             return
         else:
             self.game.player.remove_child(self)
-            if self.story_group:    
-                self.story_group.complete_directive(self.phrase)
-            else:
-                print "I was a solo directive named " + self.phrase
             
     def clear(self):
         return

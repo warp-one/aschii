@@ -91,10 +91,11 @@ class LevelZero(Level):
                                   offset=(-4, 4), 
                                   on_completion_callable=bridge.do,
                                   color_scheme=ColorScheme(basic_green))
-        bridge_talker = RotatingDirective(bridge_script_0, bridge, self, 
-                                  offset=(1, 1), 
+        btd = (RotatingDirective, (bridge_script_0, bridge, self), 
+                                  dict(offset=(1, 1), 
                                   text_layout=(RollingLayout, (3, 0, 3, 0, 1)), 
-                                  on_completion_callable=None)
+                                  on_completion_callable=None))
+        bridge_talker = btd[0](*btd[1], **btd[2])
         self.load_object(bridge)
         self.player.add_child(bridge_toggle)
         self.player.add_child(bridge_talker)
@@ -120,7 +121,7 @@ class LevelZero(Level):
         
         plinth2 = EnvironmentTile(True, 75, 90, "n", libtcod.white, self.foreground, self)
         describe(plinth2, plinth_about)
-        self.load_object(plinth)
+        self.load_object(plinth2)
         
         broken_pot2_data = (TestingDirective, 
                             (plinth2, self),
