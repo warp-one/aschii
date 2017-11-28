@@ -24,8 +24,8 @@ test_level_tileset = Tileset({
 
 def make_tile(map_drawing, 
               x, y, 
-              con, 
-              game, 
+              con,
+              game,
               blocked=None, 
               color_style=None, 
               tileset=test_level_tileset):

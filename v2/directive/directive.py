@@ -4,8 +4,8 @@ import libtcodpy as libtcod
 
 from tile import Tile
 import tools, faders, layout, directive_colors
-   
-    
+
+
 class Directive(Tile):
 
     char = 'X'
@@ -33,13 +33,12 @@ class Directive(Tile):
         self.range = range
         self.guessed = ""
         self.phrase_coordinate = (0, 0)
-        
+
         # Order Matters
         self.set_fader(new_fader)
         self.set_text_layout(text_layout)
         self.set_color_scheme(color_scheme)
         self.change_text(text, sentence=self.sentence)
-        
 
         self.con = game.foreground
 
@@ -101,11 +100,11 @@ class Directive(Tile):
         if x is None:
             x, y = self.location
         return self.game.camera.to_camera_coordinates(x, y)
-        
+
     @property
     def to_draw(self):
         return self.sentence
-        
+
     @property
     def not_guessed(self):
         guessed_letters = list(self.guessed)
@@ -117,7 +116,7 @@ class Directive(Tile):
             else:
                 unguessed_letters.append(l)
         return "".join(unguessed_letters)
-        
+
     @property
     def phrase_location(self):
         return self.sentence.find(self.phrase)
@@ -127,12 +126,12 @@ class Directive(Tile):
             self.active = False
         else:
             self.active = True
-            
+
     def is_visible(self):
         dv = self.visible
         av = self.anchor.is_visible()
         return av and dv
-       
+
     def draw(self):
         if self.completed: # should only be around to pass if there's a fader
             if self.fader:
@@ -143,12 +142,11 @@ class Directive(Tile):
                     self.game.player.remove_child(self)
         elif self.is_visible():
             self._draw()
-            
+
     def do_completion_actions(self):
         if self.on_completion_callable:
             self.on_completion_callable()
-        
-                                            
+                       
     def _draw(self):
         ir = self.in_range()
         if self.static:
@@ -173,7 +171,7 @@ class Directive(Tile):
             libtcod.console_set_default_foreground(self.con, color)
             libtcod.console_put_char(self.con, x, y,
                                             char, libtcod.BKGND_NONE)
-                                                    
+
     def complete(self):
         self.completed = True
         if self.story_group is not None:    
@@ -185,10 +183,10 @@ class Directive(Tile):
             return
         else:
             self.game.player.remove_child(self)
-            
+
     def clear(self):
         return
-            
+
     def tick_phrase(self, letter):
         if len(self.phrase) is 0:
             return
@@ -201,23 +199,24 @@ class Directive(Tile):
                         self.complete()
                     return True
         return False
-                
+
     def reset(self):
         self.phrase_clear = [False] * len(self.phrase)
         self.phrase_index = 0
         self.clear()
         self.completed = False
         self.guessed = ""
-        
+
     def update(self):
         self.visible_timer += 1
         if not self.is_visible():
             self.visible_timer = 0
         if self.text_layout:
             self.text_layout.tick(len(self.sentence))
-            
+
     def in_range(self):
-        if tools.get_distance(self.anchor.location, self.game.player.location) < self.range:
+        if tools.get_distance(self.anchor.location, 
+                            self.game.player.location) < self.range:
             return True
         else:
             return False

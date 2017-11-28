@@ -41,10 +41,8 @@ story_script_0 = deque([("moths", "Do you ever think about moths?"),
                     ]
                    )
 
-bridge_script_0 = deque([("?", "?"),
-                    ("Inspect", "Inspect the crank"),
-                    ("rusty", "The crank is rusty"),
-                    ("strong",  "Somebody strong could turn it"),
+bridge_script_0 = deque([("crank", "crank?"),
+                    ("uncrank", "uncrank."),
                     ]
                    )
                    

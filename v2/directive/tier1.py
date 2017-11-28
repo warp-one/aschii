@@ -240,39 +240,34 @@ class BridgeBuilder(Statue):
     def __init__(self, *args, **kwargs):
         super(BridgeBuilder, self).__init__(*args, **kwargs)
         self.delayed_doings = []
+        self.shape = self.get_shape()
         self.shiny = True
 
-    def do(self):
-        square_size = 15
-        Xs = []
-        for _ in range(square_size):
-            for x in range(square_size):
-                Xs.append(self.x - x)
-        Ys = []
-        for y in range(square_size):
-            for _ in range(square_size):
-                Ys.append(self.y + y)
-        for i, j in enumerate(Xs):
-            Xs[i] = (Xs[i], Ys[i])
+    def get_shape(self):
+        x1, y1 = self.x + 5, self.y - 5
+        x2, y2 = x1 + 10, y1 - 10
+        cols = [(x, y1) for x in range(x1, x2)]
+        rows = []
+        for c in cols:
+            for r in range(y2, y1):
+                rows.append((c[0], r))
+        cols.extend(rows)
+        return cols
 
-        for i, j in enumerate(tools.get_tiles_by_row_snake(square_size, square_size)):
-            self.delayed_doings.append((i, Xs[j]))
-#            self.game.the_map.change_tile(xy[0], xy[1], False, schimb=True)
-        self.shiny = False
+    def do(self):
+        if self.shiny:
+            for x, y in self.shape:
+                self.game.the_map.change_tile(x, y, False, schimb=False, tile_type="floor")
+            self.shiny = False
+        else:
+            for x, y in self.shape:
+                self.game.the_map.change_tile(x, y, True, schimb=True, tile_type="pit")
+            self.shiny = True
+
 
     def update(self):
         super(BridgeBuilder, self).update()
-        to_remove = []
-        for i, (timer, coordinate) in enumerate(self.delayed_doings):
-            timer -= 1
-            self.delayed_doings[i] = (timer, coordinate)
-            if timer < 1:
-                x, y = coordinate
-                self.game.the_map.change_tile(x, y, False, schimb=True)
-                to_remove.append((timer, coordinate))
-        for tile in to_remove:
-            self.delayed_doings.remove(tile)
-            
+
             
 class Television(Statue):
     def __init__(self, *args, **kwargs):

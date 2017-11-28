@@ -81,21 +81,22 @@ class LevelZero(Level):
         self.the_map.schimbers.append(schimber2)
         self.the_map.scribe.add_directive(schimber2)
         
-        bridge = BridgeBuilder(20, 20, "!", libtcod.dark_green, 
+        bridge = BridgeBuilder(136, 87, "C", libtcod.dark_green, 
                                self.foreground, self)
-        bridge_toggle = Directive(bridge, self, 
-                                  text="crank", 
-                                  sentence="turn the crank",
-                                  offset=(-4, 4), 
-                                  on_completion_callable=bridge.do,
-                                  color_scheme=ColorScheme(basic_green))
-        btd = (RotatingDirective, (bridge_script_0, bridge, self), 
-                                  dict(offset=(1, 1), 
-                                  text_layout=(RollingLayout, (3, 0, 3, 0, 1)), 
-                                  on_completion_callable=None))
+#        bridge_toggle = Directive(bridge, self,
+#                                  text="fault",
+#                                  sentence="default",
+#                                  offset=(-4, 4),
+#                                  on_completion_callable=bridge.do,
+#                                  color_scheme=ColorScheme(basic_green))
+        btd = (RotatingDirective, (bridge_script_0, bridge, self),
+                                  dict(offset=(-4, 4),
+                                  text_layout=(RollingLayout, (3, 0, 3, 0, 1)),
+                                  on_completion_callable=bridge.do))
         bridge_talker = btd[0](*btd[1], **btd[2])
+        bridge_talker.max_rotations = 1
         self.load_object(bridge)
-        self.player.add_child(bridge_toggle)
+#        self.player.add_child(bridge_toggle)
         self.player.add_child(bridge_talker)
         
         pot_story = DirectiveGrouper(self)

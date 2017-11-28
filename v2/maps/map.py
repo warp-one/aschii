@@ -20,6 +20,7 @@ class TileMap(Listener, object):
                     drawings.make_tile(self.drawing, x, y, self.con, self.game)
                     for y in xrange(self.height)]
                     for x in xrange(self.width)]
+        self.tile_codes = {"pit":(0, 1), "floor":(0, 2), "wall":(0, 3)}
                             
         self.libtcod_map = libtcod.map_new(self.width, self.height)
         for t in self.get_tiles():
@@ -43,9 +44,13 @@ class TileMap(Listener, object):
             libtcod.map_set_properties(self.libtcod_map, t.x, t.y, 
                                        not t.blocked, not t.blocked)
 
-    def change_tile(self, x, y, blocked, schimb=False):
+    def change_tile(self, x, y, blocked, schimb=False, tile_type=None):
         in_square = self.tilemap[x][y].next
-        new_tile = drawings.make_tile(self.drawing, x, y, self.con, self.game, blocked)
+        if tile_type is not None:
+            type_x, type_y = self.tile_codes[tile_type]
+        else:
+            type_x, type_y = x, y
+        new_tile = drawings.make_tile(self.drawing, type_x, type_y, self.con, self.game, blocked)
         self.tilemap[x][y] = new_tile
         self.tilemap[x][y].next = in_square
         libtcod.map_set_properties(self.libtcod_map, x, y, 
