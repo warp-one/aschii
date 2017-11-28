@@ -1,9 +1,7 @@
-from random import randint, choice
 
 import libtcodpy as libtcod
 
 from items import Item
-from tile import EnvironmentTile, BottomlessPit
 from observer import Listener
 from scribe import TheScribe
 import markovgen as mg

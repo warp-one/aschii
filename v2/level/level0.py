@@ -1,8 +1,6 @@
 from basic_level import Level
 from directive import *
 from items import *
-from maps import drawings
-from directive.faders import DirectiveLineFade
 
 
 gates_data = [((70, 16), "I"),

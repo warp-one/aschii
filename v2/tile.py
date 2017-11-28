@@ -166,16 +166,10 @@ class Tile(object):
             if self.next_char == '<':
                 self.next_char = None
                 
-#        visual_effect = self.get_next_effect()
-#            if visual_effect:
-#                self.next_color = visual_effect[color]
-        #
         if self.shiny:
             self.tileshine()
         self.in_fov = libtcod.map_is_in_fov(self.game.the_map.libtcod_map, self.x, self.y)
 
-#    def get_next_effect(self):
-        
     def tileshine(self):
         if not randint(0, 5):
             shine_color = self.current_color + libtcod.grey
