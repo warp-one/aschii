@@ -44,19 +44,20 @@ class TileMap(Listener, object):
             libtcod.map_set_properties(self.libtcod_map, t.x, t.y, 
                                        not t.blocked, not t.blocked)
 
-    def change_tile(self, x, y, blocked, schimb=False, tile_type=None):
+    def change_tile(self, x, y, blocked, char=None, schimb=False, tile_type=None):
         in_square = self.tilemap[x][y].next
-        if tile_type is not None:
-            type_x, type_y = self.tile_codes[tile_type]
-        else:
-            type_x, type_y = x, y
-        new_tile = drawings.make_tile(self.drawing, type_x, type_y, self.con, self.game, blocked)
+        new_tile = drawings.make_tile(self.drawing, x, y,
+                                      self.con, self.game,
+                                      tile_type=tile_type,
+                                      blocked=blocked,
+                                      char=char)
         self.tilemap[x][y] = new_tile
         self.tilemap[x][y].next = in_square
         libtcod.map_set_properties(self.libtcod_map, x, y, 
                                    new_tile.transparent, not new_tile.blocked)
         if schimb:
             self.game.player.schimb = True
+        return new_tile
         
     def get_tile(self, x, y):
         try:

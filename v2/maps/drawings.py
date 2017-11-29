@@ -26,6 +26,8 @@ def make_tile(map_drawing,
               x, y, 
               con,
               game,
+              tile_type=None,
+              char=None,
               blocked=None, 
               color_style=None, 
               tileset=test_level_tileset):
@@ -38,18 +40,25 @@ def make_tile(map_drawing,
     else:
         floor = map_drawing.get_tile(x, y, layer="floor")
     floor_rgb = floor[0], floor[1], floor[2]
-    
+
     if blocked is None:                                 
         blocked = (False if tile_rgb in [(0, 0, 0), (0, 0, 255)] else True)
     color = (libtcod.Color(*floor_rgb)
                             if not blocked 
                             else libtcod.Color(*tile_rgb))
-    if blocked:
-        char = ' '#choice(['@', '%', '#'])
+    if char is not None:
+        pass
     else:
-        char = ' '
-    tile_class = tileset.get_tile_from_RGB(tile_rgb)
-    return tile_class(blocked, x, y, char, color, con, game)
+        if blocked:
+            char = ' '
+        else:
+            char = ' '
+    if tile_type is None:
+        tile_type = tileset.get_tile_from_RGB(tile_rgb)
+
+    new_tile = tile_type(blocked, x, y, char, color, con, game)
+    return new_tile
+
 
 class MapDrawing(object):
 
@@ -85,9 +94,10 @@ class MapDrawing(object):
             return (31, 31, 31)
 
 class GifReader(object):  
-    def __init__(self, img):
+    def __init__(self, img, char=libtcod.CHAR_BLOCK2):
         self.image_file = img
         self.frames = []
+        self.char = char
         self.read_image()
 
     def get_frame_data(self):
@@ -115,7 +125,7 @@ class GifReader(object):
 
     def create_data(self, img):
         for p in list(img.getdata()):
-            yield (libtcod.Color(*p), libtcod.CHAR_BLOCK2) #'<')#
+            yield (libtcod.Color(*p), self.char) #'<')#
     
     def add_frame(self, img_data):
         self.frames.append([x for x in img_data])
@@ -153,3 +163,4 @@ lvl1 = MapDrawing("maps/lvl1.png")
 lvl2 = MapDrawing("maps/lvl2.png")
 cave_drawing = MapDrawing("maps/longcave.png", floor_img="maps/longcavefloor.png")
 bridge_drawing = MapDrawing("maps/0_level_bridge.png", floor_img="maps/0_level_bridge_floor.png")
+bridge_effect = GifReader("maps/bridge_effect.gif", char=' ')

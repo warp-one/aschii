@@ -25,7 +25,7 @@ class FieldOfRealPeople(object):
 
 class LevelZero(Level):
 
-    start_location = 18, 14
+    start_location = 136, 89
     
     lightener_nodes = [(x, randint(10, 20)) for x in range(25, 55, 8)]
     directive_stories = []

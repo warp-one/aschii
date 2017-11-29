@@ -12,11 +12,9 @@ class Tile(object):
 
     def __init__(self, x, y, char, color, con, game, phrase=None):
         self.x, self.y = x, y
-        self._char = char
+        self.char = char
         self.phrase = phrase
-        self.current_char = self.char
-        self._color = color
-        self.current_color = self.color
+        self.color = color
         self.color_queue = []
         self.char_queue = []
         self.con = con

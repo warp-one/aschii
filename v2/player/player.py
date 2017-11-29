@@ -96,6 +96,7 @@ class Player(Listener, orders.Orders, Unit):
     left_foot = False
     left_foot_displacement = -1
     idle_start = 0
+    movement_speed = 2
 
     def __init__(self, *args):
         self.blocked = False
@@ -190,16 +191,16 @@ class Player(Listener, orders.Orders, Unit):
  
         if libtcod.console_is_key_pressed(libtcod.KEY_UP):
             self.change_direction((0, -1))
-            self.move(0, -1)
+            self.move(0, -self.movement_speed)
         elif libtcod.console_is_key_pressed(libtcod.KEY_DOWN):
             self.change_direction((0, 1))
-            self.move(0, 1)
+            self.move(0, self.movement_speed)
         elif libtcod.console_is_key_pressed(libtcod.KEY_LEFT):
             self.change_direction((-1, 0))
-            self.move(-1, 0)
+            self.move(-self.movement_speed, 0)
         elif libtcod.console_is_key_pressed(libtcod.KEY_RIGHT):
             self.change_direction((1, 0))
-            self.move(1, 0)
+            self.move(self.movement_speed, 0)
             
     def add_child(self, child, offset=None):
         super(Player, self).add_child(child, offset)

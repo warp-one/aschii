@@ -4,7 +4,7 @@ import libtcodpy as libtcod
 
 import tools, settings, colors
 from directive import Directive, DirectiveLink
-from tile import Unit, Tile
+from tile import Unit, PolishedFloor, BottomlessPit
 from orders import Orders
 import maps.drawings as dr
 
@@ -237,31 +237,41 @@ class LinkedStatue(Statue):
         
         
 class BridgeBuilder(Statue):
+
+    bridge_map_location = 148, 80
+
     def __init__(self, *args, **kwargs):
         super(BridgeBuilder, self).__init__(*args, **kwargs)
-        self.delayed_doings = []
-        self.shape = self.get_shape()
+        self.effect_frames = {}
+        appear_effect = dr.bridge_effect
+        frames = appear_effect.get_frame_data()
+        self.shape = self.get_shape(frames)
         self.shiny = True
+        print self.effect_frames
 
-    def get_shape(self):
-        x1, y1 = self.x + 5, self.y - 5
-        x2, y2 = x1 + 10, y1 - 10
-        cols = [(x, y1) for x in range(x1, x2)]
-        rows = []
-        for c in cols:
-            for r in range(y2, y1):
-                rows.append((c[0], r))
-        cols.extend(rows)
-        return cols
+    def get_shape(self, frames):
+        shape = []
+        bmx, bmy = self.bridge_map_location
+        for f in frames:
+            shape_coord = f[0] + bmx, f[1] + bmy
+            self.effect_frames[shape_coord] = [char for (color, char) in frames[f] if color == libtcod.Color(0, 0, 0)]
+            if len(self.effect_frames[shape_coord]) == 0:
+                continue
+            shape.append(shape_coord)
+        return shape
 
     def do(self):
         if self.shiny:
             for x, y in self.shape:
-                self.game.the_map.change_tile(x, y, False, schimb=False, tile_type="floor")
+                changed_tile = self.game.the_map.change_tile(x, y, False,
+                    char=libtcod.CHAR_BLOCK2, schimb=False, tile_type=PolishedFloor)
+                changed_tile.char_queue.extend(self.effect_frames[changed_tile.location])
+
             self.shiny = False
         else:
             for x, y in self.shape:
-                self.game.the_map.change_tile(x, y, True, schimb=True, tile_type="pit")
+                self.game.the_map.change_tile(x, y, True,
+                    schimb=True, tile_type=BottomlessPit)
             self.shiny = True
 
 
