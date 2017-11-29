@@ -32,33 +32,9 @@ class LevelZero(Level):
     
     def __init__(self, *args):
         super(LevelZero, self).__init__(*args)
-#        self.player.add_power(Power(self.player, self, static=True, offset=(0, 30+len(self.player.children))))
-#        self.player.add_power(Sprint(self.player, self, text="sprint", static=True, offset=(0, 30+len(self.player.children))))
-        
-        self.statues = []
-        #s = Statue(statue_script2, 19, 27 + _, ' ', libtcod.green, self.foreground, self)
-        #s.loop = False
-        #self.statues.append(s)
-        #self.the_map.add(s.x, s.y, s)
-        
-#            s = MovingStatue(0, 50, reveal_script0, 56, 49 + _, 'R', libtcod.grey, self.foreground, self)
-#            s.loop = False
-#            self.statues.append(s)
-#            self.the_map.add(s.x, s.y, s)
-#            self.player.add_child(Next(s, self, text="bow", static=True, offset = (2, 2)))
-#            self.player.add_child(Waypoint(s, self, text="approach", 
-#                                            static=True, offset=(-1,-1)))
-                                            
-#            t = LinkedStatue({}, 15, 31, ' ', libtcod.brass, self.foreground, self)
-#            self.the_map.add(t.x, t.y, t)
-#            self.player.add_child(Bow(t, self, text="brighter", static=True, offset=(-1,-1)))
 
-#            u = LinkedStatue({}, 24, 32, ' ', libtcod.brass, self.foreground, self)
-#            self.the_map.add(u.x, u.y, u)
-#            self.player.add_child(Bow(u, self, text="fleeter", static=True, offset=(-1,-1), new_fader=DirectiveLineFade))
-#            u.add_link(t)
-#            t.add_link(u)
-            
+        self.statues = []
+
         schimber = Lightener(lightener_script_0, self.player, self,
                              nodes = [(x, x) for x in range(10, 60, 10)])
         schimber.visible = False
@@ -84,12 +60,6 @@ class LevelZero(Level):
         bridge = BridgeBuilder(136, 87, "C", libtcod.dark_green, 
                                self.foreground, self)
         describe(bridge, crank_about)
-#        bridge_toggle = Directive(bridge, self,
-#                                  text="fault",
-#                                  sentence="default",
-#                                  offset=(-4, 4),
-#                                  on_completion_callable=bridge.do,
-#                                  color_scheme=ColorScheme(basic_green))
         btd = (RotatingDirective, (bridge_script_0, bridge, self),
                                   dict(offset=(-4, 4),
                                   text_layout=(RollingLayout, (3, 0, 3, 0, 1)),
@@ -97,7 +67,6 @@ class LevelZero(Level):
         bridge_talker = btd[0](*btd[1], **btd[2])
         bridge_talker.max_rotations = 1
         self.load_object(bridge)
-#        self.player.add_child(bridge_toggle)
         self.player.add_child(bridge_talker)
         
         pot_story = DirectiveGrouper(self)
@@ -201,47 +170,18 @@ class LevelZero(Level):
 #                self.the_map.add(g.x, g.y, g)
 #                self.player.add_child(Ban(g, self, text=info[1], static=True, offset=(-2, 2)))
                 
-#            s = ResetStatue(2, 30, reveal_script1, 8, 1, ' ', libtcod.light_red, self.foreground, self)
-#            s.loop = False
-#            self.statues.append(s)
-#            self.the_map.add(s.x, s.y, s)
-#            self.player.add_child(Next(s, self, text="bow", static=True, offset = (2, 2)))
-            #self.player.add_child(Waypoint(s, self, text="approach", 
-#                                            static=True, offset=(-1,-1)))
-                                            
-#            rp = RealPerson(None, 11, 40, ' ', libtcod.light_blue, self.foreground, self)
-#            rp.loop = True
-#            self.statues.append(rp)
-#            self.the_map.add(rp.x, rp.y, rp)
-            
-#            v = LinkedStatue({}, 56, 40, 'L', libtcod.brass, self.foreground, self)
-#            self.the_map.add(v.x, v.y, v)
-#            v_ = WordMatch(["holy", "look", "angle", "stalagmite"], 
-#                                    v, self, static=True, offset=(-1,-1))
-#            self.player.add_child(v_)
 
-#            w = LinkedStatue({}, 67, 40, 'T', libtcod.brass, self.foreground, self)
-#            self.the_map.add(w.x, w.y, w)
-#            w_ = WordMatch(["bite", "tap", "set", "frighten"], 
-#                                    w, self, static=True, offset=(-1,-1))
-#            self.player.add_child(w_)
-#            w.add_link(v)
-#            v.add_link(w)
-
-#        self.figurine = Idol(False, 28, 28, 'i', libtcod.white, self.foreground, self)
-#        x, y = self.figurine.location
-#        self.the_map.add(x, y, self.figurine)
+        self.figurine = Idol(False, 28, 28, 'i', libtcod.white, self.foreground, self)
+        self.load_object(self.figurine)
         
         self.lamp = Lamp(False, 24, 24, 'T', libtcod.yellow, self.foreground, self)
-        x, y = self.lamp.location
-        self.the_map.add(x, y, self.lamp)
+        self.load_object(self.lamp)
         
-#        self.lute = Lute(False, 22, 20, 'Q', libtcod.light_sepia, self.foreground, self)
-#        x, y = self.lute.location
-#        self.the_map.add(x, y, self.lute)
+        self.lute = Lute(False, 22, 20, 'Q', libtcod.light_sepia, self.foreground, self)
+        self.load_object(self.lute)
 
-#        self.player.add_child(ItemGrab(self.figurine, self, text="pick up", offset = (-2, 2)))
-#        self.player.add_child(ItemGrab(self.lute, self, text="pick up", offset = (-2, 2)))
+        self.player.add_child(ItemGrab(self.figurine, self, text="pick up", offset = (-2, 2)))
+        self.player.add_child(ItemGrab(self.lute, self, text="pick up", offset = (-2, 2)))
         self.player.add_child(ItemGrab(self.lamp, self, text="pick up", offset = (-2, 2)))
 
         for d in self.directive_stories:

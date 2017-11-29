@@ -8,7 +8,7 @@ class Directive(Tile):
 
     char = 'X'
 
-    def __init__(self, anchor, game, 
+    def __init__(self, anchor, game,
                  static=False, 
                  text="Destroy", sentence=None, 
                  offset=(0, 0), 
@@ -18,6 +18,7 @@ class Directive(Tile):
                  on_completion_callable=None,
                  range = 10,
                  width = 10):
+        self.arrangeable = True
         self.anchor = anchor
         self.game = game
         self.static = static
@@ -141,10 +142,7 @@ class Directive(Tile):
         elif self.is_visible():
             self._draw()
 
-    def do_completion_actions(self):
-        if self.on_completion_callable:
-            self.on_completion_callable()
-                       
+
     def _draw(self):
         ir = self.in_range()
         if self.static:
@@ -182,6 +180,10 @@ class Directive(Tile):
         else:
             self.game.player.remove_child(self)
 
+    def do_completion_actions(self):
+        if self.on_completion_callable:
+            self.on_completion_callable()
+
     def clear(self):
         return
 
@@ -213,7 +215,7 @@ class Directive(Tile):
             self.text_layout.tick(len(self.sentence))
 
     def in_range(self):
-        if tools.get_distance(self.anchor.location, 
+        if tools.get_distance(self.anchor.location,
                             self.game.player.location) < self.range:
             return True
         else:
@@ -247,22 +249,6 @@ class RotatingDirective(Directive):
         self.change_text(new_keyword, sentence = new_sentence)
         
       
-        
-class DirectiveLink(object):
-    def __init__(self):
-        self.links = []
-        
-    def add_link(self, directive):
-        self.links.append(directive)
-        
-    def remove_link(self, directive):
-        self.links.remove(directive)
-        
-    def notify_links(self, command):
-        for l in self.links:
-            getattr(l, command)()
-            
-            
 class TestingDirective(Directive):
     def tick_phrase(self, letter):
         if len(self.phrase) is 0:
@@ -290,6 +276,11 @@ class TestingDirective(Directive):
 
         
 class NarrativeDirective(RotatingDirective):
+
+    def __init__(self, *args, **kwargs):
+        super(NarrativeDirective, self).__init__(*args, **kwargs)
+        self.arrangeable = False
+
     def do_completion_actions(self):
         if self.on_completion_callable:
             self.on_completion_callable(self)

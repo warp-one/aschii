@@ -41,7 +41,7 @@ class TextTrail(object):
         if self.current_message:
             ox, oy = self.tile.last_position
             x, y = ox + self.letter_offset[0], oy + self.letter_offset[1]
-            while not self.tilemap.can_schimb(x, y):
+            while not self.tilemap.can_tile_schimb(x, y):
                 if x != ox: x += (ox - x)/abs(ox - x)
                 elif y != oy: y += (oy - y)/abs(oy - y)
                 else: break
@@ -190,16 +190,12 @@ class Player(Listener, orders.Orders, Unit):
             self.inventory.drop_item()
  
         if libtcod.console_is_key_pressed(libtcod.KEY_UP):
-            self.change_direction((0, -1))
             self.move(0, -self.movement_speed)
         elif libtcod.console_is_key_pressed(libtcod.KEY_DOWN):
-            self.change_direction((0, 1))
             self.move(0, self.movement_speed)
         elif libtcod.console_is_key_pressed(libtcod.KEY_LEFT):
-            self.change_direction((-1, 0))
             self.move(-self.movement_speed, 0)
         elif libtcod.console_is_key_pressed(libtcod.KEY_RIGHT):
-            self.change_direction((1, 0))
             self.move(self.movement_speed, 0)
             
     def add_child(self, child, offset=None):
@@ -329,8 +325,7 @@ class Player(Listener, orders.Orders, Unit):
         if candle:
             if candle.on:
                 return
-
-        if self.darken_timer > 480:
+        elif self.darken_timer > 480:
             self.change_base_sight(-1)
             self.change_sight_radius(-1, noschimb=True)
             self.darken_timer = 0

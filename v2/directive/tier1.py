@@ -3,7 +3,7 @@ from random import choice, randint
 import libtcodpy as libtcod
 
 import tools, settings, colors
-from directive import Directive, DirectiveLink
+from directive import Directive
 from tile import Unit, PolishedFloor, BottomlessPit
 from orders import Orders
 import maps.drawings as dr

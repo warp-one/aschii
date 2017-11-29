@@ -12,6 +12,7 @@ class Power(Directive):
     def __init__(self, *args, **kwargs):
         super(Power, self).__init__(*args, **kwargs)
         self._x, self._y = self.anchor.x, self.anchor.y
+        self.arrangeable = False
         
     @property
     def x(self):
@@ -71,24 +72,3 @@ class ItemToggle(Power):
         super(ItemToggle, self).complete()
         self.item.toggle()
         self.change_text(self.item.get_toggle_text())
-
-            
-class Sprint(Power):
-
-    sprint_distance = 20
-
-    def complete(self):
-        p = self.game.player
-        player_location = p.location
-        path = []
-        for s in range(self.sprint_distance):
-            next_tile = (p.x + p.facing[0] * (s + 1), p.y + p.facing[1] * (s + 1))
-            path.append(next_tile)
-        path = p.set_path(path)
-        self.game.player.add_order(len(path), p.move_along_path, None)
-        self.reset()
-        
-        
-class LeaveTheCaves(Power):
-    def complete(self):
-        pass

@@ -51,9 +51,9 @@ class TileMap(Listener, object):
                                       tile_type=tile_type,
                                       blocked=blocked,
                                       char=char)
+        new_tile.next = in_square
         self.tilemap[x][y] = new_tile
-        self.tilemap[x][y].next = in_square
-        libtcod.map_set_properties(self.libtcod_map, x, y, 
+        libtcod.map_set_properties(self.libtcod_map, x, y,
                                    new_tile.transparent, not new_tile.blocked)
         if schimb:
             self.game.player.schimb = True
@@ -66,9 +66,9 @@ class TileMap(Listener, object):
         try:
             return self.tilemap[x][y]
         except IndexError:
-            return False
+            return None
 
-    def can_schimb(self, x, y):
+    def can_tile_schimb(self, x, y):
         return not self.get_tile(x, y).blocked
             
     def get_area(self, x, y, w, h, anchor="center"):
@@ -206,7 +206,7 @@ class TileMap(Listener, object):
         return False
         
     def _schimb(self, novel):
-        print "schimband..." # needs the uh din ah.
+        print "schimband..."
         num_cells = self.width * self.height
         prose = novel.generate_markov_text(size=num_cells/3)
         while not prose:

@@ -34,12 +34,7 @@ class RunningNarrative(tile.Tile):
         
     def clear(self): #oof
         return
-        for tx in range(self.width):
-            for ty in range(5):
-                libtcod.console_put_char(self.con, tx + self.x, ty + self.y, 
-                                        ' ', libtcod.BKGND_NONE)
 
-        
     def add_object(self, thing):
         try:
             thing_sentence = deque([(thing.name, thing.sight)])
