@@ -58,6 +58,9 @@ class TileMap(Listener, object):
         if schimb:
             self.game.player.schimb = True
         return new_tile
+
+    def revert_tile(self, x, y):
+        self.change_tile(x, y, None)
         
     def get_tile(self, x, y):
         try:

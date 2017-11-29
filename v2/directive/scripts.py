@@ -112,3 +112,5 @@ reveal_script_1 = {"start":("GOBLINS", 'CAVE OF THE GOBLINS ---->'),
 ## OBJECT DESCRIPTIONS
 
 plinth_about = [("plinth", "a plinth made of white stone"), "Around it are scattered some luminous pieces of pottery", "The reconstructed pot gleams like a silver tooth in the quiet cavern."]
+
+crank_about = [("rustyg i", "An old, rusty crank."), ""]

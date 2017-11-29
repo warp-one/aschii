@@ -83,6 +83,7 @@ class LevelZero(Level):
         
         bridge = BridgeBuilder(136, 87, "C", libtcod.dark_green, 
                                self.foreground, self)
+        describe(bridge, crank_about)
 #        bridge_toggle = Directive(bridge, self,
 #                                  text="fault",
 #                                  sentence="default",

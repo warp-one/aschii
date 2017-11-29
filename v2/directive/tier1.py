@@ -247,7 +247,6 @@ class BridgeBuilder(Statue):
         frames = appear_effect.get_frame_data()
         self.shape = self.get_shape(frames)
         self.shiny = True
-        print self.effect_frames
 
     def get_shape(self, frames):
         shape = []
@@ -270,8 +269,7 @@ class BridgeBuilder(Statue):
             self.shiny = False
         else:
             for x, y in self.shape:
-                self.game.the_map.change_tile(x, y, True,
-                    schimb=True, tile_type=BottomlessPit)
+                self.game.the_map.revert_tile(x, y)
             self.shiny = True
 
 
