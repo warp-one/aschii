@@ -1,0 +1,74 @@
+Is this the cave with the goblins?
+Yes, it is. It was, until lately.
+Where did the goblins go?
+Oh, they didn't last in this damp cave environment.
+Goblins don't like caves?
+Mold and water degrade the fibers.
+The... goblin... fibers?
+Yes. See their rotted remains on the floor there?
+They just rotted where they stood?
+We hung them, actually. Buy yes, all our valuable Gobelins, destroyed.
+How gruesome--wait, what?
+It really was a poor choice bringing them down here.
+You are talking about actual goblins, right?
+Completely genuine. Back then we didn't know that deep in the earth is no place for 15th century Parisian tapestry.
+Tapestry. I'm afraid I have the wrong place. Do you know of any other... "Gobelin caves"?
+Oh, there's one that's much the same just up the passage behind me.
+
+How long have you been stuck in that pot?
+Only for the afternoon. I was studying it.
+From the inside?
+Yes. The exterior is glazed and finished, so from the outside you can't see the patterns that baking infuses in the porcelain.
+I see. Pardon me, but I got turned around looking for the Cave of Goblins.
+The Gobelin cave? It's back the way you--
+Yes, I spoke to that man already. He thought there might be a different one just up the passage.
+Oh, haha--no. He is the only collector of Gobelins in this cave network.
+There aren't any other 'orthographically similar' chambers are there?
+I'm sure I don't know what you mean, but this is the Cave of Gombroon.
+Gombroon?
+I know, it's not much of a survey--1400s and 1900s with nothing in between, and not even the same medium, but there's rumor of a third curator setting up a transition gallery in the passage.
+What's beyond here?
+More caves.
+Is it okay to move that pot blocking the way?
+Sure. Or smash it, if you like. Truth be told I have a lot of these things, and they take up too much room.
+...
+Don't know what I was thinking, bringing them down here.
+
+What's your name?
+It's Gwendolyn.
+That's a very nice name.
+
+oh, hey, that's a really good flashlight. 
+could I borrow it for my mother? 
+she goes through like a quarter mile of totally dark cave to and from work every day. 
+it's slow and kind of hard, she even has scratches and bumps from the hard places.
+if you don't need it, just leave it with me in this room.
+i'll put it to good use
+she'll love it
+
+Everything is frozen, as if in time.
+  It can be changed, but only a little.
+    I suppose it is actually many moments.
+      Catch the ones you can and leave the rest.
+      If you find one you like, you can leave it that way.
+  It's a specific moment. But is it the right moment?
+    You'll know when it is. Until then, keep changing things.
+      It's up to you when to leave the caves.
+        I don't know if anyone else will come down here.
+          Not for a while, at least.
+          Not for 10,000 years.
+        You probably don't have to go ever.
+          You can just stay here, for all time.
+      If it weren't for you, some things would never change.
+        They would be the same forever.
+        They wouldn't ever be interfered with.
+        
+[("Gorasgwrn", "Gwendolyn", "Gloriann"),
+("Glain", "Gwaeddan", "Gadarine"),
+("Gaetane", "Galiene", "Gerhardeen"),
+("Glorien", "Goshen", "Gibbethon"),
+("Gretchen", "Guillelmine", "Garabine"),
+("Gihon", "Gudrun", "Gefen"),
+("Ghislaine", "Gelsomine", "Gath-Rimmon")]
+
+
