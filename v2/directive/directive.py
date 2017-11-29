@@ -1,5 +1,3 @@
-from random import randint, choice
-
 import libtcodpy as libtcod
 
 from tile import Tile
