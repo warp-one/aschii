@@ -18,14 +18,24 @@ class ActionManager(object):
                     action.offset = coord
                 break
 
+    def request_static_slot(self, action):
+        for coord, directive in self.static_directive_slots.iteritems():
+            if directive is None:
+                self.static_directive_slots[coord] = action
+                action.screen_location = coord
+            break
+        else:
+            return False
+
+    def drop_static_slot(self, coord):
+        self.static_directive_slots[coord] = None
         
     def remove_action(self, action):
         if action in self.actions:
             if action in self.current_actions:
                 self.current_actions.remove(action)
             self.actions.remove(action)
-            self.static_directive_slots[action.offset] = None
-        
+
     def handle_letter(self, key):
         letter = (chr(key.c) if key.c else key.vk)
         for a in self.actions:

@@ -48,7 +48,7 @@ class Directive(Tile):
         
         
         self.story_group = None
-        
+
     def change_text(self, text, sentence=None):
         self.phrase = text
         if not sentence:
