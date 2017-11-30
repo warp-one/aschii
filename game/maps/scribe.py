@@ -41,7 +41,6 @@ class TheScribe(object):
     def organize_directives_for_writing(self, num_tiles):
         mandatory_directives = []
         optional_directives = []
-        directives_to_write = []
         empty_places = self.mutated_text.count('. ', 0, num_tiles)
         print empty_places, "empties"
         
@@ -91,7 +90,7 @@ class TheScribe(object):
             current_letter = self.mutated_text[current_place_in_text]
             previous_letter = self.mutated_text[current_place_in_text - 1]
             previouser_letter = self.mutated_text[current_place_in_text - 2]
-            t.current_char = '.'#current_letter
+            t.current_char = current_letter# '.'#
             
             if previous_letter == ' ' and previouser_letter == '.':
                 end_of_sentence = True

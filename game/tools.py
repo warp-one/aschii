@@ -1,4 +1,18 @@
 from math import sqrt
+from functools import wraps
+
+
+def memoize(function):
+    memo = {}
+    @wraps(function)
+    def wrapper(*args):
+        if args in memo:
+            return memo[args]
+        else:
+            rv = function(*args)
+            memo[args] = rv
+            return rv
+    return wrapper
 
 def distance(p):
     return p[0]**2 + p[1]**2
@@ -29,6 +43,7 @@ def generate_N2(limit=None):
             yield p
         d += 1
         ymax.append(0)
+
 
 def generate_Z2(limit=None, origin=(0, 0)):
     def origin_correction(final_p):
