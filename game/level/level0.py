@@ -87,7 +87,10 @@ class LevelZero(Level):
                                 text_layout = (GatherLayout, ("self", 0, 15, 5, 0, 1))
                                 )
                                 )
-        
+
+        mona_lisa_whisper = HidingDirective(self.the_map.get_tile(181, 14), self, text="found", sentence="You found me.", offset=(0, 0), on_completion_callable=None, range=2)
+        self.player.add_child(mona_lisa_whisper)
+
         plinth2 = EnvironmentTile(True, 75, 90, "n", libtcod.white, self.foreground, self)
         describe(plinth2, plinth_about)
         self.load_object(plinth2)

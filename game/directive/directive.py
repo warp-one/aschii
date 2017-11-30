@@ -4,6 +4,7 @@ from tile import Tile
 import tools, faders, layout, directive_colors
 
 
+
 class Directive(Tile):
 
     char = 'X'
@@ -129,6 +130,7 @@ class Directive(Tile):
     def is_visible(self):
         dv = self.visible
         av = self.anchor.is_visible()
+
         return av and dv
 
     def draw(self):
@@ -220,8 +222,13 @@ class Directive(Tile):
             return True
         else:
             return False
-            
+
         
+class HidingDirective(Directive):
+
+    def is_visible(self):
+        return self.visible and self.in_range()
+
 class RotatingDirective(Directive):
     def __init__(self, script, *args, **kwargs):
         self.script = script
