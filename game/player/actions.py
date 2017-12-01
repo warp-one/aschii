@@ -36,7 +36,12 @@ class ActionManager(object):
                 self.current_actions.remove(action)
             self.actions.remove(action)
 
-    def handle_letter(self, key):
+    def handle_key(self, key):
+        is_char = (key.vk == libtcod.KEY_CHAR)
+        is_space = (key.vk == libtcod.KEY_SPACE)
+        if not (is_char or is_space): return
+        else: pass
+
         letter = (chr(key.c) if key.c else key.vk)
         for a in self.actions:
             if a.dormant_color == libtcod.grey:

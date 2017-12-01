@@ -27,6 +27,12 @@ class Inventory(object):
                                       offset=(ox, oy))
         self.owner.add_child(self.item_toggle, offset=(ox, oy))
 
+    def handle_key(self, key):
+        if key.vk == libtcod.KEY_TAB:
+            self.switch_item()
+        elif key.vk == libtcod.KEY_BACKSPACE:
+            self.drop_item()
+
     def pick_up_item(self, item):
         if item:
             item.pick_up(self.owner)

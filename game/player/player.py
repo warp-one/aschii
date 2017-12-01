@@ -127,6 +127,8 @@ class Player(Listener, orders.Orders, Unit):
         self.darkness = Darkness(darkness_style=darkness_style)
         self.add_observer(self.darkness)
         self.darkness_location = self.x, self.y
+
+        self.key_handlers = [self.inventory, self.action_manager]
         
     def is_visible(self):
         return True
@@ -165,10 +167,9 @@ class Player(Listener, orders.Orders, Unit):
         self.last_position = self.location
         key = libtcod.console_check_for_keypress()  #real-time
         
-        is_char = (key.vk == libtcod.KEY_CHAR)
-        is_space = (key.vk == libtcod.KEY_SPACE)
-        if is_char or is_space:
-            self.action_manager.handle_letter(key)
+
+        for kh in self.key_handlers:
+            kh.handle_key(key)
      
         if key.vk == libtcod.KEY_ENTER and key.lalt:
             libtcod.console_set_fullscreen(not libtcod.console_is_fullscreen())
@@ -182,13 +183,9 @@ class Player(Listener, orders.Orders, Unit):
             else:
                 self.inventory.toggle_item()
         elif key.vk == libtcod.KEY_TAB:
-            self.inventory.switch_item()
             print libtcod.sys_get_last_frame_length()
             print self.location
 
-        elif key.vk == libtcod.KEY_BACKSPACE:
-            self.inventory.drop_item()
- 
         if libtcod.console_is_key_pressed(libtcod.KEY_UP):
             self.move(0, -self.movement_speed)
         elif libtcod.console_is_key_pressed(libtcod.KEY_DOWN):
