@@ -10,14 +10,6 @@ import maps.drawings as dr
 
 
 
-class ItemGrab(Directive):
-
-    range = 2
-
-    def complete(self):
-        self.game.player.inventory.pick_up_item(self.anchor)
-        super(ItemGrab, self).complete()
-
 
 ## The Point of Interest Directives
 class Legs(Directive):
