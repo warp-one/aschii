@@ -14,22 +14,7 @@ class Power(Directive):
         self._x, self._y = self.anchor.x, self.anchor.y
         self.arrangeable = False
         
-    @property
-    def x(self):
-        return self._x
-        
-    @x.setter
-    def x(self, value):
-        self._x = value
 
-    @property
-    def y(self):
-        return self._y
-        
-    @y.setter
-    def y(self, value):
-        self._y = value
-        
     def is_visible(self):
         return True
         
@@ -58,11 +43,22 @@ class Power(Directive):
                                             ' ', libtcod.BKGND_NONE)
 
  
-class ItemToggle(Power):
+class ItemToggle(Directive):
 
     def __init__(self, item, *args, **kwargs):
         super(ItemToggle, self).__init__(*args, **kwargs)
         self.item = item
+        self.arrangeable = False
+        self._x = 0
+        self.static = True
+
+    @property
+    def x(self):
+        return self._x
+
+    @x.setter
+    def x(self, value):
+        self._x = value
 
     @property
     def y(self):

@@ -158,9 +158,9 @@ class SpecialEffect(object):
             y += self.position[1]
             tilemap.get_tile(x, y).effects.remove(self)
         
-lvl0 = MapDrawing("maps/lvl0.png")
-lvl1 = MapDrawing("maps/lvl1.png")
-lvl2 = MapDrawing("maps/lvl2.png")
-cave_drawing = MapDrawing("maps/longcave.png", floor_img="maps/longcavefloor.png")
-bridge_drawing = MapDrawing("maps/0_level_bridge.png", floor_img="maps/0_level_bridge_floor.png")
-bridge_effect = GifReader("maps/bridge_effect.gif", char=' ')
+lvl0 = MapDrawing("maps/level_images/lvl0.png")
+lvl1 = MapDrawing("maps/level_images/lvl1.png")
+lvl2 = MapDrawing("maps/level_images/lvl2.png")
+cave_drawing = MapDrawing("maps/level_images/longcave.png", floor_img="maps/level_images/longcavefloor.png")
+bridge_drawing = MapDrawing("maps/level_images/0_level_bridge.png", floor_img="maps/level_images/0_level_bridge_floor.png")
+bridge_effect = GifReader("maps/effect_images/bridge_effect.gif", char=' ')

@@ -280,7 +280,9 @@ class BridgeBuilder(Statue):
 class Television(Statue):
     def __init__(self, *args, **kwargs):
         super(Television, self).__init__(*args, **kwargs)
-        gifs = ("maps/trees-loop.gif", "maps/porn-loop.gif", "maps/sun-loop.gif")
+        gifs = ("maps/effect_images/trees-loop.gif",
+                "maps/effect_images/porn-loop.gif",
+                "maps/effect_images/sun-loop.gif")
         self.channels = [dr.SpecialEffect(dr.GifReader(gif).get_frame_data(), (self.x, self.y))
                             for gif in gifs]
         self.current_channel = 0

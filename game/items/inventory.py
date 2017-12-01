@@ -18,7 +18,7 @@ class Inventory(object):
         self.display = InventoryDisplay(self.owner.game.the_map, self.owner.con)
         self.owner.game.hud.append(self.display)
         ox = settings.SCREEN_WIDTH - self.owner.x - 20
-        oy = settings.SCREEN_HEIGHT - 5
+        oy = settings.SCREEN_HEIGHT - 1
         self.item_toggle = ItemToggle(self.current_item,
                                       self.owner,
                                       self.owner.game,
@@ -51,6 +51,7 @@ class Inventory(object):
     def switch_item(self):
         # TODO: make a legible sequence of functions rather than this unholiness
         previous_item = self.current_item
+        new_text = ""
         if not self.current_item:
             if self.inventory:
                 self.current_item = self.inventory[0]
@@ -66,12 +67,13 @@ class Inventory(object):
         if self.current_item:
             self.current_item.equip()
             self.item_toggle.item = self.current_item
-            self.item_toggle.change_text(self.current_item.get_toggle_text())
+            new_text = self.current_item.get_toggle_text()
+            self.item_toggle.change_text(new_text)
         else:
             self.item_toggle.change_text("")
         self.display.cycle_display(self.current_item)
         self.display.x = settings.SCREEN_WIDTH - (len(self.display.text) + 2 + len(self.item_toggle.phrase))
-        self.item_toggle.x = self.display.x + len(self.display.text) + 2
+        self.item_toggle.offset = (settings.SCREEN_WIDTH - len(new_text), self.item_toggle.offset[1])
         
     def get_item(self, item_name):
         for item in self.inventory:
@@ -120,16 +122,13 @@ class InventoryDisplay(object):
         for i, char in enumerate(self.text + colon):
             x, y = self.x + i, self.y
             libtcod.console_set_default_foreground(self.con, color)
-            libtcod.console_put_char(self.con, x, y, 
+            libtcod.console_put_char(self.con, x, y,
                                             char, libtcod.BKGND_NONE)
         x, y = settings.SCREEN_WIDTH - 10, settings.SCREEN_HEIGHT - 11
         libtcod.image_blit_2x(self.current_item.image, self.con, x, y, 0, 0, -1, -1)
                                             
     def clear(self):
-        for i, char in enumerate(self.text + ":"):
-            x, y = self.x + i, self.y
-            libtcod.console_put_char(self.con, x, y, 
-                                            ' ', libtcod.BKGND_NONE)
+        return
 
     def get_toggle_location(self):
         return self.x + len(self.text) + 2, self.y

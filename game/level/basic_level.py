@@ -63,6 +63,7 @@ class Level(object):
         self.background = libtcod.console_new(self.game.width, self.game.height)
         self.foreground = libtcod.console_new(self.game.width, self.game.height)
         libtcod.console_set_default_background(self.background, libtcod.blue)
+        libtcod.console_set_default_background(self.foreground, libtcod.black)
         self.consoles = [self.background, self.foreground]
 
     def update_all(self):
@@ -89,8 +90,8 @@ class Level(object):
     def clear_all(self):
         for x in xrange(settings.SCREEN_WIDTH):
             for y in xrange(settings.SCREEN_HEIGHT):
-                libtcod.console_put_char(self.foreground, x, y, 
-                                ' ', libtcod.BKGND_NONE)
+                libtcod.console_put_char(self.foreground, x, y,
+                                ' ', libtcod.BKGND_SET)
         return # HMMMMMM
         self.last_render = []
 
