@@ -205,18 +205,18 @@ class Player(Listener, orders.Orders, Unit):
         if isinstance(child, Directive):
             self.action_manager.remove_action(child)
             
-    def add_power(self, power):
-        if self.powers is None:
-            self.powers = []
-        self.add_child(power)
-        self.powers.append(power)
-        power.x = 0
-        power.y = settings.SCREEN_HEIGHT - len(self.powers)
-        power.update()
-        
-    def remove_power(self, power):
-        self.remove_child(power)
-        self.powers.remove(power)
+#    def add_power(self, power):
+#        if self.powers is None:
+#            self.powers = []
+#        self.add_child(power)
+#        self.powers.append(power)
+#        power.x = 0
+#        power.y = settings.SCREEN_HEIGHT - len(self.powers)
+#        power.update()
+#
+#    def remove_power(self, power):
+#        self.remove_child(power)
+#        self.powers.remove(power)
         
     def change_direction(self, direction):
         x, y = direction
